@@ -1,6 +1,16 @@
-import { PronoteApiFunctions } from "../constants/functions";
 import type { SessionInstance, Session } from "../session";
+
+import { PronoteApiFunctions } from "../constants/functions";
 import { retrieveResponseCookies } from "../utils/headers";
+
+export interface PronoteApiFunctionPayload<T> {
+  nom: string
+  session: number
+  numeroOrdre: string
+
+  /** `string` only when compressed and/or encrypted. */
+  donneesSec: T | string
+}
 
 export const createPronoteAPICall = async (
   apiFunctionName: PronoteApiFunctions,

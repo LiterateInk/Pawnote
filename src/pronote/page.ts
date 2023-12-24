@@ -1,4 +1,3 @@
-import { PronoteApiAccountId } from "../constants/accounts";
 import { retrieveResponseCookies } from "../utils/headers";
 
 export const downloadPronotePage = async (options: {

@@ -1,4 +1,4 @@
-import { PronoteApiAccountId } from "../constants/accounts";
+import type { PronoteApiAccountId } from "../constants/accounts";
 
 export interface PronoteApiSession {
   /** Session ID as a **string**. */

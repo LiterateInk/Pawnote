@@ -1,0 +1,247 @@
+import type { PronoteApiFunctionPayload } from "../pronote/requestAPI";
+import type { PronoteApiSession } from "../pronote/session";
+
+import forge from "node-forge";
+import pako from "pako";
+
+import { PronoteApiAccountId } from "../constants/accounts";
+import { aes } from "../utils/aes";
+
+export enum SessionInstanceVersion {
+  BEFORE_V2023 = "BEFORE_V2023",
+  V2023 = "V2023"
+}
+
+export interface SessionInstance {
+  pronote_url: string
+
+  session_id: number
+  account_type_id: PronoteApiAccountId
+
+  skip_encryption: boolean
+  skip_compression: boolean
+
+  order: number
+  version: SessionInstanceVersion
+}
+
+export interface SessionEncryption {
+  aes: {
+    iv?: string
+    key?: string
+  }
+
+  rsa: {
+    modulus: string,
+    exponent: string
+  }
+}
+
+export interface SessionExported {
+  instance: SessionInstance,
+  encryption: SessionEncryption
+}
+
+const RSA_MODULO_1024 = "B99B77A3D72D3A29B4271FC7B7300E2F791EB8948174BE7B8024667E915446D4EEA0C2424B8D1EBF7E2DDFF94691C6E994E839225C627D140A8F1146D1B0B5F18A09BBD3D8F421CA1E3E4796B301EEBCCF80D81A32A1580121B8294433C38377083C5517D5921E8A078CDC019B15775292EFDA2C30251B1CCABE812386C893E5";
+const RSA_EXPONENT_1024 = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010001";
+
+export class Session {
+  public instance: SessionInstance;
+  public encryption: SessionEncryption;
+
+  constructor (exported: SessionExported);
+  constructor (instance: SessionInstance, encryption: SessionEncryption);
+  constructor (...args: unknown[]) {
+    if (args.length === 1) {
+      const [exported] = args as [SessionExported];
+
+      this.instance = exported.instance;
+      this.encryption = exported.encryption;
+    }
+    else if (args.length === 2) {
+      const [instance, encryption] = args as [SessionInstance, SessionEncryption];
+
+      this.instance = instance;
+      this.encryption = encryption;
+    }
+    else {
+      throw new Error("Invalid arguments.");
+    }
+  }
+
+  /** Exports the current session into an object. */
+  public export (): SessionExported {
+    return {
+      instance: this.instance,
+      encryption: this.encryption
+    };
+  }
+
+  /** Takes a raw session extracted from the Pronote page and then parses it. */
+  public static importFromPage (pronoteURL: string, session_data: PronoteApiSession): Session {
+    let aes_iv: string | undefined;
+
+    // `a` parameter is not available in `Commun`.
+    if (typeof session_data.a !== "number") {
+      session_data.a = PronoteApiAccountId.Commun;
+    }
+
+    // We have to setup IV for our session when we're not in `Commun`.
+    if (session_data.a !== PronoteApiAccountId.Commun) {
+      aes_iv = forge.random.getBytesSync(16);
+    }
+
+    // Fallback to the latest version.
+    let version: SessionInstanceVersion = SessionInstanceVersion.V2023;
+    
+    // Before the v2023 update, we would have those two parameters for RSA.
+    if (typeof session_data.ER === "string" && typeof session_data.MR === "string") {
+      version = SessionInstanceVersion.BEFORE_V2023;
+    }
+
+    return new Session({
+      session_id: parseInt(session_data.h),
+      account_type_id: session_data.a,
+
+      pronote_url: pronoteURL,
+
+      skip_compression: session_data.sCoA,
+      skip_encryption: session_data.sCrA,
+
+      order: 0,
+      version
+    }, {
+      aes: {
+        iv: aes_iv,
+        key: undefined
+      },
+
+      rsa: {
+        exponent: session_data.ER ?? RSA_EXPONENT_1024,
+        modulus: session_data.MR ?? RSA_MODULO_1024
+      }
+    });
+  }
+
+  /**
+   * Check the `this.encryption.aes` object and
+   * returns the buffers of `iv` and `key` for the AES encryption.
+   *
+   * Properties can return `undefined` when they're not
+   * given in `this.encryption.aes`.
+   */
+  private encryption_aes (): { aes_iv?: forge.util.ByteStringBuffer, aes_key?: forge.util.ByteStringBuffer } {
+    // At the first order, we always take an undefined IV.
+    const aes_iv = this.encryption.aes.iv !== undefined && this.instance.order !== 1
+      ? forge.util.createBuffer(this.encryption.aes.iv)
+      : undefined;
+
+    const aes_key = this.encryption.aes.key !== undefined
+      ? forge.util.createBuffer(this.encryption.aes.key)
+      : undefined;
+
+    return { aes_iv, aes_key };
+  }
+
+  public writePronoteFunctionPayload <Req>(data: Req): { order: string, data: Req | string } {
+    this.instance.order++;
+
+    let final_data: Req | string = data;
+    const { aes_iv, aes_key } = this.encryption_aes();
+
+    const order_encrypted = aes.encrypt(this.instance.order.toString(), {
+      iv: aes_iv,
+      key: aes_key
+    });
+
+    if (!this.instance.skip_compression) {
+    // We get the JSON as string.
+      final_data = forge.util.encodeUtf8("" + JSON.stringify(final_data));
+      // We compress it using zlib, level 6, without headers.
+      const deflated_data = pako.deflateRaw(forge.util.createBuffer(final_data).toHex(), { level: 6 });
+      const decoder = new TextDecoder("utf8");
+      final_data = decoder.decode(deflated_data);
+      // We output it to HEX.
+      // When encrypted, we should get the bytes from this hex.
+      // When not encrypted, we send this HEX.
+      final_data = forge.util.bytesToHex(final_data).toUpperCase();
+    }
+
+    if (!this.instance.skip_encryption) {
+      const data = !this.instance.skip_compression
+        // If the data has been compressed, we get the bytes
+        // Of the compressed data (from HEX).
+        ? forge.util.hexToBytes(final_data as string)
+        // Otherwise, we get the JSON as string.
+        : forge.util.encodeUtf8("" + JSON.stringify(final_data));
+
+      const encrypted_data = aes.decrypt(data, {
+        iv: aes_iv, key: aes_key
+      });
+
+      // Replace the request body with the encrypted one.
+      final_data = encrypted_data;
+    }
+
+    return {
+      order: order_encrypted,
+      data: final_data
+    };
+  }
+
+  public readPronoteFunctionPayload <Res>(response_body: string): Res {
+    if (response_body.includes("La page a expir")) {
+      throw new Error("The page has expired.");
+    }
+
+    if (response_body.includes("Votre adresse IP est provisoirement suspendue")) {
+      throw new Error("Your IP address is temporarily suspended.");
+    }
+
+    if (response_body.includes("La page demandée n'existe pas")) {
+      throw new Error("The requested page does not exist.");
+    }
+
+    this.instance.order++;
+    const response = JSON.parse(response_body) as PronoteApiFunctionPayload<Res>;
+
+    try {
+      // Check the local order number with the received one.
+      const { aes_iv, aes_key } = this.encryption_aes();
+      const decrypted_order = aes.decrypt(response.numeroOrdre, {
+        iv: aes_iv, key: aes_key
+      });
+
+      if (this.instance.order !== parseInt(decrypted_order)) {
+        throw new Error("The order number does not match.");
+      }
+
+      let final_data = response.donneesSec;
+
+      if (!this.instance.skip_encryption) {
+        const decrypted_data = aes.decrypt(final_data as string, {
+          iv: aes_iv, key: aes_key
+        });
+
+        final_data = this.instance.skip_compression
+          ? JSON.parse(decrypted_data)
+          : forge.util.bytesToHex(decrypted_data);
+      }
+
+      if (!this.instance.skip_compression) {
+        const compressed = Buffer.from(final_data as string, "hex");
+        final_data = pako.inflateRaw(compressed, { to: "string" });
+      }
+
+      if (typeof final_data === "string") {
+        final_data = forge.util.decodeUtf8(final_data);
+        final_data = JSON.parse(final_data) as Res;
+      }
+
+      return final_data;
+    }
+    catch (error) {
+      throw new Error(`Failed to read payload from response.`);
+    }
+  }
+}

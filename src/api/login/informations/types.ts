@@ -1,5 +1,6 @@
 import { PronoteApiFunctions } from "../../../constants/functions";
 import { PronoteApiAccountId } from "../../../constants/accounts";
+import { Session } from "../../../session";
 
 export interface PronoteApiLoginInformations {
   request: {
@@ -379,7 +380,7 @@ export interface ApiLoginInformations {
 
   output: {
     received: PronoteApiLoginInformations["response"]
-    // session: SessionExported
+    session: Session
 
     /**
      * Generated username and password, only

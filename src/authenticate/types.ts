@@ -1,3 +1,5 @@
+import { PronoteApiAccountId } from "../constants/accounts";
+
 interface AuthenticateBaseOptions {
   /**
    * An unique identifier for the device
@@ -9,6 +11,8 @@ interface AuthenticateBaseOptions {
 export interface AuthenticatePronoteCredentialsOptions extends AuthenticateBaseOptions {
   username: string
   password: string
+
+  accountTypeID: PronoteApiAccountId
 }
 
 export interface AuthenticateENTCredentialsOptions extends AuthenticateBaseOptions {

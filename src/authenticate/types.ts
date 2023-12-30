@@ -1,4 +1,4 @@
-import { PronoteApiAccountId } from "../constants/accounts";
+import type { PronoteApiAccountId } from "../constants/accounts";
 
 interface AuthenticateBaseOptions {
   /**
@@ -25,5 +25,17 @@ export interface AuthenticateENTCredentialsOptions extends AuthenticateBaseOptio
 
 export interface AuthenticateTokenOptions extends AuthenticateBaseOptions {
   username: string
+  token: string
+
+  accountTypeID: PronoteApiAccountId
+}
+
+/**
+ * After the first authentication, we'll store the credentials
+ * for the next authentication, if the user wants to reuse them.
+ */
+export interface NextAuthenticationCredentials {
+  username: string
+  /** Replacement for the password. */
   token: string
 }

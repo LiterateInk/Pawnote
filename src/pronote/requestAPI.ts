@@ -27,7 +27,8 @@ export const createPronoteAPICall = async (
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Cookie: request.cookies?.join("; ") ?? ""
+        Cookie: request.cookies?.join("; ") ?? "",
+        "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.144 Mobile Safari/537.36"
       },
       body: JSON.stringify({
         session: request.session_instance.session_id,

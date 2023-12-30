@@ -35,7 +35,7 @@ export const callApiLoginInformations = makeApiHandler<ApiLoginInformations>(asy
   );
 
   const aes_iv = session.encryption.aes.iv;
-  if (typeof aes_iv === "undefined") {
+  if (typeof aes_iv === "undefined") { // Should never happen though.
     throw new Error("AES IV is undefined.");
   }
 
@@ -48,9 +48,7 @@ export const callApiLoginInformations = makeApiHandler<ApiLoginInformations>(asy
       break;
       
     case SessionInstanceVersion.V2023: {
-      const is_https = input.pronoteURL.startsWith("https");
-      rsa_uuid = forge.util.encode64(is_https ? aes_iv : rsa_key.encrypt(aes_iv), 64);
-      
+      rsa_uuid = forge.util.encode64(session.instance.http ? rsa_key.encrypt(aes_iv) : aes_iv, 64);
       break;
     }
   }
@@ -76,8 +74,8 @@ export const callApiLoginInformations = makeApiHandler<ApiLoginInformations>(asy
   const received = session.readPronoteFunctionPayload<PronoteApiLoginInformations["response"]>(response.payload);
 
   return {
-    session,
-    received,
+    createdSession: session,
+    data: received,
 
     setup: typeof sessionData.e !== "undefined" && typeof sessionData.f !== "undefined"
       ? {

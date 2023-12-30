@@ -379,8 +379,8 @@ export interface ApiLoginInformations {
   }
 
   output: {
-    received: PronoteApiLoginInformations["response"]
-    session: Session
+    data: PronoteApiLoginInformations["response"]
+    createdSession: Session
 
     /**
      * Generated username and password, only

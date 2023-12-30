@@ -5,7 +5,7 @@ import forge from "node-forge";
 import pako from "pako";
 
 import { PronoteApiAccountId } from "../constants/accounts";
-import { aes } from "../utils/aes";
+import aes from "../utils/aes";
 
 export enum SessionInstanceVersion {
   BEFORE_V2023 = "BEFORE_V2023",
@@ -21,14 +21,17 @@ export interface SessionInstance {
   skip_encryption: boolean
   skip_compression: boolean
 
+  poll: boolean
+  http: boolean
+
   order: number
   version: SessionInstanceVersion
 }
 
 export interface SessionEncryption {
   aes: {
-    iv?: string
-    key?: string
+    iv: string
+    key: string
   }
 
   rsa: {
@@ -79,7 +82,7 @@ export class Session {
 
   /** Takes a raw session extracted from the Pronote page and then parses it. */
   public static importFromPage (pronoteURL: string, session_data: PronoteApiSession): Session {
-    let aes_iv: string | undefined;
+    let aes_iv = '';
 
     // `a` parameter is not available in `Commun`.
     if (typeof session_data.a !== "number") {
@@ -105,15 +108,18 @@ export class Session {
 
       pronote_url: pronoteURL,
 
-      skip_compression: session_data.sCoA,
-      skip_encryption: session_data.sCrA,
+      skip_compression: session_data.sCoA ?? false,
+      skip_encryption: session_data.sCrA ?? false,
+
+      poll: session_data.poll ?? false,
+      http: session_data.http ?? false,
 
       order: 0,
       version
     }, {
       aes: {
         iv: aes_iv,
-        key: undefined
+        key: ''
       },
 
       rsa: {
@@ -130,15 +136,16 @@ export class Session {
    * Properties can return `undefined` when they're not
    * given in `this.encryption.aes`.
    */
-  private encryption_aes (): { aes_iv?: forge.util.ByteStringBuffer, aes_key?: forge.util.ByteStringBuffer } {
-    // At the first order, we always take an undefined IV.
-    const aes_iv = this.encryption.aes.iv !== undefined && this.instance.order !== 1
-      ? forge.util.createBuffer(this.encryption.aes.iv)
-      : undefined;
-
-    const aes_key = this.encryption.aes.key !== undefined
-      ? forge.util.createBuffer(this.encryption.aes.key)
-      : undefined;
+  private encryption_aes (): { aes_iv: forge.util.ByteStringBuffer, aes_key: forge.util.ByteStringBuffer } {
+    /**
+     * Even if the IV was setup, the first ever request made
+     * should take an empty IV as parameter.
+     * 
+     * Just so the server can read our encrypted request
+     * and then setup our IV on their side.
+     */
+    const aes_iv = forge.util.createBuffer(this.instance.order === 1 ? '' : this.encryption.aes.iv)
+    const aes_key = forge.util.createBuffer(this.encryption.aes.key);
 
     return { aes_iv, aes_key };
   }
@@ -149,22 +156,21 @@ export class Session {
     let final_data: Req | string = data;
     const { aes_iv, aes_key } = this.encryption_aes();
 
-    const order_encrypted = aes.encrypt(this.instance.order.toString(), {
-      iv: aes_iv,
-      key: aes_key
-    });
-
+    const order_encrypted = aes.encrypt(this.instance.order.toString(), aes_key, aes_iv);
+    
     if (!this.instance.skip_compression) {
-    // We get the JSON as string.
-      final_data = forge.util.encodeUtf8("" + JSON.stringify(final_data));
+      // We get the JSON as string.
+      final_data = forge.util.encodeUtf8("" + JSON.stringify(final_data) || "");
+      final_data = forge.util.createBuffer(final_data).toHex();
+      
       // We compress it using zlib, level 6, without headers.
-      const deflated_data = pako.deflateRaw(forge.util.createBuffer(final_data).toHex(), { level: 6 });
-      const decoder = new TextDecoder("utf8");
-      final_data = decoder.decode(deflated_data);
+      const deflated_data = pako.deflateRaw(final_data, { level: 6 });
+      final_data = String.fromCharCode.apply(null, deflated_data);
+      
       // We output it to HEX.
       // When encrypted, we should get the bytes from this hex.
       // When not encrypted, we send this HEX.
-      final_data = forge.util.bytesToHex(final_data).toUpperCase();
+      final_data = forge.util.bytesToHex(final_data as string).toUpperCase();
     }
 
     if (!this.instance.skip_encryption) {
@@ -175,16 +181,14 @@ export class Session {
         // Otherwise, we get the JSON as string.
         : forge.util.encodeUtf8("" + JSON.stringify(final_data));
 
-      const encrypted_data = aes.decrypt(data, {
-        iv: aes_iv, key: aes_key
-      });
+      const encrypted_data = aes.encrypt(data, aes_key, aes_iv);
 
       // Replace the request body with the encrypted one.
-      final_data = encrypted_data;
+      final_data = encrypted_data.toUpperCase();
     }
 
     return {
-      order: order_encrypted,
+      order: order_encrypted.toUpperCase(),
       data: final_data
     };
   }
@@ -194,23 +198,29 @@ export class Session {
       throw new Error("The page has expired.");
     }
 
-    if (response_body.includes("Votre adresse IP est provisoirement suspendue")) {
+    if (response_body.includes("Votre adresse IP a ")) {
       throw new Error("Your IP address is temporarily suspended.");
     }
 
-    if (response_body.includes("La page demandée n'existe pas")) {
+    if (response_body.includes("La page dem")) {
       throw new Error("The requested page does not exist.");
+    }
+
+    if (response_body.includes("Impossible d'a")) {
+      throw new Error("Page unaccessible.");
+    }
+
+    if (response_body.includes("Vous avez d")) {
+      throw new Error("You've been rate-limited.");
     }
 
     this.instance.order++;
     const response = JSON.parse(response_body) as PronoteApiFunctionPayload<Res>;
-
+    
     try {
       // Check the local order number with the received one.
       const { aes_iv, aes_key } = this.encryption_aes();
-      const decrypted_order = aes.decrypt(response.numeroOrdre, {
-        iv: aes_iv, key: aes_key
-      });
+      const decrypted_order = aes.decrypt(response.numeroOrdre, aes_key, aes_iv);
 
       if (this.instance.order !== parseInt(decrypted_order)) {
         throw new Error("The order number does not match.");
@@ -219,9 +229,7 @@ export class Session {
       let final_data = response.donneesSec;
 
       if (!this.instance.skip_encryption) {
-        const decrypted_data = aes.decrypt(final_data as string, {
-          iv: aes_iv, key: aes_key
-        });
+        const decrypted_data = aes.decrypt(final_data as string, aes_key, aes_iv);
 
         final_data = this.instance.skip_compression
           ? JSON.parse(decrypted_data)
@@ -229,7 +237,7 @@ export class Session {
       }
 
       if (!this.instance.skip_compression) {
-        const compressed = Buffer.from(final_data as string, "hex");
+        const compressed = new Uint8Array((final_data as string).match(/../g)!.map(h=>parseInt(h,16))).buffer
         final_data = pako.inflateRaw(compressed, { to: "string" });
       }
 
@@ -241,6 +249,7 @@ export class Session {
       return final_data;
     }
     catch (error) {
+      console.error(error);
       throw new Error(`Failed to read payload from response.`);
     }
   }

@@ -6,7 +6,7 @@ export interface PronoteApiSession {
   /** Account Type ID. */
   a: PronoteApiAccountId
   /** Whether the instance is demo or not. */
-  d: boolean
+  d?: boolean
 
   /** ENT Username. */
   e?: string
@@ -26,10 +26,32 @@ export interface PronoteApiSession {
    */
   ER?: string
 
-  /** Skip request encryption. */
-  sCrA: boolean
-  /** Skip request compression. */
-  sCoA: boolean
+  /// The following properties are assigned
+  /// to `CommunicationProduit.optionsSecurite`.
+
+  /**
+   * Skip request encryption.
+   * > Assigned to `.sansCryptageAES`.
+   */
+  sCrA?: boolean
+  
+  /**
+   * Skip request compression.
+   * > Assigned to `.sansCompressionAES`.
+   */
+  sCoA?: boolean
+
+  /**
+   * ???, but we know it changes how the encryption is made.
+   * > Assigned to `.http`.
+   */
+  http?: boolean
+
+  /**
+   * Whether polling should be made. We can ignore this.
+   * > Assigned to `.avecPollingActif`.
+   */
+  poll?: boolean
 }
 
 export const extractPronoteSessionFromHTML = (html: string): PronoteApiSession => {

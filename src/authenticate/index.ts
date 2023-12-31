@@ -20,7 +20,6 @@ export const authenticatePronoteCredentials = async (pronoteStringURL: string, o
   pronoteURL.searchParams.set("bydlg", "A6ABB224-12DD-4E31-AD3E-8A39A1C2C335");
   pronoteURL.searchParams.set("login", "true");
 
-  // NOTE: Should we support other languages ?
   const pronoteCookies = ["ielang=fr"];
 
   const { createdSession: session, data: loginInformations } = await callApiLoginInformations({
@@ -118,7 +117,7 @@ export const authenticatePronoteCredentials = async (pronoteStringURL: string, o
   }
 
   // Return the new Pronote instance.
-  return new Pronote(session, credentials, user, loginInformations);
+  return new Pronote(session, credentials, user.donnees, loginInformations);
 };
 
 export const authenticateToken = async (pronoteStringURL: string, options: AuthenticateTokenOptions): Promise<Pronote> => {
@@ -129,13 +128,12 @@ export const authenticateToken = async (pronoteStringURL: string, options: Authe
 
   pronoteURL.pathname += `/${accountType.path}`;
   
-  // Add important properties.
+  // Add important property.
   pronoteURL.searchParams.set("fd", "1");
 
-  // NOTE: Should we support other languages ?
   const pronoteCookies = ["ielang=fr", "appliMobile=1"];
 
-  const { createdSession: session, data: loginInformations, setup } = await callApiLoginInformations({
+  const { createdSession: session, data: loginInformations } = await callApiLoginInformations({
     accountTypeID: accountType.id,
     pronoteURL: pronoteURL.href,
     cookies: pronoteCookies
@@ -230,5 +228,5 @@ export const authenticateToken = async (pronoteStringURL: string, options: Authe
   }
 
   // Return the new Pronote instance.
-  return new Pronote(session, credentials, user, loginInformations);
+  return new Pronote(session, credentials, user.donnees, loginInformations);
 };

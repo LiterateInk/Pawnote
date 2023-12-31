@@ -31,4 +31,16 @@ export default class Pronote {
   public get nextTimeToken (): string {
     return this.credentials.token;
   }
+
+  /**
+   * Whether the Pronote instance you're connected to
+   * is a demonstration server or not.
+   * 
+   * `authenticateToken` won't work against them since
+   * next-time tokens aren't saved, even though
+   * it's able to generate them.
+   */
+  public get isDemo (): boolean {
+    return this.session.instance.demo;
+  }
 }

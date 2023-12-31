@@ -24,6 +24,8 @@ export interface SessionInstance {
   poll: boolean
   http: boolean
 
+  demo: boolean
+
   order: number
   version: SessionInstanceVersion
 }
@@ -113,6 +115,7 @@ export class Session {
 
       poll: session_data.poll ?? false,
       http: session_data.http ?? false,
+      demo: session_data.d ?? false,
 
       order: 0,
       version

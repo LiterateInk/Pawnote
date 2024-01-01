@@ -7,13 +7,11 @@ import type { PronoteApiResource } from "../../../constants/resources";
 export interface PronoteApiUserTimetable {
   request: {
     donnees: {
+      // If someone from Index-Education sees this, just why ?
       ressource: PronoteApiUserData["response"]["donnees"]["ressource"]
-      // Why another one ? Not sure, some instances need it all in lowercase,
-      // others need the first letter in uppercase...
       Ressource: PronoteApiUserData["response"]["donnees"]["ressource"]
-
-      NumeroSemaine: number
       numeroSemaine: number
+      NumeroSemaine: number
 
       avecAbsencesEleve: boolean
       avecAbsencesRessource: boolean
@@ -68,24 +66,42 @@ export interface PronoteApiUserTimetable {
 
         /** Whether the lesson is canceled or not. */
         estAnnule?: boolean
+        estRetenue?: boolean
+        estSortiePedagogique?: boolean
+        dispenseEleve?: boolean
         Statut?: string
+        memo?: string
+
+        listeVisios?: {
+          V: Array<{ url: string }>
+        }
 
         DateDuCours: {
           _T: 7
           V: string
         }
 
-        CouleurFond: string
+        DateDuCoursFin?: {
+          _T: 7
+          V: string
+        }
+
+        CouleurFond?: string
+
         ListeContenus: {
           _T: 24
           V: Array<{ L: string } & (
             | {
               G: PronoteApiResource.Matiere
               N: string
+              estServiceGroupe?: boolean
             }
             | {
               G: PronoteApiResource.Salle
               N: string
+            }
+            | {
+              G: PronoteApiResource.Groupe
             }
             | {
               G: PronoteApiResource.Enseignant
@@ -98,6 +114,12 @@ export interface PronoteApiUserTimetable {
         G: number
 
         AvecTafPublie: boolean
+
+        cahierDeTextes?: {
+          V: {
+            estDevoir?: boolean
+          }
+        }
       }>
     }
   }
@@ -105,7 +127,7 @@ export interface PronoteApiUserTimetable {
 
 export interface ApiUserTimetable {
   input: {
-    week: number
+    weekNumber: number
     session: Session
     resource: PronoteApiUserData["response"]["donnees"]["ressource"]
   }

@@ -37,11 +37,14 @@
     "prefs",
     "Prefs",
     "pronote",
+    "pronotepy",
     "regles",
     "Reponse",
     "Securisation",
     "Securite",
     "Specialite",
-    "viescolaire"
+    "viescolaire",
+    "visio",
+    "Visios"
   ]
 }

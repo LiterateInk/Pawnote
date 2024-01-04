@@ -1,4 +1,4 @@
-import { authenticatePronoteCredentials, authenticateToken, PronoteApiAccountId } from "../src";
+import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
 
 (async () => {
   const pronote = await authenticatePronoteCredentials("https://demo.index-education.net/pronote", {

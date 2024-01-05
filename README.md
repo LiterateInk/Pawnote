@@ -45,10 +45,22 @@ It returns a boolean that is `true` when the server is a demo.
 ## Features
 
 - [x] Timetable (per week and from/to dates)
-  - [x] parser: `Lesson`
-  - [x] parser: `LessonSubject`
+  - [x] parser: `StudentLesson`
+  - [x] parser: `StudentSubject`
   - [x] client: `.requestTimetableForWeek(weekNumber)`
   - [x] client: `.requestLessonsForInterval(from[, to])`
+- [ ] Homework
+  - [x] from/to dates
+  - [ ] (per week)
+  - [x] client: `.getHomeworkForInterval(from[, to])`
+  - [x] parser: `StudentHomework`
+  - [x] parser: parse attachments using `StudentAttachment`
+- [x] Update homework status
+  - [x] client: `.patchHomeworkStatus(homeworkID, done)`
+  - [x] parser: `StudentHomework.setDone(done)`
+- [x] Attachment
+  - [x] parser: `StudentAttachment`
+  - [x] parser: able to get attachment's URL
 
 ## Resources
 

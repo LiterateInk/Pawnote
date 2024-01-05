@@ -50,31 +50,6 @@ It returns a boolean that is `true` when the server is a demo.
   - [x] client: `.requestTimetableForWeek(weekNumber)`
   - [x] client: `.requestLessonsForInterval(from[, to])`
 
-## `Date`s in Pawnote
-
-Every single `Date` used in Pawnote is **localized** to the timezone of the client running the code.
-
-Why ? Well, because Pronote's API returns dates in the timezone of the server, so it is easier to work with localized dates.
-
-So don't be surprised if you see a date that is different from the one you expected, it was probably converted to UTC.
-
-See the example below where the client running the code is in UTC+2.
-
-```javascript
-const lessons = await pronote.requestLessonsForInterval(from, to);
-lessons.forEach(lesson => {
-  // Using `lesson.start` raw will return the date value in UTC.
-  // Using lesson.start.toLocaleString() will return the date in the timezone of the client.
-  console.log(lesson.start, "|", lesson.start.toLocaleString());
-})
-```
-
-```console
-2023-09-19T09:00:00.000Z | 9/19/2023, 11:00:00 AM
-2023-09-19T08:00:00.000Z | 9/19/2023, 10:00:00 AM
-2023-09-19T13:30:00.000Z | 9/19/2023, 3:30:00 PM
-```
-
 ## Resources
 
 Without these very useful resources, I wouldn't be able to write this whole client by myself.

@@ -42,45 +42,14 @@ export interface SessionEncryption {
   }
 }
 
-export interface SessionExported {
-  instance: SessionInstance,
-  encryption: SessionEncryption
-}
-
 const RSA_MODULO_1024 = "B99B77A3D72D3A29B4271FC7B7300E2F791EB8948174BE7B8024667E915446D4EEA0C2424B8D1EBF7E2DDFF94691C6E994E839225C627D140A8F1146D1B0B5F18A09BBD3D8F421CA1E3E4796B301EEBCCF80D81A32A1580121B8294433C38377083C5517D5921E8A078CDC019B15775292EFDA2C30251B1CCABE812386C893E5";
 const RSA_EXPONENT_1024 = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010001";
 
 export class Session {
-  public instance: SessionInstance;
-  public encryption: SessionEncryption;
-
-  constructor (exported: SessionExported);
-  constructor (instance: SessionInstance, encryption: SessionEncryption);
-  constructor (...args: unknown[]) {
-    if (args.length === 1) {
-      const [exported] = args as [SessionExported];
-
-      this.instance = exported.instance;
-      this.encryption = exported.encryption;
-    }
-    else if (args.length === 2) {
-      const [instance, encryption] = args as [SessionInstance, SessionEncryption];
-
-      this.instance = instance;
-      this.encryption = encryption;
-    }
-    else {
-      throw new Error("Invalid arguments.");
-    }
-  }
-
-  /** Exports the current session into an object. */
-  public export (): SessionExported {
-    return {
-      instance: this.instance,
-      encryption: this.encryption
-    };
-  }
+  constructor (
+    public instance: SessionInstance,
+    public encryption: SessionEncryption
+  ) {}
 
   /** Takes a raw session extracted from the Pronote page and then parses it. */
   public static importFromPage (pronoteURL: string, session_data: PronoteApiSession): Session {
@@ -135,13 +104,10 @@ export class Session {
   /**
    * Check the `this.encryption.aes` object and
    * returns the buffers of `iv` and `key` for the AES encryption.
-   *
-   * Properties can return `undefined` when they're not
-   * given in `this.encryption.aes`.
    */
-  private encryption_aes (): { aes_iv: forge.util.ByteStringBuffer, aes_key: forge.util.ByteStringBuffer } {
+  public getAESEncryptionKeys () {
     /**
-     * Even if the IV was setup, the first ever request made
+     * Even if the IV was setup, the first request made
      * should take an empty IV as parameter.
      * 
      * Just so the server can read our encrypted request
@@ -150,14 +116,14 @@ export class Session {
     const aes_iv = forge.util.createBuffer(this.instance.order === 1 ? '' : this.encryption.aes.iv)
     const aes_key = forge.util.createBuffer(this.encryption.aes.key);
 
-    return { aes_iv, aes_key };
+    return { aes_iv, aes_key } as const;
   }
 
   public writePronoteFunctionPayload <Req>(data: Req): { order: string, data: Req | string } {
     this.instance.order++;
 
     let final_data: Req | string = data;
-    const { aes_iv, aes_key } = this.encryption_aes();
+    const { aes_iv, aes_key } = this.getAESEncryptionKeys();
 
     const order_encrypted = aes.encrypt(this.instance.order.toString(), aes_key, aes_iv);
     
@@ -222,7 +188,7 @@ export class Session {
     
     try {
       // Check the local order number with the received one.
-      const { aes_iv, aes_key } = this.encryption_aes();
+      const { aes_iv, aes_key } = this.getAESEncryptionKeys();
       const decrypted_order = aes.decrypt(response.numeroOrdre, aes_key, aes_iv);
 
       if (this.instance.order !== parseInt(decrypted_order)) {

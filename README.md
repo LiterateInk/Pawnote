@@ -58,7 +58,7 @@ Why ? Well, because Pronote's API returns dates in the timezone of the server, s
 
 So don't be surprised if you see a date that is different from the one you expected, it was probably converted to UTC.
 
-See the example below where the client running the code is in UTC+2 (Europe/Paris).
+See the example below where the client running the code is in UTC+2.
 
 ```javascript
 const lessons = await pronote.requestLessonsForInterval(from, to);

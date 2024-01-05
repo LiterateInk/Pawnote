@@ -7,5 +7,9 @@ export const setDayToEnd = (date: Date): void => {
 };
 
 export const getUTCTime = (date: Date): number => {
-  return date.getTime() - date.getTimezoneOffset() * 60 * 1000;
+  return date.getTime() + date.getTimezoneOffset() * 60 * 1000;
+};
+
+export const getUTCDate = (date: Date): Date => {
+  return new Date(getUTCTime(date));
 }

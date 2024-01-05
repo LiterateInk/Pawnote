@@ -25,14 +25,11 @@ A support for other accounts will be added in the future.
 
 ### Authentication
 
-- [x] By `username` and `password` without any ENT
-- [ ] By `username` and `password` with ENT
+- [x] By `username` and `password` (no ENT)
 - [x] By `username` and `token`
+- [ ] By [QR Code](https://forum.index-education.com/upfiles/qrcode.png)
 
-I may need help to implement the authentication by ENT, since I don't have any account to test it.
-
-Feel free to open an issue when you need the support for a specific ENT.
-You can even open a pull request if you want to implement it yourself.
+**ENT support is not and will never be supported by Pawnote**, for the simple reason that implementing all of them with all of their specificities requires a lot of time and effort. It's simply a pain to implement and track, as a matter of fact, most of the issues on [pronotepy](https://github.com/bain3/pronotepy/issues) - a similar project - are related to ENTs. 
 
 #### Note about demonstration servers
 

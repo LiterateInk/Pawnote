@@ -1,4 +1,4 @@
-import type { PronoteApiAccountId } from "../constants/accounts";
+import type { PronoteApiAccountId } from "~/constants/accounts";
 
 interface AuthenticateBaseOptions {
   /**

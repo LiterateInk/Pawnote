@@ -1,5 +1,5 @@
-import { PronoteApiLoginInformations } from "../api/login/informations/types";
-import { getUTCTime } from "../utils/dates";
+import { PronoteApiLoginInformations } from "~/api/login/informations/types";
+import { getUTCTime } from "~/utils/dates";
 
 /**
  * Pronote's week numbers are relative to the `PremierLundi`

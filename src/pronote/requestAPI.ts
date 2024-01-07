@@ -1,7 +1,7 @@
-import type { SessionInstance, Session } from "../session";
+import type { SessionInstance, Session } from "~/session";
 
-import { PronoteApiFunctions } from "../constants/functions";
-import { retrieveResponseCookies } from "../utils/headers";
+import { PronoteApiFunctions } from "~/constants/functions";
+import { retrieveResponseCookies } from "~/utils/headers";
 
 export interface PronoteApiFunctionPayload<T> {
   nom: string

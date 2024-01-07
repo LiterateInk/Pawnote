@@ -1,6 +1,6 @@
-import { PronoteApiFunctions } from "../../../constants/functions";
-import { PronoteApiAccountId } from "../../../constants/accounts";
-import { Session } from "../../../session";
+import type { PronoteApiFunctions } from "~/constants/functions";
+import type { PronoteApiAccountId } from "~/constants/accounts";
+import type { Session } from "~/session";
 
 export interface PronoteApiLoginInformations {
   request: {

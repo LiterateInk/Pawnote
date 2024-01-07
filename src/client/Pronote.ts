@@ -1,14 +1,21 @@
-import { ApiLoginInformations } from "../api/login/informations/types";
-import { ApiUserData } from "../api/user/data/types";
-import { callApiUserHomework } from "../api/user/homework";
-import { callApiUserHomeworkStatus } from "../api/user/homeworkStatus";
-import { callApiUserTimetable } from "../api/user/timetable";
-import type { NextAuthenticationCredentials } from "../authenticate/types";
-import { StudentHomework } from "../parser/homework";
-import { StudentLesson } from "../parser/lesson";
-import { readPronoteApiDate, translateToPronoteWeekNumber } from "../pronote/dates";
-import { Session } from "../session";
-import { getUTCDate, setDayToEnd, setDayToStart } from "../utils/dates";
+import type { NextAuthenticationCredentials } from "~/authenticate/types";
+import type { ApiLoginInformations } from "~/api/login/informations/types";
+
+import {
+  callApiUserHomework,
+  callApiUserHomeworkStatus,
+  callApiUserTimetable,
+  
+  type ApiUserData
+} from "~/api";
+
+import { StudentHomework } from "~/parser/homework";
+import { StudentLesson } from "~/parser/lesson";
+
+import { Session } from "~/session";
+
+import { readPronoteApiDate, translateToPronoteWeekNumber } from "~/pronote/dates";
+import { getUTCDate, setDayToEnd, setDayToStart } from "~/utils/dates";
 
 export default class Pronote {
   /**

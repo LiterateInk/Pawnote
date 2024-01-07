@@ -1,11 +1,11 @@
-import type { PronoteApiFunctionPayload } from "../pronote/requestAPI";
-import type { PronoteApiSession } from "../pronote/session";
+import type { PronoteApiFunctionPayload } from "~/pronote/requestAPI";
+import type { PronoteApiSession } from "~/pronote/session";
 
 import forge from "node-forge";
 import pako from "pako";
 
-import { PronoteApiAccountId } from "../constants/accounts";
-import aes from "../utils/aes";
+import { PronoteApiAccountId } from "~/constants/accounts";
+import aes from "~/utils/aes";
 
 export enum SessionInstanceVersion {
   BEFORE_V2023 = "BEFORE_V2023",

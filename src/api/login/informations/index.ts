@@ -1,13 +1,14 @@
 import type { ApiLoginInformations, PronoteApiLoginInformations } from "./types";
-import { makeApiHandler } from "../../../utils/api";
-import { PRONOTE_ACCOUNT_TYPES } from "../../../constants/accounts";
-import { downloadPronotePage } from "../../../pronote/page";
-import { extractPronoteSessionFromHTML } from "../../../pronote/session";
-import { Session, SessionInstanceVersion } from "../../../session";
-import { cleanPronoteUrl } from "../../../pronote/url";
+
+import { makeApiHandler } from "~/utils/api";
+import { PRONOTE_ACCOUNT_TYPES } from "~/constants/accounts";
+import { downloadPronotePage } from "~/pronote/page";
+import { extractPronoteSessionFromHTML } from "~/pronote/session";
+import { Session, SessionInstanceVersion } from "~/session";
+import { cleanPronoteUrl } from "~/pronote/url";
+import { PronoteApiFunctions } from "~/constants/functions";
+import { createPronoteAPICall } from "~/pronote/requestAPI";
 import forge from "node-forge";
-import { PronoteApiFunctions } from "../../../constants/functions";
-import { createPronoteAPICall } from "../../../pronote/requestAPI";
 
 export const callApiLoginInformations = makeApiHandler<ApiLoginInformations>(async (input) => {
   const accountType = PRONOTE_ACCOUNT_TYPES.find((entry) => entry.id === input.accountTypeID);

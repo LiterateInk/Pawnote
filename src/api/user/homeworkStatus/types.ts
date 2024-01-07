@@ -1,6 +1,6 @@
-import { PronoteApiFunctions } from "../../../constants/functions";
-import { PronoteApiOnglets } from "../../../constants/onglets";
-import { Session } from "../../../session";
+import type { PronoteApiFunctions } from "~/constants/functions";
+import type { PronoteApiOnglets } from "~/constants/onglets";
+import type { Session } from "~/session";
 
 export interface PronoteApiUserHomeworkStatus {
   request: {

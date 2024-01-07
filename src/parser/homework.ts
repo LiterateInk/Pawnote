@@ -2,9 +2,9 @@ import type { PronoteApiAttachment } from "../constants/attachments";
 import type { PronoteApiUserHomework } from "../api/user/homework/types";
 import type Pronote from "../client/Pronote";
 
-import { readPronoteApiDate } from "../pronote/dates";
-import { StudentSubject } from "./subject";
-import { StudentAttachment } from "./attachment";
+import { readPronoteApiDate } from "~/pronote/dates";
+import { StudentSubject } from "~/parser/subject";
+import { StudentAttachment } from "~/parser/attachment";
 
 export class StudentHomework {
   public id: string;

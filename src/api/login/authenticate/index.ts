@@ -1,7 +1,8 @@
-import { PronoteApiFunctions } from "../../../constants/functions";
-import { createPronoteAPICall } from "../../../pronote/requestAPI";
-import { makeApiHandler } from "../../../utils/api";
 import type { ApiLoginAuthenticate, PronoteApiLoginAuthenticate } from "./types";
+
+import { PronoteApiFunctions } from "~/constants/functions";
+import { createPronoteAPICall } from "~/pronote/requestAPI";
+import { makeApiHandler } from "~/utils/api";
 
 export const callApiLoginAuthenticate = makeApiHandler<ApiLoginAuthenticate>(async (input) => {
   const request_payload = input.session.writePronoteFunctionPayload<PronoteApiLoginAuthenticate["request"]>({

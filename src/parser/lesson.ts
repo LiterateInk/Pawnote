@@ -1,8 +1,8 @@
-import type { PronoteApiUserTimetable } from "../api/user/timetable/types";
-import type Pronote from "../client/Pronote";
-import { PronoteApiResource } from "../constants/resources";
-import { translatePositionToTime, readPronoteApiDate } from "../pronote/dates";
-import { StudentSubject } from "./subject";
+import type { PronoteApiUserTimetable } from "~/api/user/timetable/types";
+import type Pronote from "~/client/Pronote";
+import { PronoteApiResource } from "~/constants/resources";
+import { translatePositionToTime, readPronoteApiDate } from "~/pronote/dates";
+import { StudentSubject } from "~/parser/subject";
 
 export class StudentLesson {
   public id: string;

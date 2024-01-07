@@ -1,6 +1,6 @@
-import { type PronoteApiAttachment, PronoteApiAttachmentType } from "../constants/attachments";
-import type Pronote from "../client/Pronote";
-import AES from "../utils/aes";
+import { type PronoteApiAttachment, PronoteApiAttachmentType } from "~/constants/attachments";
+import type Pronote from "~/client/Pronote";
+import AES from "~/utils/aes";
 
 export class StudentAttachment {
   public id: string;

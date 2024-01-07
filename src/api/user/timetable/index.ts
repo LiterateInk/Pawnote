@@ -1,8 +1,9 @@
-import { PronoteApiFunctions } from "../../../constants/functions";
-import { PronoteApiOnglets } from "../../../constants/onglets";
-import { createPronoteAPICall } from "../../../pronote/requestAPI";
-import { makeApiHandler } from "../../../utils/api";
 import type { ApiUserTimetable, PronoteApiUserTimetable } from "./types";
+
+import { PronoteApiFunctions } from "~/constants/functions";
+import { PronoteApiOnglets } from "~/constants/onglets";
+import { createPronoteAPICall } from "~/pronote/requestAPI";
+import { makeApiHandler } from "~/utils/api";
 
 export const callApiUserTimetable = makeApiHandler<ApiUserTimetable>(async (input) => {
   if (input.weekNumber <= 0) {

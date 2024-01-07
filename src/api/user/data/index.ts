@@ -1,8 +1,8 @@
 import type { ApiUserData, PronoteApiUserData } from "./types";
 
-import { PronoteApiFunctions } from "../../../constants/functions";
-import { createPronoteAPICall } from "../../../pronote/requestAPI";
-import { makeApiHandler } from "../../../utils/api";
+import { PronoteApiFunctions } from "~/constants/functions";
+import { createPronoteAPICall } from "~/pronote/requestAPI";
+import { makeApiHandler } from "~/utils/api";
 
 export const callApiUserData = makeApiHandler<ApiUserData>(async (input) => {
   const request_payload = input.session.writePronoteFunctionPayload<PronoteApiUserData["request"]>({});

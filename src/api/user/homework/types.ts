@@ -1,7 +1,7 @@
-import type { PronoteApiAttachment } from "../../../constants/attachments";
-import type { PronoteApiFunctions } from "../../../constants/functions";
-import type { PronoteApiOnglets } from "../../../constants/onglets";
-import type { Session } from "../../../session";
+import type { PronoteApiAttachment } from "~/constants/attachments";
+import type { PronoteApiFunctions } from "~/constants/functions";
+import type { PronoteApiOnglets } from "~/constants/onglets";
+import type { Session } from "~/session";
 
 export interface PronoteApiUserHomework {
   request: {

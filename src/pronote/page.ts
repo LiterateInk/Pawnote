@@ -1,4 +1,4 @@
-import { retrieveResponseCookies } from "../utils/headers";
+import { retrieveResponseCookies } from "~/utils/headers";
 
 export const downloadPronotePage = async (options: {
   pronoteURL: string

@@ -1,8 +1,9 @@
 import type { ApiUserHomeworkStatus, PronoteApiUserHomeworkStatus } from "./types";
-import { PronoteApiFunctions } from "../../../constants/functions";
-import { PronoteApiOnglets } from "../../../constants/onglets";
-import { createPronoteAPICall } from "../../../pronote/requestAPI";
-import { makeApiHandler } from "../../../utils/api";
+
+import { PronoteApiFunctions } from "~/constants/functions";
+import { PronoteApiOnglets } from "~/constants/onglets";
+import { createPronoteAPICall } from "~/pronote/requestAPI";
+import { makeApiHandler } from "~/utils/api";
 
 export const callApiUserHomeworkStatus = makeApiHandler<ApiUserHomeworkStatus>(async (input) => {
   const request_payload = input.session.writePronoteFunctionPayload<PronoteApiUserHomeworkStatus["request"]>({

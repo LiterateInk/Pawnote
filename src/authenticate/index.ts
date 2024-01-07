@@ -1,9 +1,9 @@
 import type { AuthenticatePronoteCredentialsOptions, AuthenticateTokenOptions, NextAuthenticationCredentials } from "./types";
-import { callApiLoginInformations, callApiLoginIdentify, callApiLoginAuthenticate, callApiUserData } from "../api";
-import { PRONOTE_ACCOUNT_TYPES } from "../constants/accounts";
-import aes from "../utils/aes";
+import { callApiLoginInformations, callApiLoginIdentify, callApiLoginAuthenticate, callApiUserData } from "~/api";
+import { PRONOTE_ACCOUNT_TYPES } from "~/constants/accounts";
+import aes from "~/utils/aes";
 
-import Pronote from "../client/Pronote";
+import Pronote from "~/client/Pronote";
 import forge from "node-forge";
 
 export const authenticatePronoteCredentials = async (pronoteStringURL: string, options: AuthenticatePronoteCredentialsOptions): Promise<Pronote> => {

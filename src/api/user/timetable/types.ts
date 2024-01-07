@@ -1,8 +1,8 @@
-import type { PronoteApiFunctions } from "../../../constants/functions";
-import type { PronoteApiOnglets } from "../../../constants/onglets";
-import type { Session } from "../../../session";
-import type { PronoteApiUserData } from "../data/types";
-import type { PronoteApiResource } from "../../../constants/resources";
+import type { PronoteApiFunctions } from "~/constants/functions";
+import type { PronoteApiResource } from "~/constants/resources";
+import type { PronoteApiOnglets } from "~/constants/onglets";
+import type { PronoteApiUserData } from "~/api";
+import type { Session } from "~/session";
 
 export interface PronoteApiUserTimetable {
   request: {

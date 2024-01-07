@@ -5,7 +5,7 @@ export const retrieveResponseCookies = (headers: Record<string, string> | Header
   if (setCookieHeader === null) return [];
 
   const splittedCookies = cookieParser.splitCookiesString(setCookieHeader);
-  const cookies = splittedCookies.map(cookie => cookie.split(";")[0]);
+  const cookies = splittedCookies.map((cookie) => cookie.split(";")[0]);
 
   return cookies;
 };

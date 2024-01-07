@@ -1,9 +1,9 @@
 /** Represents a subject in a student account. */
 export class StudentSubject {
-  public id: string
-  public name: string
+  public id: string;
+  public name: string;
   /** If the subject is in groups. */
-  public groups: boolean
+  public groups: boolean;
 
   constructor (subject: {
     L: string

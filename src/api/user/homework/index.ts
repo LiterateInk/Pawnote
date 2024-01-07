@@ -8,7 +8,7 @@ export const callApiUserHomework = makeApiHandler<ApiUserHomework>(async (input)
   if (input.fromWeekNumber <= 0) {
     throw new Error(`Invalid input on callApiUserHomework, "fromWeekNumber" should be a strictly positive number, got ${input.fromWeekNumber}`);
   }
-  
+
   if (typeof input.toWeekNumber === "number" && input.toWeekNumber <= 0) {
     throw new Error(`Invalid input on callApiUserHomework, "fromWeekNumber" should be a strictly positive number, got ${input.fromWeekNumber}`);
   }

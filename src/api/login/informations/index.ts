@@ -10,7 +10,7 @@ import { PronoteApiFunctions } from "../../../constants/functions";
 import { createPronoteAPICall } from "../../../pronote/requestAPI";
 
 export const callApiLoginInformations = makeApiHandler<ApiLoginInformations>(async (input) => {
-  const accountType = PRONOTE_ACCOUNT_TYPES.find(entry => entry.id === input.accountTypeID);
+  const accountType = PRONOTE_ACCOUNT_TYPES.find((entry) => entry.id === input.accountTypeID);
   if (!accountType) throw new Error(`Invalid account type ID: ${input.accountTypeID}`);
 
   const pronotePage = await downloadPronotePage({
@@ -24,7 +24,7 @@ export const callApiLoginInformations = makeApiHandler<ApiLoginInformations>(asy
 
   // Extract session data from the downloaded instance page.
   const sessionData = extractPronoteSessionFromHTML(pronotePage.body);
-  
+
   // Create a new session from the extracted data.
   const session = Session.importFromPage(cleanPronoteUrl(input.pronoteURL), sessionData);
 
@@ -41,18 +41,18 @@ export const callApiLoginInformations = makeApiHandler<ApiLoginInformations>(asy
 
   // Create "Uuid" property for the request.
   let rsa_uuid: string;
-  
+
   switch (session.instance.version) {
     case SessionInstanceVersion.BEFORE_V2023:
       rsa_uuid = forge.util.encode64(rsa_key.encrypt(aes_iv));
       break;
-      
+
     case SessionInstanceVersion.V2023: {
       rsa_uuid = forge.util.encode64(session.instance.http ? rsa_key.encrypt(aes_iv) : aes_iv, 64);
       break;
     }
   }
-  
+
   const cookies = input.cookies ?? [];
   for (const cookie of pronotePage.cookies) {
     cookies.push(cookie);

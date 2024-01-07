@@ -12,4 +12,4 @@ export const getUTCTime = (date: Date): number => {
 
 export const getUTCDate = (date: Date): Date => {
   return new Date(getUTCTime(date));
-}
+};

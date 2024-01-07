@@ -12,7 +12,7 @@ export interface PronoteApiUserHomeworkStatus {
       listeTAF: Array<{
         /** ID of the homework to update. */
         N: string
-        
+
         /** Value of the new status. */
         TAFFait: boolean
       }>

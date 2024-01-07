@@ -26,7 +26,7 @@ export default class Pronote {
    * Acts as a replacement for the password.
    * Whenever you need to authenticate, you should use this token
    * from now on if you want to avoid entering your password again.
-   * 
+   *
    * Note that this token is only valid for the `deviceUUID` you provided
    * in the authentication options.
    */
@@ -45,7 +45,7 @@ export default class Pronote {
   /**
    * Whether the Pronote instance you're connected to
    * is a demonstration server or not.
-   * 
+   *
    * `authenticateToken` won't work against them since
    * next-time tokens aren't saved, even though
    * it's able to generate them.
@@ -61,7 +61,7 @@ export default class Pronote {
     public loginInformations: ApiLoginInformations["output"]["data"]
   ) {
     this.startDay = readPronoteApiDate(loginInformations.donnees.General.PremierLundi.V);
-  
+
     this.username = credentials.username;
     this.nextTimeToken = credentials.token;
     this.pronoteRootURL = session.instance.pronote_url;
@@ -81,15 +81,15 @@ export default class Pronote {
   /**
    * User lessons for the given time interval, it won't
    * group or care about the week number of the lessons.
-   * 
+   *
    * @param from - Date for the start of the interval. Will be set to the beginning (00h00) of the given date.
    * @param to   - Date for the end of the interval. When not given, it'll default of the end (23h59) of the given date inside `from` parameter.
    *               Otherwise, will be set to the beginning (00h00) of the given date.
-   * 
+   *
    * @example
    * const from = new Date("2023-09-18");
    * const to   = new Date("2023-09-20");
-   * 
+   *
    * const lessons = await pronote.getLessonsForInterval(from, to);
    * lessons.forEach(lesson => {
    *   console.log("Do something with your", lesson);
@@ -115,13 +115,13 @@ export default class Pronote {
     }
 
     return lessons
-      .filter(lesson => <Date>from <= lesson.start && lesson.start <= <Date>to);
+      .filter((lesson) => <Date>from <= lesson.start && lesson.start <= <Date>to);
   }
 
   /**
-   * 
-   * @param weekNumber 
-   * @returns 
+   *
+   * @param weekNumber
+   * @returns
    */
   public async getTimetableForWeek (weekNumber: number): Promise<StudentLesson[]> {
     const { data: { donnees: data } } = await callApiUserTimetable({
@@ -131,7 +131,7 @@ export default class Pronote {
     });
 
     return data.ListeCours
-      .map(lesson => new StudentLesson(this, lesson));
+      .map((lesson) => new StudentLesson(this, lesson));
   }
 
   public async getHomeworkForInterval (from: Date, to?: Date): Promise<StudentHomework[]> {
@@ -152,8 +152,8 @@ export default class Pronote {
     });
 
     return data.ListeTravauxAFaire.V
-      .map(homework => new StudentHomework(this, homework))
-      .filter(homework => <Date>from <= homework.deadline && homework.deadline <= <Date>to);
+      .map((homework) => new StudentHomework(this, homework))
+      .filter((homework) => <Date>from <= homework.deadline && homework.deadline <= <Date>to);
   }
 
   public async patchHomeworkStatus (homeworkID: string, done: boolean): Promise<void> {

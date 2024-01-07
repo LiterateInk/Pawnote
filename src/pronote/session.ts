@@ -19,7 +19,7 @@ export interface PronoteApiSession {
    * @deprecated Since Pronote 2023, use hardcoded constant `RSA_MODULO_1024`.
    */
   MR?: string
-  
+
   /**
    * Exponent for RSA encryption.
    * @deprecated Since Pronote 2023, use hardcoded constant `RSA_EXPONENT_1024`.
@@ -34,7 +34,7 @@ export interface PronoteApiSession {
    * > Assigned to `.sansCryptageAES`.
    */
   sCrA?: boolean
-  
+
   /**
    * Skip request compression.
    * > Assigned to `.sansCompressionAES`.
@@ -84,6 +84,6 @@ export const extractPronoteSessionFromHTML = (html: string): PronoteApiSession =
     return JSON.parse(session_data_string) as PronoteApiSession;
   }
   catch (error) {
-    throw new Error(`Failed to extract session from HTML.`);
+    throw new Error("Failed to extract session from HTML.");
   }
 };

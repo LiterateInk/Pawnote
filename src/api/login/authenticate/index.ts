@@ -28,16 +28,16 @@ export const callApiLoginAuthenticate = makeApiHandler<ApiLoginAuthenticate>(asy
 
     switch (received.donnees.Acces) {
       case 1: // EGenreErreurAcces.Identification
-        error = "Votre identifiant ou votre mot de passe est incorrect.\nPour information, la saisie du mot de passe doit respecter les minuscules et majuscules."
+        error = "Votre identifiant ou votre mot de passe est incorrect.\nPour information, la saisie du mot de passe doit respecter les minuscules et majuscules.";
         break;
       case 2: // EGenreErreurAcces.Autorisation
-        error = "Accès refusé: Vous n'avez pas accès à cet espace.\nContactez l'établissement afin qu'il mette à jour votre profil d'autorisations."
+        error = "Accès refusé: Vous n'avez pas accès à cet espace.\nContactez l'établissement afin qu'il mette à jour votre profil d'autorisations.";
         break;
       case 3: // EGenreErreurAcces.ConnexionClasse
-        error = "Vous n'avez pas les autorisations nécessaires pour accéder aux affichages liés au mode de connexion 'Dans la classe'."
+        error = "Vous n'avez pas les autorisations nécessaires pour accéder aux affichages liés au mode de connexion 'Dans la classe'.";
         break;
       case 4: // EGenreErreurAcces.AucuneRessource
-        error = "Accès refusé: Vous n'avez pas accès à cet espace.\nContactez l'établissement afin qu'il mette à jour votre fiche de renseignements."
+        error = "Accès refusé: Vous n'avez pas accès à cet espace.\nContactez l'établissement afin qu'il mette à jour votre fiche de renseignements.";
         break;
       case 5: // EGenreErreurAcces.Connexion
         error = "Vous n'avez pas les autorisations nécessaires pour accéder aux affichages";
@@ -46,10 +46,10 @@ export const callApiLoginAuthenticate = makeApiHandler<ApiLoginAuthenticate>(asy
         error = "Suite à votre départ de l'établissement, votre connexion à l'Espace élèves a été bloquée.";
         break;
       case 7: // EGenreErreurAcces.FonctionAccompagnant
-        error = "Vous n'avez pas accès à cet espace.\nContactez l'établissement afin qu'il mette à jour votre fonction."
+        error = "Vous n'avez pas accès à cet espace.\nContactez l'établissement afin qu'il mette à jour votre fonction.";
         break;
       case 8: // EGenreErreurAcces.AccompagnantAucunEleve
-        error = "Vous n'avez pas accès à cet espace.\nContactez l'établissement afin qu'il vous affecte les élèves que vous accompagnez."    
+        error = "Vous n'avez pas accès à cet espace.\nContactez l'établissement afin qu'il vous affecte les élèves que vous accompagnez.";
         break;
       case 10: // EGenreErreurAcces.CompteDesactive
         error = "Vous n'avez pas accès à cet espace.\nVotre compte a été désactivé.";
@@ -57,15 +57,15 @@ export const callApiLoginAuthenticate = makeApiHandler<ApiLoginAuthenticate>(asy
       case 9: // EGenreErreurAcces.Message
         if (typeof received.donnees.AccesMessage !== "undefined") {
           error = received.donnees.AccesMessage.message ?? error;
-          
+
           if (received.donnees.AccesMessage.titre) {
-            error = `${received.donnees.AccesMessage.titre}: ${error}`
+            error = `${received.donnees.AccesMessage.titre}: ${error}`;
           }
         }
     }
 
     throw new Error(error);
   }
-  
+
   return { data: received };
 });

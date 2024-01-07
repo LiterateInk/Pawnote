@@ -7,7 +7,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
     password: "pronotevs",
 
     // Because this is just an example, don't forget to change this.
-    deviceUUID: 'my-device-uuid',
+    deviceUUID: "my-device-uuid"
   });
 
   const from = new Date("2023-10-16");
@@ -17,19 +17,19 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
 
   // Little separator.
   console.log("---");
-  
+
   homework
     // We filter by homeworks not done.
-    .filter(homework => !homework.done)
+    .filter((homework) => !homework.done)
     // We display them in console.
-    .forEach(homework => {
+    .forEach((homework) => {
       // Output something...
       console.log(homework.subject.name, "to finish before the", homework.deadline.toLocaleString());
       console.log("(description) =>", homework.description);
-      
+
       // If there's attachments, output them too !
       if (homework.attachments.length > 0) {
-        homework.attachments.forEach(attachment => {
+        homework.attachments.forEach((attachment) => {
           console.log("(attachment) =>", attachment.name, ":", attachment.url);
         });
       }

@@ -5,23 +5,23 @@ import { translatePositionToTime, readPronoteApiDate } from "../pronote/dates";
 import { StudentSubject } from "./subject";
 
 export class StudentLesson {
-  public id: string
-  public canceled: boolean
-  public status?: string
-  public memo?: string
-  public backgroundColor?: string
-  public outing: boolean
-  public start: Date
-  public exempted: boolean
-  public virtualClassrooms: string[] = []
-  public num: number
-  public detention: boolean
-  public test: boolean
-  public end: Date
-  public teacherNames: string[] = []
-  public classrooms: string[] = []
-  public groupNames: string[] = []
-  public subject?: StudentSubject
+  public id: string;
+  public canceled: boolean;
+  public status?: string;
+  public memo?: string;
+  public backgroundColor?: string;
+  public outing: boolean;
+  public start: Date;
+  public exempted: boolean;
+  public virtualClassrooms: string[] = [];
+  public num: number;
+  public detention: boolean;
+  public test: boolean;
+  public end: Date;
+  public teacherNames: string[] = [];
+  public classrooms: string[] = [];
+  public groupNames: string[] = [];
+  public subject?: StudentSubject;
 
   constructor (
     client: Pronote,
@@ -43,9 +43,9 @@ export class StudentLesson {
     this.num = lesson.P ?? 0;
     this.detention = lesson.estRetenue ?? false;
     this.test = lesson.cahierDeTextes?.V.estDevoir ?? false;
-    
+
     if (lesson.DateDuCoursFin) {
-      this.end = readPronoteApiDate(lesson.DateDuCoursFin.V)
+      this.end = readPronoteApiDate(lesson.DateDuCoursFin.V);
     }
     else {
       const endHours = client.loginInformations.donnees.General.ListeHeuresFin.V;

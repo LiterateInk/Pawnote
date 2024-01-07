@@ -9,7 +9,7 @@ import forge from "node-forge";
 export const authenticatePronoteCredentials = async (pronoteStringURL: string, options: AuthenticatePronoteCredentialsOptions): Promise<Pronote> => {
   const pronoteURL = new URL(pronoteStringURL);
 
-  const accountType = PRONOTE_ACCOUNT_TYPES.find(entry => entry.id === options.accountTypeID);
+  const accountType = PRONOTE_ACCOUNT_TYPES.find((entry) => entry.id === options.accountTypeID);
   if (!accountType) throw new Error(`Invalid account type ID: ${options.accountTypeID}`);
 
   pronoteURL.pathname += `/${accountType.path}`;
@@ -49,7 +49,7 @@ export const authenticatePronoteCredentials = async (pronoteStringURL: string, o
   // Short-hand for later usage.
   if (typeof session.encryption.aes.iv !== "string") throw new Error("AES IV wasn't correctly defined.");
   const aesIvBuffer = forge.util.createBuffer(session.encryption.aes.iv);
-  
+
   // Generate the hash for the AES key.
   const challengeAesKeyHash = forge.md.sha256.create()
     .update(loginIdentifier.donnees.alea ?? "")
@@ -58,7 +58,7 @@ export const authenticatePronoteCredentials = async (pronoteStringURL: string, o
     .toHex()
     .toUpperCase();
 
-  // Generate the key using the hash. 
+  // Generate the key using the hash.
   const challengeAesKey = options.username + challengeAesKeyHash;
   // Convert the key to a buffer for later usage.
   const challengeAesKeyBuffer = forge.util.createBuffer(challengeAesKey);
@@ -70,7 +70,7 @@ export const authenticatePronoteCredentials = async (pronoteStringURL: string, o
 
   try {
     const challengeDecrypted = forge.util.decodeUtf8(challengeDecryptedBytes);
-    
+
     // Modify the plain text by removing every second character.
     const challengeDecryptedUnscrambledParts = new Array(challengeDecrypted.length);
     for (let i = 0; i < challengeDecrypted.length; i += 1) {
@@ -84,7 +84,7 @@ export const authenticatePronoteCredentials = async (pronoteStringURL: string, o
     challengeDecryptedUnscrambled = forge.util.encodeUtf8(challengeDecryptedUnscrambled);
 
     /// Encrypt the modified text back with AES and encoding it as HEX.
-    resolved_challenge = aes.encrypt(challengeDecryptedUnscrambled, challengeAesKeyBuffer, aesIvBuffer)
+    resolved_challenge = aes.encrypt(challengeDecryptedUnscrambled, challengeAesKeyBuffer, aesIvBuffer);
   }
   catch {
     throw new Error("Unable to resolve the challenge. Please check your credentials.");
@@ -104,7 +104,7 @@ export const authenticatePronoteCredentials = async (pronoteStringURL: string, o
   const decryptedAuthKey = aes.decrypt(authenticationReply.donnees.cle, challengeAesKeyBuffer, aesIvBuffer);
 
   // Get the new AES key that will be used in our requests.
-  const authKeyBytesArray = new Uint8Array(decryptedAuthKey.split(",").map(a => parseInt(a)));
+  const authKeyBytesArray = new Uint8Array(decryptedAuthKey.split(",").map((a) => parseInt(a)));
   const authKey = forge.util.createBuffer(authKeyBytesArray).bytes();
   session.encryption.aes.key = authKey;
 
@@ -114,7 +114,7 @@ export const authenticatePronoteCredentials = async (pronoteStringURL: string, o
   const credentials: NextAuthenticationCredentials = {
     username: loginIdentifier.donnees.login ?? options.username,
     token: authenticationReply.donnees.jetonConnexionAppliMobile
-  }
+  };
 
   // Return the new Pronote instance.
   return new Pronote(session, credentials, user.donnees, loginInformations);
@@ -123,11 +123,11 @@ export const authenticatePronoteCredentials = async (pronoteStringURL: string, o
 export const authenticateToken = async (pronoteStringURL: string, options: AuthenticateTokenOptions): Promise<Pronote> => {
   const pronoteURL = new URL(pronoteStringURL);
 
-  const accountType = PRONOTE_ACCOUNT_TYPES.find(entry => entry.id === options.accountTypeID);
+  const accountType = PRONOTE_ACCOUNT_TYPES.find((entry) => entry.id === options.accountTypeID);
   if (!accountType) throw new Error(`Invalid account type ID: ${options.accountTypeID}`);
 
   pronoteURL.pathname += `/${accountType.path}`;
-  
+
   // Add important property.
   pronoteURL.searchParams.set("fd", "1");
 
@@ -169,7 +169,7 @@ export const authenticateToken = async (pronoteStringURL: string, options: Authe
     .toHex()
     .toUpperCase();
 
-  // Generate the key using the hash. 
+  // Generate the key using the hash.
   const challengeAesKey = options.username + challengeAesKeyHash;
   // Convert the key to a buffer for later usage.
   const challengeAesKeyBuffer = forge.util.createBuffer(challengeAesKey);
@@ -181,7 +181,7 @@ export const authenticateToken = async (pronoteStringURL: string, options: Authe
 
   try {
     const challengeDecrypted = forge.util.decodeUtf8(challengeDecryptedBytes);
-    
+
     // Modify the plain text by removing every second character.
     const challengeDecryptedUnscrambledParts = new Array(challengeDecrypted.length);
     for (let i = 0; i < challengeDecrypted.length; i += 1) {
@@ -195,7 +195,7 @@ export const authenticateToken = async (pronoteStringURL: string, options: Authe
     challengeDecryptedUnscrambled = forge.util.encodeUtf8(challengeDecryptedUnscrambled);
 
     /// Encrypt the modified text back with AES and encoding it as HEX.
-    resolved_challenge = aes.encrypt(challengeDecryptedUnscrambled, challengeAesKeyBuffer, aesIvBuffer)
+    resolved_challenge = aes.encrypt(challengeDecryptedUnscrambled, challengeAesKeyBuffer, aesIvBuffer);
   }
   catch {
     throw new Error("Unable to resolve the challenge. The given token is maybe incorrect or not for t.");
@@ -215,7 +215,7 @@ export const authenticateToken = async (pronoteStringURL: string, options: Authe
   const decryptedAuthKey = aes.decrypt(authenticationReply.donnees.cle, challengeAesKeyBuffer, aesIvBuffer);
 
   // Get the new AES key that will be used in our requests.
-  const authKeyBytesArray = new Uint8Array(decryptedAuthKey.split(",").map(a => parseInt(a)));
+  const authKeyBytesArray = new Uint8Array(decryptedAuthKey.split(",").map((a) => parseInt(a)));
   const authKey = forge.util.createBuffer(authKeyBytesArray).bytes();
   session.encryption.aes.key = authKey;
 
@@ -225,7 +225,7 @@ export const authenticateToken = async (pronoteStringURL: string, options: Authe
   const credentials: NextAuthenticationCredentials = {
     username: loginIdentifier.donnees.login ?? options.username,
     token: authenticationReply.donnees.jetonConnexionAppliMobile
-  }
+  };
 
   // Return the new Pronote instance.
   return new Pronote(session, credentials, user.donnees, loginInformations);

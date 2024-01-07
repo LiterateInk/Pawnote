@@ -27,7 +27,7 @@ export const downloadPronotePage = async (options: {
   }
   catch (error) {
     console.error(error);
-    throw new Error(`Failed to download Pronote page.`);
+    throw new Error("Failed to download Pronote page.");
   }
 };
 

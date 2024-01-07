@@ -373,7 +373,7 @@ export interface ApiLoginInformations {
   input: {
     accountTypeID: PronoteApiAccountId
     pronoteURL: string
-  
+
     /** Cookies to append in the request for instance page. */
     cookies?: Array<string>
   }

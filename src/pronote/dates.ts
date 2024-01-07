@@ -3,8 +3,8 @@ import { getUTCTime } from "../utils/dates";
 
 /**
  * Pronote's week numbers are relative to the `PremierLundi`
- * property in the `loginInformations.General` object. 
- * 
+ * property in the `loginInformations.General` object.
+ *
  * Translated from [pronotepy](https://github.com/bain3/pronotepy/blob/5d09a8666c91466d724beb1967bf75f78ee5738e/pronotepy/clients.py#L270-L273).
  */
 export const translateToPronoteWeekNumber = (dateToTranslate: Date, startDay: Date): number => {
@@ -18,28 +18,28 @@ const LONG_DATE_SHORT_HOURS_RE = /^\d{2}\/\d{2}\/\d{2} \d{2}h\d{2}$/;
 
 /**
  * Convert a date from Pronote API to a JS `Date`.
- * 
+ *
  * Translated from [pronotepy](https://github.com/bain3/pronotepy/blob/5d09a8666c91466d724beb1967bf75f78ee5738e/pronotepy/dataClasses.py#L149-L159).
  */
 export const readPronoteApiDate = (formatted: string): Date => {
   if (SHORT_DATE_RE.test(formatted)) {
-    const [day, month, year] = formatted.split('/').map(Number);
+    const [day, month, year] = formatted.split("/").map(Number);
     return new Date(year, month - 1, day);
   }
   else if (LONG_DATE_LONG_HOURS_RE.test(formatted)) {
-    const [date, time] =  formatted.split(' ');
-    const [day, month, year] = date.split('/').map(Number);
-    const [hours, minutes, seconds] = time.split(':').map(Number);
+    const [date, time] =  formatted.split(" ");
+    const [day, month, year] = date.split("/").map(Number);
+    const [hours, minutes, seconds] = time.split(":").map(Number);
 
     const output = new Date(year, month - 1, day);
     output.setHours(hours, minutes, seconds);
     return output;
   }
   else if (LONG_DATE_SHORT_HOURS_RE.test(formatted)) {
-    const [date, time] =  formatted.split(' ');
-    const [day, month, year] = date.split('/').map(Number);
-    const [hours, minutes] = time.split('h').map(Number);
-    
+    const [date, time] =  formatted.split(" ");
+    const [day, month, year] = date.split("/").map(Number);
+    const [hours, minutes] = time.split("h").map(Number);
+
     // NOTE: Fix this when we're 2100, just saying.
     const output = new Date(parseInt(`20${year}`), month - 1, day);
     output.setHours(hours, minutes);
@@ -47,7 +47,7 @@ export const readPronoteApiDate = (formatted: string): Date => {
   }
 
   throw new Error("Could not parse date given by the API.");
-}
+};
 
 export const translatePositionToTime = (
   endHours: PronoteApiLoginInformations["response"]["donnees"]["General"]["ListeHeuresFin"]["V"],
@@ -65,6 +65,6 @@ export const translatePositionToTime = (
 
   const formattedTime = startTime["L"];
   const [hours, minutes] = formattedTime.split("h").map(Number);
-  
+
   return { hours, minutes };
-}
+};

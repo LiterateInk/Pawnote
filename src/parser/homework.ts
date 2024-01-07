@@ -8,12 +8,12 @@ import { StudentAttachment } from "./attachment";
 
 export class StudentHomework {
   public id: string;
-  public subject: StudentSubject
+  public subject: StudentSubject;
   public description: string;
-  public backgroundColor: string
-  public done: boolean
+  public backgroundColor: string;
+  public done: boolean;
   public deadline: Date;
-  public attachments: Array<StudentAttachment>
+  public attachments: Array<StudentAttachment>;
 
   constructor (
     private client: Pronote,
@@ -25,7 +25,7 @@ export class StudentHomework {
     this.subject = new StudentSubject(homework.Matiere.V);
     this.deadline = readPronoteApiDate(homework.PourLe.V);
     this.backgroundColor = homework.CouleurFond;
-    this.attachments = homework.ListePieceJointe.V.map(raw => new StudentAttachment(client, raw));
+    this.attachments = homework.ListePieceJointe.V.map((raw) => new StudentAttachment(client, raw));
   }
 
   public async setDone (done: boolean): Promise<void> {

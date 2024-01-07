@@ -53,7 +53,7 @@ export class Session {
 
   /** Takes a raw session extracted from the Pronote page and then parses it. */
   public static importFromPage (pronoteURL: string, session_data: PronoteApiSession): Session {
-    let aes_iv = '';
+    let aes_iv = "";
 
     // `a` parameter is not available in `Commun`.
     if (typeof session_data.a !== "number") {
@@ -67,7 +67,7 @@ export class Session {
 
     // Fallback to the latest version.
     let version: SessionInstanceVersion = SessionInstanceVersion.V2023;
-    
+
     // Before the v2023 update, we would have those two parameters for RSA.
     if (typeof session_data.ER === "string" && typeof session_data.MR === "string") {
       version = SessionInstanceVersion.BEFORE_V2023;
@@ -91,7 +91,7 @@ export class Session {
     }, {
       aes: {
         iv: aes_iv,
-        key: ''
+        key: ""
       },
 
       rsa: {
@@ -109,11 +109,11 @@ export class Session {
     /**
      * Even if the IV was setup, the first request made
      * should take an empty IV as parameter.
-     * 
+     *
      * Just so the server can read our encrypted request
      * and then setup our IV on their side.
      */
-    const aes_iv = forge.util.createBuffer(this.instance.order === 1 ? '' : this.encryption.aes.iv)
+    const aes_iv = forge.util.createBuffer(this.instance.order === 1 ? "" : this.encryption.aes.iv);
     const aes_key = forge.util.createBuffer(this.encryption.aes.key);
 
     return { aes_iv, aes_key } as const;
@@ -126,16 +126,16 @@ export class Session {
     const { aes_iv, aes_key } = this.getAESEncryptionKeys();
 
     const order_encrypted = aes.encrypt(this.instance.order.toString(), aes_key, aes_iv);
-    
+
     if (!this.instance.skip_compression) {
       // We get the JSON as string.
       final_data = forge.util.encodeUtf8("" + JSON.stringify(final_data) || "");
       final_data = forge.util.createBuffer(final_data).toHex();
-      
+
       // We compress it using zlib, level 6, without headers.
       const deflated_data = pako.deflateRaw(final_data, { level: 6 });
-      final_data = String.fromCharCode.apply(null, deflated_data);
-      
+      final_data = String.fromCharCode.apply(null, Array.from(deflated_data));
+
       // We output it to HEX.
       // When encrypted, we should get the bytes from this hex.
       // When not encrypted, we send this HEX.
@@ -185,7 +185,7 @@ export class Session {
 
     this.instance.order++;
     const response = JSON.parse(response_body) as PronoteApiFunctionPayload<Res>;
-    
+
     try {
       // Check the local order number with the received one.
       const { aes_iv, aes_key } = this.getAESEncryptionKeys();
@@ -206,7 +206,7 @@ export class Session {
       }
 
       if (!this.instance.skip_compression) {
-        const compressed = new Uint8Array((final_data as string).match(/../g)!.map(h=>parseInt(h,16))).buffer
+        const compressed = new Uint8Array((final_data as string).match(/../g)!.map((h) => parseInt(h, 16))).buffer;
         final_data = pako.inflateRaw(compressed, { to: "string" });
       }
 
@@ -219,7 +219,7 @@ export class Session {
     }
     catch (error) {
       console.error(error);
-      throw new Error(`Failed to read payload from response.`);
+      throw new Error("Failed to read payload from response.");
     }
   }
 }

@@ -21,7 +21,7 @@ export class StudentAttachment {
     }
     else {
       const { aes_iv, aes_key } = client.getAESEncryptionKeys();
-      
+
       // Some magical stuff Pronote requires.
       const data = JSON.stringify({
         N: this.id,
@@ -30,7 +30,7 @@ export class StudentAttachment {
 
       // Encrypt that magical stuff to add it in the URL.
       const encrypted = AES.encrypt(data, aes_key, aes_iv);
-      this.url = `${client.pronoteRootURL}/FichiersExternes/${encrypted}/${encodeURIComponent(this.name)}?Session=${client.sessionID}`
+      this.url = `${client.pronoteRootURL}/FichiersExternes/${encrypted}/${encodeURIComponent(this.name)}?Session=${client.sessionID}`;
     }
   }
 }

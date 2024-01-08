@@ -5,7 +5,7 @@ import {
   callApiUserHomework,
   callApiUserHomeworkStatus,
   callApiUserTimetable,
-  
+
   type ApiUserData
 } from "~/api";
 

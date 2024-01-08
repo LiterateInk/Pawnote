@@ -3,10 +3,10 @@ import type Pronote from "~/client/Pronote";
 import { readPronoteApiDate } from "~/pronote/dates";
 
 export class Period {
-  public id: string
-  public name: string
-  public start: Date
-  public end: Date
+  public id: string;
+  public name: string;
+  public start: Date;
+  public end: Date;
 
   constructor (
     client: Pronote,

@@ -163,6 +163,16 @@ export default class Pronote {
       .filter((homework) => <Date>from <= homework.deadline && homework.deadline <= <Date>to);
   }
 
+  public async getHomeworkForWeek (weekNumber: number): Promise<StudentHomework[]> {
+    const { data: { donnees: data } } = await callApiUserHomework({
+      session: this.session,
+      fromWeekNumber: weekNumber
+    });
+
+    return data.ListeTravauxAFaire.V
+      .map((homework) => new StudentHomework(this, homework));
+  }
+
   public async patchHomeworkStatus (homeworkID: string, done: boolean): Promise<void> {
     await callApiUserHomeworkStatus({
       session: this.session,

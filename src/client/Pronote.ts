@@ -11,6 +11,7 @@ import {
 
 import { StudentHomework } from "~/parser/homework";
 import { StudentLesson } from "~/parser/lesson";
+import { Period } from "~/parser/period";
 
 import { Session } from "~/session";
 
@@ -59,6 +60,8 @@ export default class Pronote {
    */
   public isDemo: boolean;
 
+  public periods: Array<Period>;
+
   constructor (
     private session: Session,
     credentials: NextAuthenticationCredentials,
@@ -74,6 +77,11 @@ export default class Pronote {
     this.pronoteRootURL = session.instance.pronote_url;
     this.sessionID = session.instance.session_id;
     this.isDemo = this.session.instance.demo;
+
+    this.periods = [];
+    for (const period of loginInformations.donnees.General.ListePeriodes) {
+      this.periods.push(new Period(this, period));
+    }
   }
 
   /**

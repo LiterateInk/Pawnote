@@ -32,7 +32,7 @@ export const callApiGeolocation = makeApiHandler<ApiGeolocation>(async (input) =
   data = Array.isArray(data) ? data : [];
 
   // Restructure the results to be more readable.
-  const results: ApiGeolocation["output"] = data.map(result => ({
+  const results: ApiGeolocation["output"] = data.map((result) => ({
     url: result.url,
     name: decode(result.nomEtab) // Use UTF8 instead of HTML entities encoding.
       .replace("COLLEGE", "COLLÈGE")

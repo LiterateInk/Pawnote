@@ -14,6 +14,7 @@
   },
   "scripts": {
     "build": "pnpm lint && tsup src/index.ts --dts --minify terser --clean --format cjs,esm --sourcemap",
+    "release": "release-it",
     "lint": "eslint .",
     "tsx": "tsx"
   },

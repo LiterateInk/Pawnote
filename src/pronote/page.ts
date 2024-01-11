@@ -1,3 +1,4 @@
+import { MOBILE_CHROME_USER_AGENT } from "~/constants/user-agent";
 import { retrieveResponseCookies } from "~/utils/headers";
 
 export const downloadPronotePage = async (options: {
@@ -15,8 +16,7 @@ export const downloadPronotePage = async (options: {
       redirect: "manual",
       headers: {
         Cookie: options.cookies?.join("; ") ?? "",
-        // Taken from <https://www.whatismybrowser.com/guides/the-latest-user-agent/chrome>
-        "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.144 Mobile Safari/537.36"
+        "User-Agent": MOBILE_CHROME_USER_AGENT
       }
     });
 

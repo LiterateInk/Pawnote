@@ -2,6 +2,7 @@ import type { SessionInstance, Session } from "~/session";
 
 import { PronoteApiFunctions } from "~/constants/functions";
 import { retrieveResponseCookies } from "~/utils/headers";
+import { MOBILE_CHROME_USER_AGENT } from "~/constants/user-agent";
 
 export interface PronoteApiFunctionPayload<T> {
   nom: string
@@ -28,7 +29,7 @@ export const createPronoteAPICall = async (
       headers: {
         "Content-Type": "application/json",
         Cookie: request.cookies?.join("; ") ?? "",
-        "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.144 Mobile Safari/537.36"
+        "User-Agent": MOBILE_CHROME_USER_AGENT
       },
       body: JSON.stringify({
         session: request.session_instance.session_id,

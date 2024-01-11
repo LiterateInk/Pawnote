@@ -1,30 +1,70 @@
 {
   "name": "pawnote",
-  "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
+  "version": "0.1.0",
+  "description": "A simple wrapper around Index-Education's Pronote internal API.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
   "scripts": {
-    "build": "tsup src/index.ts --clean --dts --format cjs,esm",
+    "build": "pnpm lint && tsup src/index.ts --dts --minify terser --clean --format cjs,esm --sourcemap",
     "lint": "eslint .",
     "tsx": "tsx"
   },
-  "keywords": [],
-  "author": "",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "pronote",
+    "api",
+    "wrapper",
+    "student",
+    "France"
+  ],
+  "author": "Mikkel RINGAUD <mikkel@milescode.dev> (https://github.com/Vexcited)",
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "chore: release v${version}",
+      "tagAnnotation": "Release v${version}",
+      "tagName": "v${version}"
+    },
+    "github": {
+      "release": true,
+      "draft": false,
+      "releaseName": "v${version}"
+    },
+    "npm": {
+      "publish": true
+    },
+    "hooks": {
+      "before:init": "pnpm lint",
+      "after:bump": "pnpm build"
+    }
+  },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^1.5.3",
-    "@types/crypto-js": "^4.2.1",
     "@types/node-forge": "^1.3.10",
     "@types/pako": "^2.0.3",
     "@types/set-cookie-parser": "^2.4.7",
     "@typescript-eslint/parser": "^6.18.0",
     "eslint": "^8.56.0",
+    "release-it": "^17.0.1",
+    "terser": "^5.26.0",
     "tsup": "^8.0.1",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "crypto-js": "^4.2.0",
     "html-entities": "^2.4.0",
     "node-forge": "^1.3.1",
     "pako": "^2.1.0",

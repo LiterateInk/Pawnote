@@ -29,7 +29,7 @@ A support for other accounts will be added in the future.
 - [x] By `username` and `token`
 - [ ] By [QR Code](https://forum.index-education.com/upfiles/qrcode.png)
 
-**ENT support is not and will never be supported by Pawnote**, for the simple reason that implementing all of them with all of their specificities requires a lot of time and effort. It's simply a pain to implement and track, as a matter of fact, most of the issues on [pronotepy](https://github.com/bain3/pronotepy/issues) - a similar project - are related to ENTs. 
+**ENT support is not and will never be supported by Pawnote**, for the simple reason that implementing all of them with all of their specificities requires a lot of time and effort. It's simply a pain to implement and track, as a matter of fact, most of the issues on [pronotepy](https://github.com/bain3/pronotepy/issues) - a similar project - are related to ENTs.
 
 #### Note about demonstration servers
 

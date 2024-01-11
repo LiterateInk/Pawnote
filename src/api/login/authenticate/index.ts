@@ -22,38 +22,37 @@ export const callApiLoginAuthenticate = makeApiHandler<ApiLoginAuthenticate>(asy
   const received = input.session.readPronoteFunctionPayload<PronoteApiLoginAuthenticate["response"]>(response.payload);
 
   // Handle potential errors.
-  // TODO: Translate the errors in English.
   // `Acces: 0` === `EGenreErreurAcces.Aucune` -> No error.
   if (typeof received.donnees.Acces === "number" && received.donnees.Acces !== 0) {
     let error = "Erreur inconnue.";
 
     switch (received.donnees.Acces) {
       case 1: // EGenreErreurAcces.Identification
-        error = "Votre identifiant ou votre mot de passe est incorrect.\nPour information, la saisie du mot de passe doit respecter les minuscules et majuscules.";
+        error = "Your username or password is incorrect.\nPlease note that passwords are case-sensitive.";
         break;
       case 2: // EGenreErreurAcces.Autorisation
-        error = "Accès refusé: Vous n'avez pas accès à cet espace.\nContactez l'établissement afin qu'il mette à jour votre profil d'autorisations.";
+        error = "Access denied: You do not have access to this area.\nContact the school to update your authorization profile.";
         break;
       case 3: // EGenreErreurAcces.ConnexionClasse
-        error = "Vous n'avez pas les autorisations nécessaires pour accéder aux affichages liés au mode de connexion 'Dans la classe'.";
+        error = "You do not have the necessary authorizations to access displays linked to the 'In the classroom' connection mode.";
         break;
       case 4: // EGenreErreurAcces.AucuneRessource
-        error = "Accès refusé: Vous n'avez pas accès à cet espace.\nContactez l'établissement afin qu'il mette à jour votre fiche de renseignements.";
+        error = "Access denied: You do not have access to this area.\nContact the school to update your information.";
         break;
       case 5: // EGenreErreurAcces.Connexion
-        error = "Vous n'avez pas les autorisations nécessaires pour accéder aux affichages";
+        error = "You do not have the necessary authorizations to access displays.";
         break;
       case 6: // EGenreErreurAcces.BloqueeEleve
-        error = "Suite à votre départ de l'établissement, votre connexion à l'Espace élèves a été bloquée.";
+        error = "Following your departure from the school, your connection to the Students' Area has been blocked.";
         break;
       case 7: // EGenreErreurAcces.FonctionAccompagnant
-        error = "Vous n'avez pas accès à cet espace.\nContactez l'établissement afin qu'il mette à jour votre fonction.";
+        error = "You do not have access to this area.\nContact the school to update your function.";
         break;
       case 8: // EGenreErreurAcces.AccompagnantAucunEleve
-        error = "Vous n'avez pas accès à cet espace.\nContactez l'établissement afin qu'il vous affecte les élèves que vous accompagnez.";
+        error = "You do not have access to this area.\nContact the school to be assigned the students you are accompanying.";
         break;
       case 10: // EGenreErreurAcces.CompteDesactive
-        error = "Vous n'avez pas accès à cet espace.\nVotre compte a été désactivé.";
+        error = "You do not have access to this account type. Your account has been deactivated.";
         break;
       case 9: // EGenreErreurAcces.Message
         if (typeof received.donnees.AccesMessage !== "undefined") {

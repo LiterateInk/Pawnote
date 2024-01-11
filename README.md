@@ -46,10 +46,9 @@ It returns a boolean that is `true` when the server is a demo.
   - [x] parser: `StudentSubject`
   - [x] client: `.requestTimetableForWeek(weekNumber)`
   - [x] client: `.requestLessonsForInterval(from[, to])`
-- [ ] Homework
-  - [x] from/to dates
-  - [ ] (per week)
+- [x] Homework (per week and from/to dates)
   - [x] client: `.getHomeworkForInterval(from[, to])`
+  - [x] client: `.getHomeworkForWeek(weekNumber)`
   - [x] parser: `StudentHomework`
   - [x] parser: parse attachments using `StudentAttachment`
 - [x] Update homework status
@@ -58,6 +57,42 @@ It returns a boolean that is `true` when the server is a demo.
 - [x] Attachment
   - [x] parser: `StudentAttachment`
   - [x] parser: able to get attachment's URL
+- [x] Find Pronote instances with longitude and latitude
+  - [x] `findPronoteInstances({ longitude, latitude })`
+- Periods
+  - [x] parser: `Period`
+  - [x] client: `.periods` (property)
+  - [x] parser: `Period.getGrades()`
+- Grades
+  - [x] client: `.getGradesForPeriod(period)`
+  - [x] parser: `StudentGrade`
+
+## Installation
+
+Use your favorite package manager to install [Pawnote from NPM](https://www.npmjs.com/package/pawnote).
+
+```bash
+# pnpm
+pnpm add pawnote
+
+# Yarn
+yarn add pawnote
+
+# npm
+npm install pawnote
+```
+
+## Usage
+
+You can see multiple examples in the [`examples`](./examples) folder.
+
+## API
+
+Documentation is not yet available, for now you'll have to use intellisense.
+Most of the methods are self-explanatory and well commented.
+
+We'll see if we can generate a documentation website
+using comments from the source code in the future.
 
 ## Resources
 

@@ -11,7 +11,8 @@ module.exports = [
       }
     }
   },
-  { // Apply stylistic rules to every files.
+  {
+    ignores: ["dist/**"],
     plugins: {
       stylistic: require("@stylistic/eslint-plugin")
     },

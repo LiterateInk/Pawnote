@@ -1,10 +1,10 @@
 /**
  * Reads a Pronote grade from their API.
- * When the grade is "17", we leave it as is, 
+ * When the grade is "17", we leave it as is,
  * but when it is "|1", we translate it the `PronoteApiGradeType` enum.
- * 
- * @param grade 
- * @returns 
+ *
+ * @param grade
+ * @returns
  */
 export const readPronoteApiGrade = (grade: string): PronoteApiGradeType | number => {
   // Encoded grade, should translate it.

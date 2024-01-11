@@ -14,7 +14,7 @@ export interface PronoteApiUserGrades {
         N: string
         /** Name of the period. */
         L: string
-      } 
+      }
     }
   }
 
@@ -283,7 +283,7 @@ export interface PronoteApiUserGrades {
 export interface ApiUserGrades {
   input: {
     session: Session
-    
+
     periodID: string
     periodName: string
   }

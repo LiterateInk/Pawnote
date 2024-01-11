@@ -10,7 +10,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeTyp
     deviceUUID: "my-device-uuid"
   });
 
-  const firstTrimester = pronote.periods.find(period => period.name === "Trimestre 1");
+  const firstTrimester = pronote.periods.find((period) => period.name === "Trimestre 1");
   if (!firstTrimester) throw new Error("Wasn't able to find a period named 'Trimestre 1'.");
 
   const grades = await firstTrimester.getGrades();
@@ -41,9 +41,9 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeTyp
     else {
       return `${value}/${outOf} (x${coefficient})`;
     }
-  }
+  };
 
-  grades.forEach(grade => {
+  grades.forEach((grade) => {
     console.log(grade.subject.name, ":", grade.comment || "(no description)");
     console.log("Registered the", grade.date.toLocaleString(), "//", grade.period.name);
 
@@ -67,5 +67,5 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeTyp
 
     // Break line for next entry.
     console.log();
-  })
+  });
 })();

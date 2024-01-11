@@ -193,7 +193,7 @@ export default class Pronote {
 
   /**
    * Get grades for a specific period.
-   * 
+   *
    * @remark Internally used in the `Period` class.
    * @param period - Period the grades will be from.
    */
@@ -205,6 +205,6 @@ export default class Pronote {
     });
 
     return data.listeDevoirs.V
-      .map(grade => new StudentGrade(this, period, grade));
+      .map((grade) => new StudentGrade(this, period, grade));
   }
 }

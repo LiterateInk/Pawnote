@@ -8,33 +8,33 @@ import { readPronoteApiDate } from "~/pronote/dates";
 /** Represents a grade. */
 export class StudentGrade {
   /** the id of the grade (used internally) */
-  public id: string
+  public id: string;
   /** the actual grade */
-  public value: number | PronoteApiGradeType
+  public value: number | PronoteApiGradeType;
   /** the maximum amount of points */
-  public outOf: number | PronoteApiGradeType
+  public outOf: number | PronoteApiGradeType;
   /** the default maximum amount of points */
-  public defaultOutOf?: number | PronoteApiGradeType
+  public defaultOutOf?: number | PronoteApiGradeType;
   /** the date on which the grade was given */
-  public date: Date
+  public date: Date;
   /** the subject in which the grade was given */
-  public subject: StudentSubject
+  public subject: StudentSubject;
   /** the average of the class */
-  public average: number | PronoteApiGradeType
+  public average: number | PronoteApiGradeType;
   /** the highest grade */
-  public max: number | PronoteApiGradeType
+  public max: number | PronoteApiGradeType;
   /** the lowest grade */
-  public min: number | PronoteApiGradeType
+  public min: number | PronoteApiGradeType;
   /** the coefficient of the grade */
-  public coefficient: number
+  public coefficient: number;
   /** comment on the grade description */
-  public comment: string
+  public comment: string;
   /** is the grade bonus : only points above 10 count */
-  public isBonus: boolean
+  public isBonus: boolean;
   /** is the grade optional : the grade only counts if it increases the average */
-  public isOptional: boolean
+  public isOptional: boolean;
   /** is the grade out of 20. Example 8/10 -> 16/20 */
-  public isOutOf20: boolean 
+  public isOutOf20: boolean;
 
   constructor (
     public client: Pronote,

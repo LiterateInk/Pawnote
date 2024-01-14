@@ -60,12 +60,13 @@ It returns a boolean that is `true` when the server is a demo.
 - [x] Find Pronote instances with longitude and latitude
   - [x] `findPronoteInstances({ longitude, latitude })`
 - Periods
-  - [x] parser: `Period`
   - [x] client: `.periods` (property)
-  - [x] parser: `Period.getGrades()`
-- Grades
-  - [x] client: `.getGradesForPeriod(period)`
+  - [x] parser: `Period`
+- Grades & Averages
+  - [x] client: `.getGradesOverviewForPeriod(period)`
+  - [x] parser: `Period.getGradesOverview()`
   - [x] parser: `StudentGrade`
+  - [x] parser: `StudentAverage`
 
 ## Installation
 

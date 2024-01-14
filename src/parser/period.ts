@@ -19,7 +19,7 @@ export class Period {
     this.end = readPronoteApiDate(period.dateFin.V);
   }
 
-  public async getGrades (): Promise<StudentGrade[]> {
-    return this.client.getGradesForPeriod(this);
+  public async getGradesOverview () {
+    return this.client.getGradesOverviewForPeriod(this);
   }
 }

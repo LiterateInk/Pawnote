@@ -13,7 +13,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeTyp
   const firstTrimester = pronote.periods.find((period) => period.name === "Trimestre 1");
   if (!firstTrimester) throw new Error("Wasn't able to find a period named 'Trimestre 1'.");
 
-  const grades = await firstTrimester.getGrades();
+  const gradesOverview = await firstTrimester.getGradesOverview();
   // Or you can also the following syntax :
   // const grades = await pronote.getGradesForPeriod(firstTrimester);
 
@@ -43,7 +43,9 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeTyp
     }
   };
 
-  grades.forEach((grade) => {
+  console.group("--- GRADES ---\n");
+
+  gradesOverview.grades.forEach((grade) => {
     console.log(grade.subject.name, ":", grade.comment || "(no description)");
     console.log("Registered the", grade.date.toLocaleString(), "//", grade.period.name);
 
@@ -68,4 +70,21 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeTyp
     // Break line for next entry.
     console.log();
   });
+
+  console.groupEnd();
+
+  console.group("--- AVERAGES ---\n");
+
+  gradesOverview.averages.forEach(average => {
+    console.log("->", average.subject.name);
+    console.log("Student:", average.student);
+    console.log("Class:", average.class_average);
+    console.log("Max:", average.max);
+    console.log("Min:", average.min);
+
+    // Break line for next entry.
+    console.log();
+  });
+
+  console.groupEnd();
 })();

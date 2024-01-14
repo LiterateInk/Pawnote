@@ -19,6 +19,7 @@ import { readPronoteApiDate, translateToPronoteWeekNumber } from "~/pronote/date
 import { getUTCDate, setDayToEnd, setDayToStart } from "~/utils/dates";
 import { callApiUserGrades } from "~/api/user/grades";
 import { StudentGrade } from "~/parser/grade";
+import { StudentAverage } from "~/parser/average";
 
 export default class Pronote {
   /**
@@ -192,19 +193,23 @@ export default class Pronote {
   }
 
   /**
-   * Get grades for a specific period.
+   * Get grades overview for a specific period.
    *
    * @remark Internally used in the `Period` class.
-   * @param period - Period the grades will be from.
+   * @param period - Period the grades overview will be from.
    */
-  public async getGradesForPeriod (period: Period): Promise<StudentGrade[]> {
+  public async getGradesOverviewForPeriod (period: Period) {
     const { data: { donnees: data } } = await callApiUserGrades({
       session: this.session,
       periodID: period.id,
       periodName: period.name
     });
 
-    return data.listeDevoirs.V
-      .map((grade) => new StudentGrade(this, period, grade));
+    return {
+      grades: data.listeDevoirs.V
+        .map((grade) => new StudentGrade(this, period, grade)),
+      averages: data.listeServices.V
+        .map((average) => new StudentAverage(average))
+    };
   }
 }

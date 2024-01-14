@@ -75,7 +75,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeTyp
 
   console.group("--- AVERAGES ---\n");
 
-  gradesOverview.averages.forEach(average => {
+  gradesOverview.averages.forEach((average) => {
     console.log("->", average.subject.name);
     console.log("Student:", average.student);
     console.log("Class:", average.class_average);

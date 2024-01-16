@@ -4,7 +4,7 @@ import { makeApiHandler } from "~/utils/api";
 import { createPronoteAPICall } from "~/pronote/requestAPI";
 import { PronoteApiFunctions } from "~/constants/functions";
 
-export const callApiUserGrades = makeApiHandler<ApiUserGrades>(async (input) => {
+export const callApiUserGrades = makeApiHandler<ApiUserGrades>(async (fetcher, input) => {
   const request_payload = input.session.writePronoteFunctionPayload<PronoteApiUserGrades["request"]>({
     donnees: {
       Periode: {
@@ -15,7 +15,7 @@ export const callApiUserGrades = makeApiHandler<ApiUserGrades>(async (input) => 
 
     _Signature_: { onglet: PronoteApiOnglets.Grades }
   });
-  const response = await createPronoteAPICall(PronoteApiFunctions.Grades, {
+  const response = await createPronoteAPICall(fetcher, PronoteApiFunctions.Grades, {
     session_instance: input.session.instance,
     payload: request_payload
   });

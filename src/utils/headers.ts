@@ -1,7 +1,7 @@
 import cookieParser from "set-cookie-parser";
 
 export const retrieveResponseCookies = (headers: Record<string, string> | Headers): string[] => {
-  const setCookieHeader = headers instanceof Headers ? headers.get("set-cookie") : headers["set-cookie"];
+  const setCookieHeader = getHeaderFromFetcherResponse(headers, "set-cookie");
   if (setCookieHeader === null) return [];
 
   const splittedCookies = cookieParser.splitCookiesString(setCookieHeader);

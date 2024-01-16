@@ -5,7 +5,7 @@ import { PronoteApiOnglets } from "~/constants/onglets";
 import { createPronoteAPICall } from "~/pronote/requestAPI";
 import { makeApiHandler } from "~/utils/api";
 
-export const callApiUserHomework = makeApiHandler<ApiUserHomework>(async (input) => {
+export const callApiUserHomework = makeApiHandler<ApiUserHomework>(async (fetcher, input) => {
   if (input.fromWeekNumber <= 0) {
     throw new Error(`Invalid input on callApiUserHomework, "fromWeekNumber" should be a strictly positive number, got ${input.fromWeekNumber}`);
   }
@@ -27,7 +27,7 @@ export const callApiUserHomework = makeApiHandler<ApiUserHomework>(async (input)
     }
   });
 
-  const response = await createPronoteAPICall(PronoteApiFunctions.Homework, {
+  const response = await createPronoteAPICall(fetcher, PronoteApiFunctions.Homework, {
     session_instance: input.session.instance,
     payload: request_payload
   });

@@ -8,24 +8,23 @@ import { makeApiHandler } from "~/utils/api";
 import { MOBILE_CHROME_USER_AGENT } from "~/constants/user-agent";
 
 /** Gives every Pronote instance in a 20km radius of the given `longitude` and `latitude`. */
-export const callApiGeolocation = makeApiHandler<ApiGeolocation>(async (input) => {
+export const callApiGeolocation = makeApiHandler<ApiGeolocation>(async (fetcher, input) => {
   const request_body: PronoteApiGeolocation["request"] = {
     nomFonction: "geoLoc",
     lat: input.latitude.toString(),
     long: input.longitude.toString()
   };
 
-  const body = new URLSearchParams();
-  body.set("data", JSON.stringify(request_body));
+  const searchParamsBody = new URLSearchParams();
+  searchParamsBody.set("data", JSON.stringify(request_body));
 
-  const headers = new Headers();
-  headers.set("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-  headers.set("User-Agent", MOBILE_CHROME_USER_AGENT);
-
-  const response = await fetch(PRONOTE_GEOLOCATION_URL, {
+  const response = await fetcher(PRONOTE_GEOLOCATION_URL, {
     method: "POST",
-    headers,
-    body
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+      "User-Agent": MOBILE_CHROME_USER_AGENT
+    },
+    body: searchParamsBody.toString()
   });
 
   let data = await response.json() as PronoteApiGeolocation["response"];

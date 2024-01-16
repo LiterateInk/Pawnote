@@ -1,12 +1,16 @@
 import type { AuthenticatePronoteCredentialsOptions, AuthenticateTokenOptions, NextAuthenticationCredentials } from "./types";
 import { callApiLoginInformations, callApiLoginIdentify, callApiLoginAuthenticate, callApiUserData } from "~/api";
 import { PRONOTE_ACCOUNT_TYPES } from "~/constants/accounts";
+import { defaultPawnoteFetcher } from "~/utils/fetcher";
 import aes from "~/utils/aes";
 
 import Pronote from "~/client/Pronote";
 import forge from "node-forge";
 
 export const authenticatePronoteCredentials = async (pronoteStringURL: string, options: AuthenticatePronoteCredentialsOptions): Promise<Pronote> => {
+  // Use default fetcher if not provided.
+  const fetcher = options.fetcher ?? defaultPawnoteFetcher;
+
   const pronoteURL = new URL(pronoteStringURL);
 
   const accountType = PRONOTE_ACCOUNT_TYPES.find((entry) => entry.id === options.accountTypeID);
@@ -22,13 +26,13 @@ export const authenticatePronoteCredentials = async (pronoteStringURL: string, o
 
   const pronoteCookies = ["ielang=fr"];
 
-  const { createdSession: session, data: loginInformations } = await callApiLoginInformations({
+  const { createdSession: session, data: loginInformations } = await callApiLoginInformations(fetcher, {
     accountTypeID: accountType.id,
     pronoteURL: pronoteURL.href,
     cookies: pronoteCookies
   });
 
-  const { data: loginIdentifier } = await callApiLoginIdentify({
+  const { data: loginIdentifier } = await callApiLoginIdentify(fetcher, {
     cookies: pronoteCookies,
     username: options.username,
     session: session,
@@ -91,7 +95,7 @@ export const authenticatePronoteCredentials = async (pronoteStringURL: string, o
   }
 
   // Send the resolved challenge.
-  const { data: authenticationReply } = await callApiLoginAuthenticate({
+  const { data: authenticationReply } = await callApiLoginAuthenticate(fetcher, {
     solvedChallenge: resolved_challenge,
     cookies: pronoteCookies,
     session
@@ -109,7 +113,7 @@ export const authenticatePronoteCredentials = async (pronoteStringURL: string, o
   session.encryption.aes.key = authKey;
 
   // Retrieve the user data.
-  const { data: user } = await callApiUserData({ session });
+  const { data: user } = await callApiUserData(fetcher, { session });
 
   const credentials: NextAuthenticationCredentials = {
     username: loginIdentifier.donnees.login ?? options.username,
@@ -117,10 +121,13 @@ export const authenticatePronoteCredentials = async (pronoteStringURL: string, o
   };
 
   // Return the new Pronote instance.
-  return new Pronote(session, credentials, user.donnees, loginInformations);
+  return new Pronote(fetcher, session, credentials, user.donnees, loginInformations);
 };
 
 export const authenticateToken = async (pronoteStringURL: string, options: AuthenticateTokenOptions): Promise<Pronote> => {
+  // Use default fetcher if not provided.
+  const fetcher = options.fetcher ?? defaultPawnoteFetcher;
+
   const pronoteURL = new URL(pronoteStringURL);
 
   const accountType = PRONOTE_ACCOUNT_TYPES.find((entry) => entry.id === options.accountTypeID);
@@ -133,13 +140,13 @@ export const authenticateToken = async (pronoteStringURL: string, options: Authe
 
   const pronoteCookies = ["ielang=fr", "appliMobile=1"];
 
-  const { createdSession: session, data: loginInformations } = await callApiLoginInformations({
+  const { createdSession: session, data: loginInformations } = await callApiLoginInformations(fetcher, {
     accountTypeID: accountType.id,
     pronoteURL: pronoteURL.href,
     cookies: pronoteCookies
   });
 
-  const { data: loginIdentifier } = await callApiLoginIdentify({
+  const { data: loginIdentifier } = await callApiLoginIdentify(fetcher, {
     cookies: pronoteCookies,
     username: options.username,
     session: session,
@@ -202,7 +209,7 @@ export const authenticateToken = async (pronoteStringURL: string, options: Authe
   }
 
   // Send the resolved challenge.
-  const { data: authenticationReply } = await callApiLoginAuthenticate({
+  const { data: authenticationReply } = await callApiLoginAuthenticate(fetcher, {
     solvedChallenge: resolved_challenge,
     cookies: pronoteCookies,
     session
@@ -220,7 +227,7 @@ export const authenticateToken = async (pronoteStringURL: string, options: Authe
   session.encryption.aes.key = authKey;
 
   // Retrieve the user data.
-  const { data: user } = await callApiUserData({ session });
+  const { data: user } = await callApiUserData(fetcher, { session });
 
   const credentials: NextAuthenticationCredentials = {
     username: loginIdentifier.donnees.login ?? options.username,
@@ -228,5 +235,5 @@ export const authenticateToken = async (pronoteStringURL: string, options: Authe
   };
 
   // Return the new Pronote instance.
-  return new Pronote(session, credentials, user.donnees, loginInformations);
+  return new Pronote(fetcher, session, credentials, user.donnees, loginInformations);
 };

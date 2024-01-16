@@ -5,7 +5,7 @@ import { PronoteApiOnglets } from "~/constants/onglets";
 import { createPronoteAPICall } from "~/pronote/requestAPI";
 import { makeApiHandler } from "~/utils/api";
 
-export const callApiUserHomeworkStatus = makeApiHandler<ApiUserHomeworkStatus>(async (input) => {
+export const callApiUserHomeworkStatus = makeApiHandler<ApiUserHomeworkStatus>(async (fetcher, input) => {
   const request_payload = input.session.writePronoteFunctionPayload<PronoteApiUserHomeworkStatus["request"]>({
     donnees: {
       listeTAF: [{
@@ -19,7 +19,7 @@ export const callApiUserHomeworkStatus = makeApiHandler<ApiUserHomeworkStatus>(a
     }
   });
 
-  const response = await createPronoteAPICall(PronoteApiFunctions.HomeworkDone, {
+  const response = await createPronoteAPICall(fetcher, PronoteApiFunctions.HomeworkDone, {
     session_instance: input.session.instance,
     payload: request_payload
   });

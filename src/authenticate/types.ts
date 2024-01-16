@@ -1,4 +1,5 @@
 import type { PronoteApiAccountId } from "~/constants/accounts";
+import type { PawnoteFetcher } from "~/utils/fetcher";
 
 interface AuthenticateBaseOptions {
   /**
@@ -6,6 +7,13 @@ interface AuthenticateBaseOptions {
    * that will authenticate to Pronote.
    */
   deviceUUID: string
+
+  /**
+   * By default, Pawnote is going to use `fetch` (Fetch API).
+   * If, for some reason, you need to use another method to make an
+   * HTTP request, you'll have to provide it here.
+   */
+  fetcher?: PawnoteFetcher
 }
 
 export interface AuthenticatePronoteCredentialsOptions extends AuthenticateBaseOptions {

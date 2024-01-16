@@ -1,5 +1,6 @@
 import type { NextAuthenticationCredentials } from "~/authenticate/types";
 import type { ApiLoginInformations } from "~/api/login/informations/types";
+import type { PawnoteFetcher } from "~/utils/fetcher";
 
 import {
   callApiUserHomework,
@@ -66,6 +67,7 @@ export default class Pronote {
   public periods: Array<Period>;
 
   constructor (
+    public fetcher: PawnoteFetcher,
     private session: Session,
     credentials: NextAuthenticationCredentials,
 
@@ -142,7 +144,7 @@ export default class Pronote {
    * @returns
    */
   public async getTimetableForWeek (weekNumber: number): Promise<StudentLesson[]> {
-    const { data: { donnees: data } } = await callApiUserTimetable({
+    const { data: { donnees: data } } = await callApiUserTimetable(this.fetcher, {
       resource: this.user.ressource,
       session: this.session,
       weekNumber
@@ -163,7 +165,7 @@ export default class Pronote {
     const fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
     const toWeekNumber   = translateToPronoteWeekNumber(to, this.startDay);
 
-    const { data: { donnees: data } } = await callApiUserHomework({
+    const { data: { donnees: data } } = await callApiUserHomework(this.fetcher, {
       session: this.session,
       fromWeekNumber,
       toWeekNumber
@@ -175,7 +177,7 @@ export default class Pronote {
   }
 
   public async getHomeworkForWeek (weekNumber: number): Promise<StudentHomework[]> {
-    const { data: { donnees: data } } = await callApiUserHomework({
+    const { data: { donnees: data } } = await callApiUserHomework(this.fetcher, {
       session: this.session,
       fromWeekNumber: weekNumber
     });
@@ -185,7 +187,7 @@ export default class Pronote {
   }
 
   public async patchHomeworkStatus (homeworkID: string, done: boolean): Promise<void> {
-    await callApiUserHomeworkStatus({
+    await callApiUserHomeworkStatus(this.fetcher, {
       session: this.session,
       id: homeworkID,
       status: done
@@ -199,7 +201,7 @@ export default class Pronote {
    * @param period - Period the grades overview will be from.
    */
   public async getGradesOverviewForPeriod (period: Period) {
-    const { data: { donnees: data } } = await callApiUserGrades({
+    const { data: { donnees: data } } = await callApiUserGrades(this.fetcher, {
       session: this.session,
       periodID: period.id,
       periodName: period.name

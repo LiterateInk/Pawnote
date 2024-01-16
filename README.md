@@ -59,14 +59,15 @@ It returns a boolean that is `true` when the server is a demo.
   - [x] parser: able to get attachment's URL
 - [x] Find Pronote instances with longitude and latitude
   - [x] `findPronoteInstances({ longitude, latitude })`
-- Periods
+- [x] Periods
   - [x] client: `.periods` (property)
   - [x] parser: `Period`
-- Grades & Averages
+- [x] Grades & Averages
   - [x] client: `.getGradesOverviewForPeriod(period)`
   - [x] parser: `Period.getGradesOverview()`
   - [x] parser: `StudentGrade`
   - [x] parser: `StudentAverage`
+- [x] Custom `fetcher` to call the API with another API than [`fetch`](https://developer.mozilla.org/docs/Web/API/Fetch_API)
 
 ## Installation
 

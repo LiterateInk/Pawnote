@@ -12,3 +12,5 @@ import type { ApiGeolocation } from "~/api";
  * This type is a single item from the array returned by the function.
  */
 export type PronoteInstance = ApiGeolocation["output"][number];
+
+export { type PawnoteFetcher, defaultPawnoteFetcher } from "~/utils/fetcher";

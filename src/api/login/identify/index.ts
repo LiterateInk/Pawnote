@@ -4,7 +4,7 @@ import { PronoteApiFunctions } from "~/constants/functions";
 import { createPronoteAPICall } from "~/pronote/requestAPI";
 import { makeApiHandler } from "~/utils/api";
 
-export const callApiLoginIdentify = makeApiHandler<ApiLoginIdentify>(async (input) => {
+export const callApiLoginIdentify = makeApiHandler<ApiLoginIdentify>(async (fetcher, input) => {
   const requestPayload = input.session.writePronoteFunctionPayload<PronoteApiLoginIdentify["request"]>({
     donnees: {
       genreConnexion: 0,
@@ -21,7 +21,7 @@ export const callApiLoginIdentify = makeApiHandler<ApiLoginIdentify>(async (inpu
     }
   });
 
-  const response = await createPronoteAPICall(PronoteApiFunctions.Identify, {
+  const response = await createPronoteAPICall(fetcher, PronoteApiFunctions.Identify, {
     session_instance: input.session.instance,
     cookies: input.cookies ?? [],
     payload: requestPayload

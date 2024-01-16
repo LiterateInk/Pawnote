@@ -4,9 +4,9 @@ import { PronoteApiFunctions } from "~/constants/functions";
 import { createPronoteAPICall } from "~/pronote/requestAPI";
 import { makeApiHandler } from "~/utils/api";
 
-export const callApiUserData = makeApiHandler<ApiUserData>(async (input) => {
+export const callApiUserData = makeApiHandler<ApiUserData>(async (fetcher, input) => {
   const request_payload = input.session.writePronoteFunctionPayload<PronoteApiUserData["request"]>({});
-  const response = await createPronoteAPICall(PronoteApiFunctions.UserData, {
+  const response = await createPronoteAPICall(fetcher, PronoteApiFunctions.UserData, {
     session_instance: input.session.instance,
     payload: request_payload
   });

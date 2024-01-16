@@ -5,7 +5,7 @@ import { PronoteApiOnglets } from "~/constants/onglets";
 import { createPronoteAPICall } from "~/pronote/requestAPI";
 import { makeApiHandler } from "~/utils/api";
 
-export const callApiUserTimetable = makeApiHandler<ApiUserTimetable>(async (input) => {
+export const callApiUserTimetable = makeApiHandler<ApiUserTimetable>(async (fetcher, input) => {
   if (input.weekNumber <= 0) {
     throw new Error(`Invalid input on callApiUserTimetable, "weekNumber" should be a strictly positive number, got ${input.weekNumber}`);
   }
@@ -32,7 +32,7 @@ export const callApiUserTimetable = makeApiHandler<ApiUserTimetable>(async (inpu
     _Signature_: { onglet: PronoteApiOnglets.Timetable }
   });
 
-  const response = await createPronoteAPICall(PronoteApiFunctions.Timetable, {
+  const response = await createPronoteAPICall(fetcher, PronoteApiFunctions.Timetable, {
     session_instance: input.session.instance,
     payload: request_payload
   });

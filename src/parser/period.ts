@@ -1,7 +1,7 @@
-import { PronoteApiLoginInformations } from "~/api";
 import type Pronote from "~/client/Pronote";
+import type { PronoteApiLoginInformations } from "~/api";
+
 import { readPronoteApiDate } from "~/pronote/dates";
-import type { StudentGrade } from "./grade";
 
 export class Period {
   public id: string;

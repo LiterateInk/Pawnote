@@ -10,7 +10,7 @@ import { PronoteApiFunctions } from "~/constants/functions";
 import { createPronoteAPICall } from "~/pronote/requestAPI";
 import forge from "node-forge";
 
-export const callApiLoginInformations = makeApiHandler<ApiLoginInformations>(async (input) => {
+export const callApiLoginInformations = makeApiHandler<ApiLoginInformations>(async (fetcher, input) => {
   const accountType = PRONOTE_ACCOUNT_TYPES.find((entry) => entry.id === input.accountTypeID);
   if (!accountType) throw new Error(`Invalid account type ID: ${input.accountTypeID}`);
 
@@ -66,7 +66,7 @@ export const callApiLoginInformations = makeApiHandler<ApiLoginInformations>(asy
     }
   });
 
-  const response = await createPronoteAPICall(PronoteApiFunctions.Informations, {
+  const response = await createPronoteAPICall(fetcher, PronoteApiFunctions.Informations, {
     cookies,
     payload: request_payload,
     session_instance: session.instance

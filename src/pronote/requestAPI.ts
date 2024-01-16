@@ -1,4 +1,5 @@
 import type { SessionInstance, Session } from "~/session";
+import type { PawnoteFetcher } from "~/utils/fetcher";
 
 import { PronoteApiFunctions } from "~/constants/functions";
 import { retrieveResponseCookies } from "~/utils/headers";
@@ -14,6 +15,7 @@ export interface PronoteApiFunctionPayload<T> {
 }
 
 export const createPronoteAPICall = async (
+  fetcher: PawnoteFetcher,
   apiFunctionName: PronoteApiFunctions,
   request: {
     payload: ReturnType<Session["writePronoteFunctionPayload"]>
@@ -24,7 +26,7 @@ export const createPronoteAPICall = async (
   try {
     const pronote_url = request.session_instance.pronote_url;
     const function_url = pronote_url + `/appelfonction/${request.session_instance.account_type_id}/${request.session_instance.session_id}/${request.payload.order}`;
-    const response = await fetch(function_url, {
+    const response = await fetcher(function_url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

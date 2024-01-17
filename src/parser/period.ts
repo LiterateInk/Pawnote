@@ -22,4 +22,8 @@ export class Period {
   public async getGradesOverview () {
     return this.client.getGradesOverviewForPeriod(this);
   }
+
+  public async getEvaluations () {
+    return this.client.getEvaluationsForPeriod(this);
+  }
 }

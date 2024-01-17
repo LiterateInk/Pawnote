@@ -56,7 +56,7 @@ It returns a boolean that is `true` when the server is a demo.
   - [x] parser: `StudentHomework.setDone(done)`
 - [x] Attachment
   - [x] parser: `StudentAttachment`
-  - [x] parser: able to get attachment's URL
+  - [x] parser: able to get/build attachment's URL
 - [x] Find Pronote instances with longitude and latitude
   - [x] `findPronoteInstances(fetcher, { longitude, latitude })`
 - [x] Periods
@@ -67,6 +67,11 @@ It returns a boolean that is `true` when the server is a demo.
   - [x] parser: `Period.getGradesOverview()`
   - [x] parser: `StudentGrade`
   - [x] parser: `StudentAverage`
+- [x] Evaluations and Skills (= Acquisition)
+  - [x] client: `.getEvaluationsForPeriod(period)`
+  - [x] parser: `Period.getEvaluations()`
+  - [x] parser: `StudentEvaluation`
+  - [x] parser: `StudentSkill`
 - [x] Custom `fetcher` to call the API with another API than [`fetch`](https://developer.mozilla.org/docs/Web/API/Fetch_API)
 
 ## Installation

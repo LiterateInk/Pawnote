@@ -7,5 +7,6 @@ export enum PronoteApiFunctions {
   Homework = "PageCahierDeTexte",
   Resources = "PageCahierDeTexte",
   Grades = "DernieresNotes",
-  HomeworkDone = "SaisieTAFFaitEleve"
+  HomeworkDone = "SaisieTAFFaitEleve",
+  Evaluations = "DernieresEvaluations"
 }

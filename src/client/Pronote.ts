@@ -22,6 +22,8 @@ import { callApiUserGrades } from "~/api/user/grades";
 import { StudentGrade } from "~/parser/grade";
 import { StudentAverage } from "~/parser/average";
 import { readPronoteApiGrade } from "~/pronote/grades";
+import { callApiUserEvaluations } from "~/api/user/evaluations";
+import { StudentEvaluation } from "~/parser/evaluation";
 
 export default class Pronote {
   /**
@@ -218,5 +220,19 @@ export default class Pronote {
       overallAverage: readPronoteApiGrade(data.moyGenerale.V),
       classAverage: readPronoteApiGrade(data.moyGeneraleClasse.V)
     };
+  }
+
+  public async getEvaluationsForPeriod (period: Period): Promise<StudentEvaluation[]> {
+    const { data: { donnees: data } } = await callApiUserEvaluations(this.fetcher, {
+      session: this.session,
+      period: {
+        L: period.name,
+        N: period.id,
+        G: 2
+      }
+    });
+
+    return data.listeEvaluations.V
+      .map(evaluation => new StudentEvaluation(evaluation));
   }
 }

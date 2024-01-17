@@ -88,6 +88,39 @@ npm install pawnote
 
 You can see multiple examples in the [`examples`](./examples) folder.
 
+### Tauri
+
+Since Pawnote uses `fetch` as default fetcher, you need to use a custom fetcher to make it work with the [Tauri HTTP API](https://tauri.app/v1/api/js/http).
+
+Here's an example fetcher made to work with Tauri (v1) :
+
+```typescript
+import { type PawnoteFetcher } from "pawnote";
+import { Body, ResponseType, getClient } from "@tauri-apps/api/http";
+
+const tauriPawnoteFetcher: PawnoteFetcher = async (url, options) => {
+  const client = await getClient(options.redirect === "manual" ? {
+    maxRedirections: 0
+  }: void 0);
+
+  const response = await client.request<string>({
+    url,
+    method: options.method,
+    headers: options.headers,
+    body: options.method !== "GET" && options.body ? Body.text(options.body) : void 0,
+    responseType: ResponseType.Text
+  });
+
+  return {
+    headers: response.headers,
+    text: async () => response.data,
+    json: async <T>() => JSON.parse(response.data) as T
+  }
+};
+
+export default tauriPawnoteFetcher;
+```
+
 ## API
 
 Documentation is not yet available, for now you'll have to use intellisense.

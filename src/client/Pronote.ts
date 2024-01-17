@@ -21,6 +21,7 @@ import { getUTCDate, setDayToEnd, setDayToStart } from "~/utils/dates";
 import { callApiUserGrades } from "~/api/user/grades";
 import { StudentGrade } from "~/parser/grade";
 import { StudentAverage } from "~/parser/average";
+import { readPronoteApiGrade } from "~/pronote/grades";
 
 export default class Pronote {
   /**
@@ -196,6 +197,7 @@ export default class Pronote {
 
   /**
    * Get grades overview for a specific period.
+   * Including student's grades with averages and the global averages.
    *
    * @remark Internally used in the `Period` class.
    * @param period - Period the grades overview will be from.
@@ -211,7 +213,10 @@ export default class Pronote {
       grades: data.listeDevoirs.V
         .map((grade) => new StudentGrade(this, period, grade)),
       averages: data.listeServices.V
-        .map((average) => new StudentAverage(average))
+        .map((average) => new StudentAverage(average)),
+
+      overallAverage: readPronoteApiGrade(data.moyGenerale.V),
+      classAverage: readPronoteApiGrade(data.moyGeneraleClasse.V)
     };
   }
 }

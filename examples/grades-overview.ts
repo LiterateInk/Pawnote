@@ -87,7 +87,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeTyp
   });
 
   console.groupEnd();
-  
+
   console.group("--- GLOBAL AVERAGE ---\n");
 
   console.log("Student:", gradesOverview.overallAverage);

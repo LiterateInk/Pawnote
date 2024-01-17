@@ -233,6 +233,6 @@ export default class Pronote {
     });
 
     return data.listeEvaluations.V
-      .map(evaluation => new StudentEvaluation(evaluation));
+      .map((evaluation) => new StudentEvaluation(evaluation));
   }
 }

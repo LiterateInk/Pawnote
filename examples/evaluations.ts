@@ -15,14 +15,14 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
 
   const evaluations = await firstTrimester.getEvaluations();
 
-  evaluations.forEach(evaluation => {
+  evaluations.forEach((evaluation) => {
     console.log(evaluation.name, "::", evaluation.description || "(no description)");
     console.log("Submitted the", evaluation.date.toLocaleString());
-    
+
     console.group("-> Skills");
 
-    evaluation.skills.forEach(skill => {
-      console.group(`-> ${skill.item?.name ?? "Unknown skill"}`)
+    evaluation.skills.forEach((skill) => {
+      console.group(`-> ${skill.item?.name ?? "Unknown skill"}`);
       console.log(`${skill.value} : ${skill.abbreviationValue} (x${skill.coefficient})`);
       console.log(`${skill.pillar.name} in the domain of ${skill.domain.name}`);
       console.groupEnd();
@@ -31,6 +31,6 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
     console.groupEnd();
 
     // Line break for next iteration.
-    console.log(); 
-  })
+    console.log();
+  });
 })();

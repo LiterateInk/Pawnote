@@ -63,7 +63,7 @@ export interface PronoteApiUserEvaluations {
 
               /** Coefficient of this grading. */
               coefficient: number
-              
+
               domaine: {
                 _T: number
                 V: {

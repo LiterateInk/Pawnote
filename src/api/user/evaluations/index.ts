@@ -17,7 +17,7 @@ export const callApiUserEvaluations = makeApiHandler<ApiUserEvaluations>(async (
     payload: request_payload
   });
 
-  
+
   const received = input.session.readPronoteFunctionPayload<PronoteApiUserEvaluations["response"]>(response.payload);
   return { data: received };
 });

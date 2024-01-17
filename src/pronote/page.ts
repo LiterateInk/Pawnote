@@ -1,7 +1,8 @@
+import type { PawnoteFetcher } from "~/utils/fetcher";
 import { MOBILE_CHROME_USER_AGENT } from "~/constants/user-agent";
 import { retrieveResponseCookies } from "~/utils/headers";
 
-export const downloadPronotePage = async (options: {
+export const downloadPronotePage = async (fetcher: PawnoteFetcher, options: {
   pronoteURL: string
   cookies?: string[]
 }): Promise<{
@@ -11,7 +12,7 @@ export const downloadPronotePage = async (options: {
   cookies: string[]
 }> => {
   try {
-    const response = await fetch(options.pronoteURL, {
+    const response = await fetcher(options.pronoteURL, {
       method: "GET",
       redirect: "manual",
       headers: {

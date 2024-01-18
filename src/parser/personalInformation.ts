@@ -2,12 +2,12 @@ import type { PronoteApiUserPersonalInformation } from "~/api/user/personalInfor
 
 export class StudentPersonalInformation {
   public address: string[];
-  
+
   public postalCode: string;
   public province: string;
   public country: string;
   public city: string;
-  
+
   public email: string;
   /** In the format: +[country-code][phone-number]` */
   public phone: string;
@@ -19,7 +19,7 @@ export class StudentPersonalInformation {
       personalInformation.adresse1,
       personalInformation.adresse2,
       personalInformation.adresse3,
-      personalInformation.adresse4,
+      personalInformation.adresse4
     ];
 
     this.postalCode = personalInformation.codePostal;

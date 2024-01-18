@@ -109,7 +109,7 @@ export default class Pronote {
     this.studentName = user.ressource.L;
     this.schoolName = user.ressource.Etablissement.V.L;
     this.studentClass = user.ressource.classeDEleve.L;
-    
+
     if (user.ressource.avecPhoto) {
       this.studentProfilePictureURL = new StudentAttachment(this, {
         G: 1,
@@ -272,7 +272,7 @@ export default class Pronote {
   private personalInformationCache?: StudentPersonalInformation;
 
   /**
-   * Allows to get more information such as student's INE, email, phone and address. 
+   * Allows to get more information such as student's INE, email, phone and address.
    * @param forceUpdate - Forces the API request, even if a cache for this request was made.
    */
   public async getPersonalInformation (forceUpdate = false): Promise<StudentPersonalInformation> {

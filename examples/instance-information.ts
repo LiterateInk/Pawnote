@@ -8,11 +8,11 @@ import { getPronoteInstanceInformation, defaultPawnoteFetcher } from "../src";
   console.log("Root URL:", instance.pronoteRootURL);
   console.log("School Name:", instance.schoolName);
   console.log("Server Version:", instance.version);
-  
+
   console.group("Available account types:", instance.accounts.length);
-  instance.accounts.forEach(account => {
+  instance.accounts.forEach((account) => {
     console.log("->", account.name, `(${account.id})`);
-  })
+  });
   console.groupEnd();
 
   if (instance.entURL) {

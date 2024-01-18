@@ -3,8 +3,8 @@ export { PronoteApiAccountId } from "~/constants/accounts";
 export { authenticatePronoteCredentials, authenticateToken, authenticatePronoteQRCode } from "~/authenticate";
 export { PronoteApiGradeType } from "./pronote/grades";
 
-// Geolocation.
-export { callApiGeolocation as findPronoteInstances } from "~/api";
+export { callApiGeolocation as findPronoteInstances, callApiInstance as getPronoteInstanceInformation } from "~/api";
+
 import type { ApiGeolocation } from "~/api";
 
 /**

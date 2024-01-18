@@ -62,6 +62,8 @@ It returns a boolean that is `true` when the server is a demo.
   - [x] parser: able to get/build attachment's URL
 - [x] Find Pronote instances with longitude and latitude
   - [x] `findPronoteInstances(fetcher, { longitude, latitude })`
+- [x] Get information about an instance from its URL
+  - [x] `getPronoteInstanceInformation(fetcher, { pronoteURL })`
 - [x] Periods
   - [x] client: `.periods` (property)
   - [x] parser: `Period`

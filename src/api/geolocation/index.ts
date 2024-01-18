@@ -27,7 +27,7 @@ export const callApiGeolocation = makeApiHandler<ApiGeolocation>(async (fetcher,
     body: searchParamsBody.toString()
   });
 
-  let data = await response.json() as PronoteApiGeolocation["response"];
+  let data = await response.json<PronoteApiGeolocation["response"]>();
   data = Array.isArray(data) ? data : [];
 
   // Restructure the results to be more readable.

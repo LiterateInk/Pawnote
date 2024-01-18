@@ -128,10 +128,10 @@ export const authenticatePronoteCredentials = async (pronoteStringURL: string, o
 export const authenticateToken = async (pronoteStringURL: string, options: AuthenticateTokenOptions): Promise<Pronote> => {
   // Use default fetcher if not provided.
   const fetcher = options.fetcher ?? defaultPawnoteFetcher;
-  
+
   const accountType = PRONOTE_ACCOUNT_TYPES.find((entry) => entry.id === options.accountTypeID);
   if (!accountType) throw new Error(`Invalid account type ID: ${options.accountTypeID}`);
-  
+
   const pronoteURL = new URL(pronoteStringURL);
   pronoteURL.pathname += `/${accountType.path}`;
 
@@ -249,7 +249,7 @@ export const authenticatePronoteQRCode = async (options: AuthenticateQRCodeOptio
   let password = aes.decrypt(forge.util.encodeUtf8(options.dataFromQRCode.jeton), pinBuffer, forge.util.createBuffer());
 
   const lastPath = options.dataFromQRCode.url.split("/").pop();
-  const accountType = PRONOTE_ACCOUNT_TYPES.find(entry => entry.path === lastPath);
+  const accountType = PRONOTE_ACCOUNT_TYPES.find((entry) => entry.path === lastPath);
   if (!accountType) throw new Error(`Invalid account type path: ${lastPath}`);
 
   const pronoteURL = new URL(options.dataFromQRCode.url);
@@ -355,4 +355,4 @@ export const authenticatePronoteQRCode = async (options: AuthenticateQRCodeOptio
 
   // Return the new Pronote instance.
   return new Pronote(fetcher, session, credentials, user.donnees, loginInformations);
-}
+};

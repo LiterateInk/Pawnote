@@ -77,7 +77,7 @@ It returns a boolean that is `true` when the server is a demo.
   - [x] parser: `Period.getEvaluations()`
   - [x] parser: `StudentEvaluation`
   - [x] parser: `StudentSkill`
-- Personal Information on Student Account
+- [x] Personal Information on Student Account
   - [x] client: `.getPersonalInformation()`
   - [x] parser: `StudentPersonalInformation`
 - [x] Custom `fetcher` to call the API with another API than [`fetch`](https://developer.mozilla.org/docs/Web/API/Fetch_API)

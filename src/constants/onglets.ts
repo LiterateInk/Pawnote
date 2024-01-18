@@ -3,5 +3,6 @@ export enum PronoteApiOnglets {
   Resources = 89,
   Homework = 88,
   Timetable = 16,
-  Evaluations = 201
+  Evaluations = 201,
+  Account = 49
 }

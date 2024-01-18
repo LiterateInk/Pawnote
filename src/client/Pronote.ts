@@ -25,6 +25,9 @@ import { readPronoteApiGrade } from "~/pronote/grades";
 import { callApiUserEvaluations } from "~/api/user/evaluations";
 import { StudentEvaluation } from "~/parser/evaluation";
 import { PronoteApiAccountId } from "~/constants/accounts";
+import { StudentPersonalInformation } from "~/parser/personalInformation";
+import { callApiUserPersonalInformation } from "~/api/user/personalInformation";
+import { StudentAttachment } from "~/parser/attachment";
 
 export default class Pronote {
   /**
@@ -73,6 +76,17 @@ export default class Pronote {
    */
   public isDemo: boolean;
 
+  /** First name and family name of the logged in student. */
+  public studentName: string;
+
+  /** School name of the Pronote instance. */
+  public schoolName: string;
+
+  /** @example "3A" */
+  public studentClass: string;
+
+  /** An absolute URL giving the profile picture of the logged in student, if exists. */
+  public studentProfilePictureURL?: string;
   public periods: Array<Period>;
 
   constructor (
@@ -91,7 +105,18 @@ export default class Pronote {
     this.pronoteRootURL = session.instance.pronote_url;
     this.accountTypeID = session.instance.account_type_id;
     this.sessionID = session.instance.session_id;
-    this.isDemo = this.session.instance.demo;
+    this.isDemo = session.instance.demo;
+    this.studentName = user.ressource.L;
+    this.schoolName = user.ressource.Etablissement.V.L;
+    this.studentClass = user.ressource.classeDEleve.L;
+    
+    if (user.ressource.avecPhoto) {
+      this.studentProfilePictureURL = new StudentAttachment(this, {
+        G: 1,
+        N: user.ressource.N,
+        L: "photo.jpg"
+      }).url;
+    }
 
     this.periods = [];
     for (const period of loginInformations.donnees.General.ListePeriodes) {
@@ -241,5 +266,26 @@ export default class Pronote {
 
     return data.listeEvaluations.V
       .map((evaluation) => new StudentEvaluation(evaluation));
+  }
+
+  /** Since content inside of it can't change that often, we use a cache to prevent calling the API every time. */
+  private personalInformationCache?: StudentPersonalInformation;
+
+  /**
+   * Allows to get more information such as student's INE, email, phone and address. 
+   * @param forceUpdate - Forces the API request, even if a cache for this request was made.
+   */
+  public async getPersonalInformation (forceUpdate = false): Promise<StudentPersonalInformation> {
+    // Use cache when exists and allowed.
+    if (this.personalInformationCache && !forceUpdate) return this.personalInformationCache;
+
+    // Otherwise, let's renew the data.
+    const { data: { donnees: data } } = await callApiUserPersonalInformation(this.fetcher, {
+      session: this.session,
+      userID: this.user.ressource.N
+    });
+
+    this.personalInformationCache = new StudentPersonalInformation(data.Informations);
+    return this.personalInformationCache;
   }
 }

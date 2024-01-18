@@ -24,6 +24,7 @@ import { StudentAverage } from "~/parser/average";
 import { readPronoteApiGrade } from "~/pronote/grades";
 import { callApiUserEvaluations } from "~/api/user/evaluations";
 import { StudentEvaluation } from "~/parser/evaluation";
+import { PronoteApiAccountId } from "~/constants/accounts";
 
 export default class Pronote {
   /**
@@ -51,6 +52,11 @@ export default class Pronote {
    * Root URL of the Pronote instance.
    */
   public pronoteRootURL: string;
+
+  /**
+   * ID of this account type in the Pronote API.
+   */
+  public accountTypeID: PronoteApiAccountId;
 
   /**
    * ID of the currently running session on Pronote.
@@ -83,6 +89,7 @@ export default class Pronote {
     this.username = credentials.username;
     this.nextTimeToken = credentials.token;
     this.pronoteRootURL = session.instance.pronote_url;
+    this.accountTypeID = session.instance.account_type_id;
     this.sessionID = session.instance.session_id;
     this.isDemo = this.session.instance.demo;
 

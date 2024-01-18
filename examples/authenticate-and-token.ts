@@ -24,9 +24,10 @@ import { authenticatePronoteCredentials, authenticateToken, PronoteApiAccountId 
     console.log("\n------ TOKEN:");
 
     const nextPronote = await authenticateToken(pronoteBaseURL, {
-      accountTypeID: PronoteApiAccountId.Eleve,
-      // We use informations from last session.
+      // We can use informations from last session.
+      accountTypeID: pronote.accountTypeID,
       username: pronote.username,
+      // And here, we **must** use the token given.
       token: pronote.nextTimeToken,
 
       // You MUST use the same device UUID as the one you used for the first authentication.

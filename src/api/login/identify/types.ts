@@ -57,6 +57,8 @@ export interface ApiLoginIdentify {
     requestFirstMobileAuthentication: boolean
     /** When we authenticate using a token. */
     reuseMobileAuthentication: boolean
+    /** When we authenticate using a QRCode. */
+    requestFromQRCode: boolean
 
     deviceUUID: string
   }

@@ -15,7 +15,7 @@ export const callApiLoginIdentify = makeApiHandler<ApiLoginIdentify>(async (fetc
       enConnexionAppliMobile: input.reuseMobileAuthentication,
       demandeConnexionAuto: false,
       demandeConnexionAppliMobile: input.requestFirstMobileAuthentication,
-      demandeConnexionAppliMobileJeton: false,
+      demandeConnexionAppliMobileJeton: input.requestFromQRCode,
       uuidAppliMobile: input.deviceUUID,
       loginTokenSAV: ""
     }

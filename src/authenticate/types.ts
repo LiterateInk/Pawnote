@@ -23,12 +23,17 @@ export interface AuthenticatePronoteCredentialsOptions extends AuthenticateBaseO
   accountTypeID: PronoteApiAccountId
 }
 
-export interface AuthenticateENTCredentialsOptions extends AuthenticateBaseOptions {
-  entUsername: string
-  entPassword: string
+export interface AuthenticateQRCodeOptions extends AuthenticateBaseOptions {
+  /** 4 numbers you've entered in the Pronote UI. */
+  pinCode: string
 
-  entURL: string
-  entToken: string
+  /** Data contained in the QR code, you might use another tool to decode the QRCode to have this object. */
+  dataFromQRCode: {
+    jeton: string
+    login: string
+    /** URL of the Pronote instance, with correct mobile account path. */
+    url: string
+  }
 }
 
 export interface AuthenticateTokenOptions extends AuthenticateBaseOptions {

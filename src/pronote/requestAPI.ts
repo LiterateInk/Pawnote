@@ -4,6 +4,7 @@ import type { PawnoteFetcher } from "~/utils/fetcher";
 import { PronoteApiFunctions } from "~/constants/functions";
 import { retrieveResponseCookies } from "~/utils/headers";
 import { MOBILE_CHROME_USER_AGENT } from "~/constants/user-agent";
+import { PawnoteNetworkFail } from "~/errors/NetworkFail";
 
 export interface PronoteApiFunctionPayload<T> {
   nom: string
@@ -47,7 +48,7 @@ export const createPronoteAPICall = async (
 
     return { payload, cookies };
   }
-  catch (error) {
-    throw new Error(`Failed to call API function "${apiFunctionName}": ${error}`);
+  catch {
+    throw new PawnoteNetworkFail();
   }
 };

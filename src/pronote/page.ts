@@ -1,6 +1,7 @@
 import type { PawnoteFetcher } from "~/utils/fetcher";
 import { MOBILE_CHROME_USER_AGENT } from "~/constants/user-agent";
 import { retrieveResponseCookies } from "~/utils/headers";
+import { PawnoteNetworkFail } from "~/errors/NetworkFail";
 
 export const downloadPronotePage = async (fetcher: PawnoteFetcher, options: {
   pronoteURL: string
@@ -27,8 +28,7 @@ export const downloadPronotePage = async (fetcher: PawnoteFetcher, options: {
     };
   }
   catch (error) {
-    console.error(error);
-    throw new Error("Failed to download Pronote page.");
+    throw new PawnoteNetworkFail();
   }
 };
 

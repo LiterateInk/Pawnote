@@ -23,3 +23,6 @@ export type PronoteInstanceInformation = ApiInstance["output"];
 
 export type { Period } from "~/parser/period";
 export { type PawnoteFetcher, defaultPawnoteFetcher } from "~/utils/fetcher";
+
+export { PawnoteError, PawnoteErrorCodes } from "~/errors/constants";
+export { PawnoteNetworkFail } from "~/errors/NetworkFail";

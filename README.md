@@ -81,6 +81,10 @@ It returns a boolean that is `true` when the server is a demo.
   - [x] client: `.getPersonalInformation()`
   - [x] parser: `StudentPersonalInformation`
 - [x] Custom `fetcher` to call the API with another API than [`fetch`](https://developer.mozilla.org/docs/Web/API/Fetch_API)
+- [ ] Error handlers
+  - [x] PawnoteNetworkFail
+  - [ ] PawnoteBadCredentials
+  - [ ] ... (more to come)
 
 ## Installation
 

@@ -290,8 +290,8 @@ export default class Pronote {
     return this.personalInformationCache;
   }
 
-  private presenceRequestsInterval?: ReturnType<typeof setInterval>
-  
+  private presenceRequestsInterval?: ReturnType<typeof setInterval>;
+
   /**
    * @param interval Custom interval (in ms) for `Presence` requests. Default to 2 minutes.
    */

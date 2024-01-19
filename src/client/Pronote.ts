@@ -28,6 +28,7 @@ import { PronoteApiAccountId } from "~/constants/accounts";
 import { StudentPersonalInformation } from "~/parser/personalInformation";
 import { callApiUserPersonalInformation } from "~/api/user/personalInformation";
 import { StudentAttachment } from "~/parser/attachment";
+import { callApiUserPresence } from "~/api/user/presence";
 
 export default class Pronote {
   /**
@@ -287,5 +288,22 @@ export default class Pronote {
 
     this.personalInformationCache = new StudentPersonalInformation(data.Informations);
     return this.personalInformationCache;
+  }
+
+  private presenceRequestsInterval?: ReturnType<typeof setInterval>
+  
+  /**
+   * @param interval Custom interval (in ms) for `Presence` requests. Default to 2 minutes.
+   */
+  public startPresenceRequests (interval = 2 * 60 * 1000): void {
+    if (this.presenceRequestsInterval) this.stopPresenceRequests();
+    this.presenceRequestsInterval = setInterval(async () => {
+      await callApiUserPresence(this.fetcher, { session: this.session });
+    }, interval);
+  }
+
+  public stopPresenceRequests (): void {
+    if (!this.presenceRequestsInterval) return;
+    clearInterval(this.presenceRequestsInterval);
   }
 }

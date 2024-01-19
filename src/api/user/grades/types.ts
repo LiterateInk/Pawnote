@@ -21,11 +21,11 @@ export interface PronoteApiUserGrades {
   response: {
     nom: PronoteApiFunctions.Grades
     donnees: {
-      moyGenerale: {
+      moyGenerale?: {
         _T: 10
         V: string
       }
-      moyGeneraleClasse: {
+      moyGeneraleClasse?: {
         _T: 10
         V: string
       }

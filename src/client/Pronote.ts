@@ -249,8 +249,8 @@ export default class Pronote {
       averages: data.listeServices.V
         .map((average) => new StudentAverage(average)),
 
-      overallAverage: readPronoteApiGrade(data.moyGenerale.V),
-      classAverage: readPronoteApiGrade(data.moyGeneraleClasse.V)
+      overallAverage: data.moyGenerale && readPronoteApiGrade(data.moyGenerale.V),
+      classAverage: data.moyGeneraleClasse && readPronoteApiGrade(data.moyGeneraleClasse.V)
     };
   }
 

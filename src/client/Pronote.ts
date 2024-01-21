@@ -15,6 +15,7 @@ import { StudentLesson } from "~/parser/lesson";
 import { Period } from "~/parser/period";
 
 import { Session } from "~/session";
+import Queue from "~/utils/queue";
 
 import { readPronoteApiDate, translateToPronoteWeekNumber } from "~/pronote/dates";
 import { getUTCDate, setDayToEnd, setDayToStart } from "~/utils/dates";
@@ -90,6 +91,8 @@ export default class Pronote {
   public studentProfilePictureURL?: string;
   public periods: Array<Period>;
 
+  private queue: Queue;
+
   constructor (
     public fetcher: PawnoteFetcher,
     private session: Session,
@@ -123,6 +126,9 @@ export default class Pronote {
     for (const period of loginInformations.donnees.General.ListePeriodes) {
       this.periods.push(new Period(this, period));
     }
+
+    // For further requests, we implement a queue.
+    this.queue = new Queue();
   }
 
   /**
@@ -180,53 +186,63 @@ export default class Pronote {
    * @returns
    */
   public async getTimetableForWeek (weekNumber: number): Promise<StudentLesson[]> {
-    const { data: { donnees: data } } = await callApiUserTimetable(this.fetcher, {
-      resource: this.user.ressource,
-      session: this.session,
-      weekNumber
-    });
+    return this.queue.push(async () => {
+      const { data: { donnees: data } } = await callApiUserTimetable(this.fetcher, {
+        resource: this.user.ressource,
+        session: this.session,
+        weekNumber
+      });
 
-    return data.ListeCours
-      .map((lesson) => new StudentLesson(this, lesson));
+      return data.ListeCours
+        .map((lesson) => new StudentLesson(this, lesson));
+    });
   }
 
   public async getHomeworkForInterval (from: Date, to?: Date): Promise<StudentHomework[]> {
-    if (!(to instanceof Date)) {
-      to = readPronoteApiDate(this.loginInformations.donnees.General.DerniereDate.V);
-    }
+    return this.queue.push(async () => {
+      if (!(to instanceof Date)) {
+        to = readPronoteApiDate(this.loginInformations.donnees.General.DerniereDate.V);
+      }
 
-    from = getUTCDate(from);
-    to   = getUTCDate(to);
+      from = getUTCDate(from);
+      to   = getUTCDate(to);
 
-    const fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
-    const toWeekNumber   = translateToPronoteWeekNumber(to, this.startDay);
+      const fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
+      const toWeekNumber   = translateToPronoteWeekNumber(to, this.startDay);
 
-    const { data: { donnees: data } } = await callApiUserHomework(this.fetcher, {
-      session: this.session,
-      fromWeekNumber,
-      toWeekNumber
+      const { data: { donnees: data } } = await callApiUserHomework(this.fetcher, {
+        session: this.session,
+        fromWeekNumber,
+        toWeekNumber
+      });
+
+      return data.ListeTravauxAFaire.V
+        .map((homework) => new StudentHomework(this, homework))
+        .filter((homework) => <Date>from <= homework.deadline && homework.deadline <= <Date>to);
     });
-
-    return data.ListeTravauxAFaire.V
-      .map((homework) => new StudentHomework(this, homework))
-      .filter((homework) => <Date>from <= homework.deadline && homework.deadline <= <Date>to);
   }
 
   public async getHomeworkForWeek (weekNumber: number): Promise<StudentHomework[]> {
-    const { data: { donnees: data } } = await callApiUserHomework(this.fetcher, {
-      session: this.session,
-      fromWeekNumber: weekNumber
-    });
+    return this.queue.push(async () => {
+      const { data: { donnees: data } } = await callApiUserHomework(this.fetcher, {
+        session: this.session,
+        fromWeekNumber: weekNumber
+      });
 
-    return data.ListeTravauxAFaire.V
-      .map((homework) => new StudentHomework(this, homework));
+      return data.ListeTravauxAFaire.V
+        .map((homework) => new StudentHomework(this, homework));
+    });
   }
 
   public async patchHomeworkStatus (homeworkID: string, done: boolean): Promise<void> {
-    await callApiUserHomeworkStatus(this.fetcher, {
-      session: this.session,
-      id: homeworkID,
-      status: done
+    return this.queue.push(async () => {
+      await callApiUserHomeworkStatus(this.fetcher, {
+        session: this.session,
+        id: homeworkID,
+        status: done
+      });
+
+      return void 0;
     });
   }
 
@@ -238,35 +254,39 @@ export default class Pronote {
    * @param period - Period the grades overview will be from.
    */
   public async getGradesOverviewForPeriod (period: Period) {
-    const { data: { donnees: data } } = await callApiUserGrades(this.fetcher, {
-      session: this.session,
-      periodID: period.id,
-      periodName: period.name
+    return this.queue.push(async () => {
+      const { data: { donnees: data } } = await callApiUserGrades(this.fetcher, {
+        session: this.session,
+        periodID: period.id,
+        periodName: period.name
+      });
+
+      return {
+        grades: data.listeDevoirs.V
+          .map((grade) => new StudentGrade(this, period, grade)),
+        averages: data.listeServices.V
+          .map((average) => new StudentAverage(average)),
+
+        overallAverage: data.moyGenerale && readPronoteApiGrade(data.moyGenerale.V),
+        classAverage: data.moyGeneraleClasse && readPronoteApiGrade(data.moyGeneraleClasse.V)
+      };
     });
-
-    return {
-      grades: data.listeDevoirs.V
-        .map((grade) => new StudentGrade(this, period, grade)),
-      averages: data.listeServices.V
-        .map((average) => new StudentAverage(average)),
-
-      overallAverage: data.moyGenerale && readPronoteApiGrade(data.moyGenerale.V),
-      classAverage: data.moyGeneraleClasse && readPronoteApiGrade(data.moyGeneraleClasse.V)
-    };
   }
 
   public async getEvaluationsForPeriod (period: Period): Promise<StudentEvaluation[]> {
-    const { data: { donnees: data } } = await callApiUserEvaluations(this.fetcher, {
-      session: this.session,
-      period: {
-        L: period.name,
-        N: period.id,
-        G: 2
-      }
-    });
+    return this.queue.push(async () => {
+      const { data: { donnees: data } } = await callApiUserEvaluations(this.fetcher, {
+        session: this.session,
+        period: {
+          L: period.name,
+          N: period.id,
+          G: 2
+        }
+      });
 
-    return data.listeEvaluations.V
-      .map((evaluation) => new StudentEvaluation(evaluation));
+      return data.listeEvaluations.V
+        .map((evaluation) => new StudentEvaluation(evaluation));
+    });
   }
 
   /** Since content inside of it can't change that often, we use a cache to prevent calling the API every time. */
@@ -277,17 +297,19 @@ export default class Pronote {
    * @param forceUpdate - Forces the API request, even if a cache for this request was made.
    */
   public async getPersonalInformation (forceUpdate = false): Promise<StudentPersonalInformation> {
-    // Use cache when exists and allowed.
-    if (this.personalInformationCache && !forceUpdate) return this.personalInformationCache;
+    return this.queue.push(async () => {
+      // Use cache when exists and allowed.
+      if (this.personalInformationCache && !forceUpdate) return this.personalInformationCache;
 
-    // Otherwise, let's renew the data.
-    const { data: { donnees: data } } = await callApiUserPersonalInformation(this.fetcher, {
-      session: this.session,
-      userID: this.user.ressource.N
+      // Otherwise, let's renew the data.
+      const { data: { donnees: data } } = await callApiUserPersonalInformation(this.fetcher, {
+        session: this.session,
+        userID: this.user.ressource.N
+      });
+
+      this.personalInformationCache = new StudentPersonalInformation(data.Informations);
+      return this.personalInformationCache;
     });
-
-    this.personalInformationCache = new StudentPersonalInformation(data.Informations);
-    return this.personalInformationCache;
   }
 
   private presenceRequestsInterval?: ReturnType<typeof setInterval>;
@@ -297,9 +319,9 @@ export default class Pronote {
    */
   public startPresenceRequests (interval = 2 * 60 * 1000): void {
     if (this.presenceRequestsInterval) this.stopPresenceRequests();
-    this.presenceRequestsInterval = setInterval(async () => {
-      await callApiUserPresence(this.fetcher, { session: this.session });
-    }, interval);
+    this.presenceRequestsInterval = setInterval(() => (
+      this.queue.push(() => callApiUserPresence(this.fetcher, { session: this.session }))
+    ), interval);
   }
 
   public stopPresenceRequests (): void {

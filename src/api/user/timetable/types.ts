@@ -3,6 +3,7 @@ import type { PronoteApiResource } from "~/constants/resources";
 import type { PronoteApiOnglets } from "~/constants/onglets";
 import type { PronoteApiUserData } from "~/api";
 import type { Session } from "~/session";
+import type { PronoteValue } from "~/api/type";
 
 export interface PronoteApiUserTimetable {
   request: {
@@ -115,11 +116,27 @@ export interface PronoteApiUserTimetable {
 
         AvecTafPublie: boolean
 
-        cahierDeTextes?: {
-          V: {
-            estDevoir?: boolean
-          }
-        }
+        /**
+         * Defined if `AvecCdT` is `true`.
+         * Contains the ID of the item in the `PronoteApiUserResources.ListeCahierDeTextes` array.
+         */
+        cahierDeTextes?: PronoteValue<24, {
+          /** ID in `ListeCahierDeTextes` from `PronoteApiUserResources` response. */
+          N: string
+          // TODO: Check if this really happens.
+          estDevoir?: boolean
+        }>
+
+        /**
+         * Defined and `true` when something has been
+         * written on this lesson in the "content and resources" page.
+         * 
+         * ---
+         * 
+         * `AvecCdT` means _**Avec Cahier de Textes**_, which is the same naming
+         * used in responses inside [`PronoteApiUserResources`](../resources/types.ts): `ListeCahierDeTextes`
+         */
+        AvecCdT?: boolean
       }>
     }
   }

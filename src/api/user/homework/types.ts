@@ -1,6 +1,9 @@
+import type { PronoteValue } from "~/api/type";
 import type { PronoteApiAttachment } from "~/constants/attachments";
 import type { PronoteApiFunctions } from "~/constants/functions";
+import type { PronoteApiHomeworkDifficulty } from "~/constants/homework";
 import type { PronoteApiOnglets } from "~/constants/onglets";
+import type { PronoteApiThemesList } from "~/constants/themes";
 import type { Session } from "~/session";
 
 export interface PronoteApiUserHomework {
@@ -27,74 +30,70 @@ export interface PronoteApiUserHomework {
           /** ID of the homework. */
           N: string
 
-          /** Content of the homework. */
-          descriptif: {
-            _T: number
-            /** This is actually HTML, use innerHTML to render the content. */
-            V: string
-          }
+          /**
+           * Content of the homework.
+           * This is an HTML string, you can use whatever you want to parse/display it.
+           */
+          descriptif: PronoteValue<21, string>
 
+          // TODO: Find what is this.
           avecMiseEnForme: boolean
 
-          /** Due date for the homework. */
-          PourLe: {
-            _T: 7
-            /** Date format is "DD/MM/YYYY". */
-            V: string
-          }
+          /**
+           * When the homework has been given.
+           * @example "22/01/2024"
+           */
+          DonneLe: PronoteValue<7, string>
 
-          /** When the work has been done. */
+          /**
+           * Due date for the homework.
+           * @example "24/01/2024"
+           */
+          PourLe: PronoteValue<7, string>
+
+          /** `true` when the homework has been done. */
           TAFFait: boolean
 
-          niveauDifficulte: number
+          /** Difficulty of the given work. */
+          niveauDifficulte: PronoteApiHomeworkDifficulty
+          /**
+           * Time in minutes to do the exercice.
+           * @example 30 // For 30 minutes.
+           */
           duree: number
 
-          cahierDeTextes: {
-            _T: 24
-            V: {
-              N: string
-            }
-          }
+          cahierDeTextes: PronoteValue<24, {
+            /** ID in `ListeCahierDeTextes` from `PronoteApiUserResources` response. */
+            N: string
+          }>
+          
+          cours: PronoteValue<24, {
+            /** ID of the lesson in the timetable. */
+            N: string
+          }>
 
-          cours: {
-            _T: 24
-            V: {
-              N: string
-            }
-          }
+          /** Subject from where this homework is from. */
+          Matiere: PronoteValue<24, {
+            /** Name of the subject. */
+            L: string
+            /** ID of the subject. */
+            N: string
+          }>
 
-          /** When the homework has been given. */
-          DonneLe: {
-            _T: 7
-            /** Date format is "DD/MM/YYYY". */
-            V: string
-          }
-
-          Matiere: {
-            _T: 24
-            V: {
-              /** Name of the subject. */
-              L: string
-              N: string
-            }
-          }
-
-          /** HEX value of the background color given on Pronote. */
+          /** Subject color given by Pronote. */
           CouleurFond: string
 
+          // TODO: Find what this is.
           nomPublic: string
-          ListeThemes: {
-            _T: 24
-            V: unknown[]
-          }
 
+          /** Themes associated with the homework. */
+          ListeThemes: PronoteApiThemesList
+
+          /** @example "Uniquement les thèmes associés aux matières du travail à faire" */
           libelleCBTheme: string
 
           /** Attachments. */
-          ListePieceJointe: {
-            _T: 24
-            V: Array<PronoteApiAttachment>
-          }
+          ListePieceJointe: PronoteValue<24, Array<PronoteApiAttachment>>
         }>
       }
     }

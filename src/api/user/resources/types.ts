@@ -1,8 +1,9 @@
-import { PronoteValue } from "~/api/type";
-import { PronoteApiAttachment } from "~/constants/attachments";
+import type { PronoteValue } from "~/api/type";
+import type { PronoteApiAttachment } from "~/constants/attachments";
 import type { PronoteApiFunctions } from "~/constants/functions";
-import { PronoteApiLessonContentCategory } from "~/constants/lessonCategory";
+import type { PronoteApiLessonContentCategory } from "~/constants/lessonCategory";
 import type { PronoteApiOnglets } from "~/constants/onglets";
+import type { PronoteApiThemesList } from "~/constants/themes";
 import type { Session } from "~/session";
 
 export interface PronoteApiUserResources {
@@ -117,20 +118,7 @@ export interface PronoteApiUserResources {
           )>
 
           /** Themes associated with the lesson. */
-          ListeThemes: PronoteValue<24, Array<{
-            /** Name of the theme. */
-            L: string
-            /** ID of the theme. */
-            N: string
-
-            /** Subject in which the theme is from. */
-            Matiere: PronoteValue<24, {
-              /** Name of the subject. */
-              L: string
-              /** ID of the subject. */
-              N: string
-            }>
-          }>>
+          ListeThemes: PronoteApiThemesList
 
           /** @example "Uniquement les thèmes associés aux matières du contenu" */
           libelleCBTheme: string

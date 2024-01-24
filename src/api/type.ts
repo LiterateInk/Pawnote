@@ -1,4 +1,4 @@
 export interface PronoteValue<Type extends number, Value extends unknown> {
-  T: Type
+  _T: Type
   V: Value
 }

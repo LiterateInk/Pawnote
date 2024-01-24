@@ -212,7 +212,7 @@ export default class Pronote {
 
     const fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
     const toWeekNumber   = translateToPronoteWeekNumber(to, this.startDay);
-    
+
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserHomework(this.fetcher, {
         session: this.session,
@@ -262,7 +262,7 @@ export default class Pronote {
 
     const fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
     const toWeekNumber   = translateToPronoteWeekNumber(to, this.startDay);
-    
+
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserResources(this.fetcher, {
         session: this.session,

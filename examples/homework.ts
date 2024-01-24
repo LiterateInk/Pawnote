@@ -34,6 +34,10 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
         });
       }
 
+      if (homework.lessonResourceID) {
+        console.log("(info) => lesson content is available, see :", homework.lessonResourceID);
+      }
+
       // Little separator.
       console.log("---");
     });

@@ -1,6 +1,8 @@
-import type { PronoteValue } from "~/api/type"
+import type { PronoteValue } from "~/api/type";
 
-export type PronoteApiThemesList = PronoteValue<24, Array<{
+export type PronoteApiThemesList = PronoteValue<24, Array<PronoteApiTheme>>;
+
+export interface PronoteApiTheme {
   /** Name of the theme. */
   L: string
   /** ID of the theme. */
@@ -13,4 +15,4 @@ export type PronoteApiThemesList = PronoteValue<24, Array<{
     /** ID of the subject. */
     N: string
   }>
-}>>
+}

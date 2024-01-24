@@ -1,30 +1,47 @@
 import type { PronoteApiUserTimetable } from "~/api/user/timetable/types";
 import type Pronote from "~/client/Pronote";
-import { PronoteApiResource } from "~/constants/resources";
+
+import type { StudentLessonResource } from "./lessonResource";
+import type { StudentHomework } from "./homework";
+
 import { translatePositionToTime, readPronoteApiDate } from "~/pronote/dates";
+import { PronoteApiResource } from "~/constants/resources";
 import { StudentSubject } from "~/parser/subject";
 
-export class StudentLesson {
+/**
+ * A single item in the student's timetable.
+ */
+export class StudentTimetableLesson {
   public id: string;
   public canceled: boolean;
   public status?: string;
   public memo?: string;
   public backgroundColor?: string;
+  /** If it is a pedagogical outing. */
   public outing: boolean;
   public start: Date;
+  /** Specifies if the student's presence is exempt. */
   public exempted: boolean;
+  /** List of URLs for virtual classrooms. */
   public virtualClassrooms: string[] = [];
+  /** For the same lesson time, the biggest `num` is the one shown on Pronote. */
   public num: number;
   public detention: boolean;
+  /** If there will be a test in the lesson. */
   public test: boolean;
   public end: Date;
   public teacherNames: string[] = [];
   public classrooms: string[] = [];
   public groupNames: string[] = [];
   public subject?: StudentSubject;
+  /** Is the lesson considered normal : is not detention, or an outing. */
+  public normal: boolean;
+
+  public haveLessonResource: boolean;
+  public lessonResourceID?: string;
 
   constructor (
-    client: Pronote,
+    private client: Pronote,
     lesson: PronoteApiUserTimetable["response"]["donnees"]["ListeCours"][number]
   ) {
     this.id = lesson.N;
@@ -43,6 +60,7 @@ export class StudentLesson {
     this.num = lesson.P ?? 0;
     this.detention = lesson.estRetenue ?? false;
     this.test = lesson.cahierDeTextes?.V.estDevoir ?? false;
+    this.normal = !this.detention && !this.outing;
 
     if (lesson.DateDuCoursFin) {
       this.end = readPronoteApiDate(lesson.DateDuCoursFin.V);
@@ -74,12 +92,13 @@ export class StudentLesson {
           break;
       }
     }
+
+    this.haveLessonResource = Boolean(lesson.AvecCdT && lesson.cahierDeTextes);
+    if (this.haveLessonResource) this.lessonResourceID = lesson.cahierDeTextes!.V.N;
   }
 
-  /**
-   * Is the lesson considered normal : is not detention, or an outing.
-   */
-  public get normal (): boolean {
-    return !this.detention && !this.outing;
+  public async getResource (): Promise<StudentLessonResource | undefined> {
+    if (!this.haveLessonResource) return;
+    return this.client.getLessonResource(this.lessonResourceID!);
   }
 }

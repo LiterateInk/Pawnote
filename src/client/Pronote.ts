@@ -11,7 +11,6 @@ import {
 } from "~/api";
 
 import { StudentHomework } from "~/parser/homework";
-import { StudentLesson } from "~/parser/lesson";
 import { Period } from "~/parser/period";
 
 import { Session } from "~/session";
@@ -30,6 +29,11 @@ import { StudentPersonalInformation } from "~/parser/personalInformation";
 import { callApiUserPersonalInformation } from "~/api/user/personalInformation";
 import { StudentAttachment } from "~/parser/attachment";
 import { callApiUserPresence } from "~/api/user/presence";
+import { callApiUserResources } from "~/api/user/resources";
+import { callApiUserLessonResource } from "~/api/user/lessonResource";
+import { callApiUserLessonHomework } from "~/api/user/lessonHomework";
+import { StudentTimetableLesson } from "~/parser/timetableLesson";
+import { StudentLessonResource } from "~/parser/lessonResource";
 
 export default class Pronote {
   /**
@@ -157,7 +161,7 @@ export default class Pronote {
    *   console.log("Do something with your", lesson);
    * });
    */
-  public async getLessonsForInterval (from: Date, to?: Date): Promise<StudentLesson[]> {
+  public async getLessonsForInterval (from: Date, to?: Date): Promise<StudentTimetableLesson[]> {
     setDayToStart(from);
 
     if (to instanceof Date) setDayToStart(to);
@@ -169,7 +173,7 @@ export default class Pronote {
     const fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
     const toWeekNumber = translateToPronoteWeekNumber(to, this.startDay);
 
-    const lessons: StudentLesson[] = [];
+    const lessons: StudentTimetableLesson[] = [];
 
     for (let weekNumber = fromWeekNumber; weekNumber <= toWeekNumber; weekNumber++) {
       const weekLessons = await this.getTimetableForWeek(weekNumber);
@@ -185,7 +189,7 @@ export default class Pronote {
    * @param weekNumber
    * @returns
    */
-  public async getTimetableForWeek (weekNumber: number): Promise<StudentLesson[]> {
+  public async getTimetableForWeek (weekNumber: number): Promise<StudentTimetableLesson[]> {
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserTimetable(this.fetcher, {
         resource: this.user.ressource,
@@ -194,7 +198,7 @@ export default class Pronote {
       });
 
       return data.ListeCours
-        .map((lesson) => new StudentLesson(this, lesson));
+        .map((lesson) => new StudentTimetableLesson(this, lesson));
     });
   }
 
@@ -231,6 +235,20 @@ export default class Pronote {
 
       return data.ListeTravauxAFaire.V
         .map((homework) => new StudentHomework(this, homework));
+    });
+  }
+
+  public async getResourcesForWeek (weekNumber: number): Promise<unknown> {
+    return this.queue.push(async () => {
+      const { data: { donnees: data } } = await callApiUserResources(this.fetcher, {
+        session: this.session,
+        fromWeekNumber: weekNumber
+      });
+
+      return {
+        lessons: data.ListeCahierDeTextes.V
+          .map((lesson) => new StudentLessonResource(this, lesson))
+      };
     });
   }
 
@@ -327,5 +345,29 @@ export default class Pronote {
   public stopPresenceRequests (): void {
     if (!this.presenceRequestsInterval) return;
     clearInterval(this.presenceRequestsInterval);
+  }
+
+  public async getLessonResource (lessonId: string): Promise<StudentLessonResource> {
+    return this.queue.push(async () => {
+      const { data: { donnees: data } } = await callApiUserLessonResource(this.fetcher, {
+        session: this.session,
+        lessonId
+      });
+
+      const content = data.ListeCahierDeTextes.V[0];
+      return new StudentLessonResource(this, content);
+    });
+  }
+
+  public async getLessonHomework (lessonId: string): Promise<StudentHomework[]> {
+    return this.queue.push(async () => {
+      const { data: { donnees: data } } = await callApiUserLessonHomework(this.fetcher, {
+        session: this.session,
+        lessonId
+      });
+
+      return data.ListeCahierDeTextes.V[0].ListeTravailAFaire.V
+        .map((homework) => new StudentHomework(this, homework));
+    });
   }
 }

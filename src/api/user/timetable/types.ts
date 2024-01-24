@@ -130,9 +130,9 @@ export interface PronoteApiUserTimetable {
         /**
          * Defined and `true` when something has been
          * written on this lesson in the "content and resources" page.
-         * 
+         *
          * ---
-         * 
+         *
          * `AvecCdT` means _**Avec Cahier de Textes**_, which is the same naming
          * used in responses inside [`PronoteApiUserResources`](../resources/types.ts): `ListeCahierDeTextes`
          */

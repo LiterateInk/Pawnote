@@ -24,7 +24,7 @@ export interface PronoteApiUserResources {
       ListeCahierDeTextes: PronoteValue<24, Array<{
         /** ID */
         N: string
-        
+
         /** Contains the lesson ID in timetable. */
         cours: PronoteValue<24, {
           /** ID of the lesson in timetable. */
@@ -71,13 +71,13 @@ export interface PronoteApiUserResources {
          * @example "26/01/2024 08:00:00"
          */
         Date: PronoteValue<7, string>
-      
+
         /**
          * When the lesson ends.
          * @example "26/01/2024 09:00:00"
          */
         DateFin: PronoteValue<7, string>
-  
+
         /**
          * If there's an homework related, this is the date it should be given.
          * @example "30/01/2024"
@@ -122,7 +122,7 @@ export interface PronoteApiUserResources {
 
           /** @example "Uniquement les thèmes associés aux matières du contenu" */
           libelleCBTheme: string
-          
+
           /** `-1` when not defined. */
           parcoursEducatif: number
 
@@ -211,7 +211,7 @@ export interface PronoteApiUserResources {
 export interface ApiUserResources {
   input: {
     session: Session
-    
+
     fromWeekNumber: number
     toWeekNumber?: number
   }

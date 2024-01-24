@@ -24,78 +24,75 @@ export interface PronoteApiUserHomework {
   response: {
     nom: PronoteApiFunctions.Homework
     donnees: {
-      ListeTravauxAFaire: {
-        _T: 24
-        V: Array<{
-          /** ID of the homework. */
+      ListeTravauxAFaire: PronoteValue<24, Array<{
+        /** ID of the homework. */
+        N: string
+
+        /**
+         * Content of the homework.
+         * This is an HTML string, you can use whatever you want to parse/display it.
+         */
+        descriptif: PronoteValue<21, string>
+
+        // TODO: Find what is this.
+        avecMiseEnForme: boolean
+
+        /**
+         * When the homework has been given.
+         * @example "22/01/2024"
+         */
+        DonneLe: PronoteValue<7, string>
+
+        /**
+         * Due date for the homework.
+         * @example "24/01/2024"
+         */
+        PourLe: PronoteValue<7, string>
+
+        /** `true` when the homework has been done. */
+        TAFFait: boolean
+
+        /** Difficulty of the given work. */
+        niveauDifficulte: PronoteApiHomeworkDifficulty
+        /**
+         * Time in minutes to do the exercice.
+         * @example 30 // For 30 minutes.
+         */
+        duree: number
+
+        cahierDeTextes?: PronoteValue<24, {
+          /** ID in `ListeCahierDeTextes` from `PronoteApiUserResources` response. */
           N: string
-
-          /**
-           * Content of the homework.
-           * This is an HTML string, you can use whatever you want to parse/display it.
-           */
-          descriptif: PronoteValue<21, string>
-
-          // TODO: Find what is this.
-          avecMiseEnForme: boolean
-
-          /**
-           * When the homework has been given.
-           * @example "22/01/2024"
-           */
-          DonneLe: PronoteValue<7, string>
-
-          /**
-           * Due date for the homework.
-           * @example "24/01/2024"
-           */
-          PourLe: PronoteValue<7, string>
-
-          /** `true` when the homework has been done. */
-          TAFFait: boolean
-
-          /** Difficulty of the given work. */
-          niveauDifficulte: PronoteApiHomeworkDifficulty
-          /**
-           * Time in minutes to do the exercice.
-           * @example 30 // For 30 minutes.
-           */
-          duree: number
-
-          cahierDeTextes: PronoteValue<24, {
-            /** ID in `ListeCahierDeTextes` from `PronoteApiUserResources` response. */
-            N: string
-          }>
-          
-          cours: PronoteValue<24, {
-            /** ID of the lesson in the timetable. */
-            N: string
-          }>
-
-          /** Subject from where this homework is from. */
-          Matiere: PronoteValue<24, {
-            /** Name of the subject. */
-            L: string
-            /** ID of the subject. */
-            N: string
-          }>
-
-          /** Subject color given by Pronote. */
-          CouleurFond: string
-
-          // TODO: Find what this is.
-          nomPublic: string
-
-          /** Themes associated with the homework. */
-          ListeThemes: PronoteApiThemesList
-
-          /** @example "Uniquement les thèmes associés aux matières du travail à faire" */
-          libelleCBTheme: string
-
-          /** Attachments. */
-          ListePieceJointe: PronoteValue<24, Array<PronoteApiAttachment>>
         }>
-      }
+
+        cours: PronoteValue<24, {
+          /** ID of the lesson in the timetable. */
+          N: string
+        }>
+
+        /** Subject from where this homework is from. */
+        Matiere: PronoteValue<24, {
+          /** Name of the subject. */
+          L: string
+          /** ID of the subject. */
+          N: string
+        }>
+
+        /** Subject color given by Pronote. */
+        CouleurFond: string
+
+        // TODO: Find what this is.
+        nomPublic: string
+
+        /** Themes associated with the homework. */
+        ListeThemes: PronoteApiThemesList
+
+        /** @example "Uniquement les thèmes associés aux matières du travail à faire" */
+        libelleCBTheme: string
+
+        /** Attachments. */
+        ListePieceJointe: PronoteValue<24, Array<PronoteApiAttachment>>
+      }>>
     }
   }
 }

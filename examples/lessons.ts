@@ -20,5 +20,11 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
 
     // Output something...
     console.log(subjectName, "starts the", lesson.start.toLocaleString(), "and ends the", lesson.end.toLocaleString());
+    if (lesson.haveLessonResource) {
+      console.log("(info) => has lesson resource/content");
+    }
+
+    // Break line.
+    console.log();
   });
 })();

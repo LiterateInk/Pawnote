@@ -203,17 +203,17 @@ export default class Pronote {
   }
 
   public async getHomeworkForInterval (from: Date, to?: Date): Promise<StudentHomework[]> {
+    if (!(to instanceof Date)) {
+      to = readPronoteApiDate(this.loginInformations.donnees.General.DerniereDate.V);
+    }
+
+    from = getUTCDate(from);
+    to   = getUTCDate(to);
+
+    const fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
+    const toWeekNumber   = translateToPronoteWeekNumber(to, this.startDay);
+    
     return this.queue.push(async () => {
-      if (!(to instanceof Date)) {
-        to = readPronoteApiDate(this.loginInformations.donnees.General.DerniereDate.V);
-      }
-
-      from = getUTCDate(from);
-      to   = getUTCDate(to);
-
-      const fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
-      const toWeekNumber   = translateToPronoteWeekNumber(to, this.startDay);
-
       const { data: { donnees: data } } = await callApiUserHomework(this.fetcher, {
         session: this.session,
         fromWeekNumber,
@@ -248,6 +248,32 @@ export default class Pronote {
       return {
         lessons: data.ListeCahierDeTextes.V
           .map((lesson) => new StudentLessonResource(this, lesson))
+      };
+    });
+  }
+
+  public async getResourcesForInterval (from: Date, to?: Date): Promise<unknown> {
+    if (!(to instanceof Date)) {
+      to = readPronoteApiDate(this.loginInformations.donnees.General.DerniereDate.V);
+    }
+
+    from = getUTCDate(from);
+    to   = getUTCDate(to);
+
+    const fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
+    const toWeekNumber   = translateToPronoteWeekNumber(to, this.startDay);
+    
+    return this.queue.push(async () => {
+      const { data: { donnees: data } } = await callApiUserResources(this.fetcher, {
+        session: this.session,
+        fromWeekNumber,
+        toWeekNumber
+      });
+
+      return {
+        lessons: data.ListeCahierDeTextes.V
+          .map((lesson) => new StudentLessonResource(this, lesson))
+          .filter((lesson) => <Date>from <= lesson.end && lesson.end <= <Date>to)
       };
     });
   }

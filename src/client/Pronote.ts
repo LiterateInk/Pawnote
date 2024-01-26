@@ -43,6 +43,12 @@ export default class Pronote {
   public startDay: Date;
 
   /**
+   * Last day of the entire timetable.
+   * Used to get week numbers relative to this date.
+   */
+  public endDay: Date;
+
+  /**
    * Username that SHOULD be used for any further authentication.
    */
   public username: string;
@@ -107,6 +113,7 @@ export default class Pronote {
     public loginInformations: ApiLoginInformations["output"]["data"]
   ) {
     this.startDay = readPronoteApiDate(loginInformations.donnees.General.PremierLundi.V);
+    this.endDay = readPronoteApiDate(loginInformations.donnees.General.DerniereDate.V);
 
     this.username = credentials.username;
     this.nextTimeToken = credentials.token;
@@ -202,11 +209,10 @@ export default class Pronote {
     });
   }
 
-  public async getHomeworkForInterval (from: Date, to?: Date): Promise<StudentHomework[]> {
-    if (!(to instanceof Date)) {
-      to = readPronoteApiDate(this.loginInformations.donnees.General.DerniereDate.V);
-    }
-
+  /**
+   * When `to` is not given, it'll default to the end of the year.
+   */
+  public async getHomeworkForInterval (from: Date, to = this.endDay): Promise<StudentHomework[]> {
     from = getUTCDate(from);
     to   = getUTCDate(to);
 

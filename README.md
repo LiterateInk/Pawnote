@@ -157,4 +157,4 @@ Without these very useful resources, I wouldn't be able to write this whole clie
 - [`pronote-api`](https://github.com/dorian-eydoux/pronote-api/tree/master/src)'s (forked/archived) source code.
 - [`pronotepy`](https://github.com/bain3/pronotepy)'s source code.
 - [Pronote QR Code API](https://github.com/Androz2091/pronote-qrcode-api)
-- [Read encrypted/compressed responses from Pronote](https://gist.github.com/Vexcited/3b599b4eaf0797b532f087540728ec09
+- [Read encrypted/compressed responses from Pronote](https://gist.github.com/Vexcited/3b599b4eaf0797b532f087540728ec09)

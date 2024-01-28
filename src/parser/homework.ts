@@ -6,6 +6,7 @@ import { StudentSubject } from "~/parser/subject";
 import { StudentAttachment } from "~/parser/attachment";
 import type { StudentLessonResource } from "./lessonResource";
 import { PronoteApiHomeworkDifficulty, PronoteApiHomeworkReturnType } from "~/constants/homework";
+import { StudentTheme } from "./theme";
 
 export class StudentHomework {
   public id: string;
@@ -18,6 +19,8 @@ export class StudentHomework {
   public difficulty: PronoteApiHomeworkDifficulty;
   /** Time that should take, in minutes, to do the homework. */
   public lengthInMinutes?: number;
+  /** Themes associated with this homework. */
+  public themes: StudentTheme[];
 
   /**
    * Available only if the homework should be returned.
@@ -50,6 +53,7 @@ export class StudentHomework {
     this.attachments = homework.ListePieceJointe.V.map((raw) => new StudentAttachment(client, raw));
     this.difficulty = homework.niveauDifficulte;
     this.lengthInMinutes = homework.duree;
+    this.themes = homework.ListeThemes.V.map((theme) => new StudentTheme(theme));
 
     if (homework.avecRendu) {
       if (homework.genreRendu === PronoteApiHomeworkReturnType.PAPER) {

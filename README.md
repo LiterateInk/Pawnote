@@ -45,13 +45,14 @@ It returns a boolean that is `true` when the server is a demo.
 ## Features
 
 - [x] Timetable (per week and from/to dates)
-  - [x] parser: `StudentLesson`
+  - [x] parser: `StudentTimetableLesson`
   - [x] parser: `StudentSubject`
   - [x] client: `.requestTimetableForWeek(weekNumber)`
   - [x] client: `.requestLessonsForInterval(from[, to])`
 - [x] Homework (per week and from/to dates)
   - [x] client: `.getHomeworkForInterval(from[, to])`
   - [x] client: `.getHomeworkForWeek(weekNumber)`
+  - [x] client: all homework for a specific lesson `.getLessonHomework(lessonResourceId)`
   - [x] parser: `StudentHomework`
   - [x] parser: parse attachments using `StudentAttachment`
 - [x] Update homework status
@@ -60,6 +61,11 @@ It returns a boolean that is `true` when the server is a demo.
 - [x] Attachment
   - [x] parser: `StudentAttachment`
   - [x] parser: able to get/build attachment's URL
+- [x] Resources (per week and from/to dates)
+  - [x] client: `.getResourcesForInterval(from[, to])`
+  - [x] client: `.getResourcesForWeek(weekNumber)`
+  - [x] client: `.getLessonResource(lessonResourceId)`
+  - [x] parser: `StudentLessonResource`
 - [x] Find Pronote instances with longitude and latitude
   - [x] `findPronoteInstances(fetcher, { longitude, latitude })`
 - [x] Get information about an instance from its URL

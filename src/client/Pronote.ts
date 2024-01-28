@@ -244,7 +244,7 @@ export default class Pronote {
     });
   }
 
-  public async getResourcesForWeek (weekNumber: number): Promise<unknown> {
+  public async getResourcesForWeek (weekNumber: number) {
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserResources(this.fetcher, {
         session: this.session,
@@ -258,7 +258,7 @@ export default class Pronote {
     });
   }
 
-  public async getResourcesForInterval (from: Date, to?: Date): Promise<unknown> {
+  public async getResourcesForInterval (from: Date, to?: Date) {
     if (!(to instanceof Date)) {
       to = readPronoteApiDate(this.loginInformations.donnees.General.DerniereDate.V);
     }

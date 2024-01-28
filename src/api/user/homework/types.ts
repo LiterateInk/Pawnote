@@ -1,7 +1,7 @@
 import type { PronoteValue } from "~/api/type";
 import type { PronoteApiAttachment } from "~/constants/attachments";
 import type { PronoteApiFunctions } from "~/constants/functions";
-import type { PronoteApiHomeworkDifficulty } from "~/constants/homework";
+import type { PronoteApiHomeworkDifficulty, PronoteApiHomeworkReturnType } from "~/constants/homework";
 import type { PronoteApiOnglets } from "~/constants/onglets";
 import type { PronoteApiThemesList } from "~/constants/themes";
 import type { Session } from "~/session";
@@ -59,6 +59,18 @@ export interface PronoteApiUserHomework {
          * @example 30 // For 30 minutes.
          */
         duree: number
+
+        /** Whether the homework should be returned or not. */
+        avecRendu?: boolean
+
+        /**
+         * Only available when you have to upload a file.
+         * - `true` is when the file hasn't been uploaded yet.
+         * - `false` is when the file has been uploaded.
+         */
+        peuRendre?: boolean
+        /** Type of return the teacher asks. */
+        genreRendu?: PronoteApiHomeworkReturnType
 
         cahierDeTextes?: PronoteValue<24, {
           /** ID in `ListeCahierDeTextes` from `PronoteApiUserResources` response. */

@@ -1,4 +1,4 @@
-import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
+import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiHomeworkReturnType } from "../src";
 
 (async () => {
   const pronote = await authenticatePronoteCredentials("https://demo.index-education.net/pronote", {
@@ -32,6 +32,15 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
         homework.attachments.forEach((attachment) => {
           console.log("(attachment) =>", attachment.name, ":", attachment.url);
         });
+      }
+
+      if (homework.return) {
+        if (homework.return.type === PronoteApiHomeworkReturnType.PAPER) {
+          console.log("(return) => on paper ; should be returned to teacher manually");
+        }
+        else if (homework.return.type === PronoteApiHomeworkReturnType.FILE_UPLOAD) {
+          console.log("(return) => file upload", homework.return.uploaded ? "(uploaded)" : "(not uploaded)");
+        }
       }
 
       if (homework.lessonResourceID) {

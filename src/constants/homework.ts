@@ -4,3 +4,8 @@ export enum PronoteApiHomeworkDifficulty {
   MEDIUM = 2,
   HARD = 3
 }
+
+export enum PronoteApiHomeworkReturnType {
+  PAPER = 1,
+  FILE_UPLOAD = 2
+}

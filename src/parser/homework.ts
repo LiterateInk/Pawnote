@@ -5,6 +5,7 @@ import { readPronoteApiDate } from "~/pronote/dates";
 import { StudentSubject } from "~/parser/subject";
 import { StudentAttachment } from "~/parser/attachment";
 import type { StudentLessonResource } from "./lessonResource";
+import { PronoteApiHomeworkDifficulty, PronoteApiHomeworkReturnType } from "~/constants/homework";
 
 export class StudentHomework {
   public id: string;
@@ -14,6 +15,19 @@ export class StudentHomework {
   public done: boolean;
   public deadline: Date;
   public attachments: Array<StudentAttachment>;
+  public difficulty: PronoteApiHomeworkDifficulty;
+  /** Time that should take, in minutes, to do the homework. */
+  public lengthInMinutes?: number;
+
+  /**
+   * Available only if the homework should be returned.
+   */
+  public return?: {
+    type: PronoteApiHomeworkReturnType.PAPER
+  } | {
+    type: PronoteApiHomeworkReturnType.FILE_UPLOAD
+    uploaded: boolean
+  };
 
   /**
    * If defined, can be used to retrieve
@@ -34,6 +48,22 @@ export class StudentHomework {
     this.deadline = readPronoteApiDate(homework.PourLe.V);
     this.backgroundColor = homework.CouleurFond;
     this.attachments = homework.ListePieceJointe.V.map((raw) => new StudentAttachment(client, raw));
+    this.difficulty = homework.niveauDifficulte;
+    this.lengthInMinutes = homework.duree;
+
+    if (homework.avecRendu) {
+      if (homework.genreRendu === PronoteApiHomeworkReturnType.PAPER) {
+        this.return = {
+          type: PronoteApiHomeworkReturnType.PAPER
+        };
+      }
+      else if (homework.genreRendu === PronoteApiHomeworkReturnType.FILE_UPLOAD) {
+        this.return = {
+          type: PronoteApiHomeworkReturnType.FILE_UPLOAD,
+          uploaded: !homework.peuRendre
+        };
+      }
+    }
 
     if (homework.cahierDeTextes) {
       this.lessonResourceID = homework.cahierDeTextes.V.N;

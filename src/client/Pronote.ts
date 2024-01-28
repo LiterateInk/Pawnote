@@ -177,8 +177,12 @@ export default class Pronote {
       setDayToEnd(to);
     }
 
-    const fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
-    const toWeekNumber = translateToPronoteWeekNumber(to, this.startDay);
+    let fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
+    let toWeekNumber = translateToPronoteWeekNumber(to, this.startDay);
+
+    // Make sure to set the default to 1.
+    if (fromWeekNumber <= 0) fromWeekNumber = 1;
+    if (toWeekNumber <= 0) toWeekNumber = 1;
 
     const lessons: StudentTimetableLesson[] = [];
 
@@ -216,8 +220,12 @@ export default class Pronote {
     from = getUTCDate(from);
     to   = getUTCDate(to);
 
-    const fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
-    const toWeekNumber   = translateToPronoteWeekNumber(to, this.startDay);
+    let fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
+    let toWeekNumber   = translateToPronoteWeekNumber(to, this.startDay);
+
+    // Make sure to set the default to 1.
+    if (fromWeekNumber <= 0) fromWeekNumber = 1;
+    if (toWeekNumber <= 0) toWeekNumber = 1;
 
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserHomework(this.fetcher, {
@@ -266,8 +274,12 @@ export default class Pronote {
     from = getUTCDate(from);
     to   = getUTCDate(to);
 
-    const fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
-    const toWeekNumber   = translateToPronoteWeekNumber(to, this.startDay);
+    let fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
+    let toWeekNumber   = translateToPronoteWeekNumber(to, this.startDay);
+
+    // Make sure to set the default to 1.
+    if (fromWeekNumber <= 0) fromWeekNumber = 1;
+    if (toWeekNumber <= 0) toWeekNumber = 1;
 
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserResources(this.fetcher, {

@@ -127,7 +127,7 @@ import { Body, ResponseType, getClient } from "@tauri-apps/api/http";
 const tauriPawnoteFetcher: PawnoteFetcher = async (url, options) => {
   const client = await getClient(options.redirect === "manual" ? {
     maxRedirections: 0
-  }: void 0);
+  } : void 0);
 
   const response = await client.request<string>({
     url,
@@ -160,7 +160,7 @@ using comments from the source code in the future.
 Without these very useful resources, I wouldn't be able to write this whole client by myself.
 
 - [Pronote Protocol](https://github.com/bain3/pronotepy/blob/master/PRONOTE%20protocol.md) written by developers of `pronotepy`.
-- [`pronote-api`](https://github.com/dorian-eydoux/pronote-api/tree/master/src)'s (forked/archived) source code.
+- [`pronote-api`](https://github.com/Merlode11/pronote-api)'s (forked) source code.
 - [`pronotepy`](https://github.com/bain3/pronotepy)'s source code.
 - [Pronote QR Code API](https://github.com/Androz2091/pronote-qrcode-api)
 - [Read encrypted/compressed responses from Pronote](https://gist.github.com/Vexcited/3b599b4eaf0797b532f087540728ec09)

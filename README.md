@@ -90,6 +90,15 @@ It returns a boolean that is `true` when the server is a demo.
 - [x] Sends `Presence` requests to keep alive the connection
   - [x] client: `.startPresenceRequests()`
   - [x] client: `.stopPresenceRequests()`
+- [ ] News
+  - [x] client: `.getNews()`
+  - [ ] client: `.patchNewsRead(newsID, read)`
+  - [x] parser: `StudentNews`
+  - [x] parser: `StudentNewsCategory`
+  - [x] parser: `StudentNewsItem`
+    - [ ] add a `patchRead(read)` method. should allow usage only if is an information.
+  - [ ] parser: `StudentNewsItemQuestion`
+    - Choices are not handled yet, but will be in the future...
 - [ ] Error handlers
   - [x] PawnoteNetworkFail
   - [ ] PawnoteBadCredentials

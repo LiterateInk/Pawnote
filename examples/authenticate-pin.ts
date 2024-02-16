@@ -1,4 +1,4 @@
-import { authenticatePronoteQRCode, authenticateToken } from "~/authenticate";
+import { authenticatePronoteQRCode, authenticateToken } from "../src";
 
 (async () => {
   console.log("------ PIN:");

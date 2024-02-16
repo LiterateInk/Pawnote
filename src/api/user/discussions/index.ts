@@ -5,10 +5,10 @@ import { PronoteApiOnglets } from "~/constants/onglets";
 import { createPronoteAPICall } from "~/pronote/requestAPI";
 import { makeApiHandler } from "~/utils/api";
 
-export const callApiUserMessages = makeApiHandler<ApiUserDiscussions>(async (fetcher, input) => {
+export const callApiUserDiscussions = makeApiHandler<ApiUserDiscussions>(async (fetcher, input) => {
   const request_payload = input.session.writePronoteFunctionPayload<PronoteApiUserDiscussions["request"]>({
     _Signature_: {
-      onglet: PronoteApiOnglets.Messages
+      onglet: PronoteApiOnglets.Discussions
     },
 
     donnees: {
@@ -18,7 +18,7 @@ export const callApiUserMessages = makeApiHandler<ApiUserDiscussions>(async (fet
     }
   });
 
-  const response = await createPronoteAPICall(fetcher, PronoteApiFunctions.Messages, {
+  const response = await createPronoteAPICall(fetcher, PronoteApiFunctions.Discussions, {
     session_instance: input.session.instance,
     payload: request_payload
   });

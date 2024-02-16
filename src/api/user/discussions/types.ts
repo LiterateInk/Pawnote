@@ -1,4 +1,4 @@
-import { PronoteValue } from "~/api/type";
+import type { PronoteValue } from "~/api/type";
 import type { PronoteApiFunctions } from "~/constants/functions";
 import type { PronoteApiOnglets } from "~/constants/onglets";
 import type { Session } from "~/session";
@@ -6,7 +6,7 @@ import type { Session } from "~/session";
 export interface PronoteApiUserDiscussions {
   request: {
     _Signature_: {
-      onglet: PronoteApiOnglets.Messages
+      onglet: PronoteApiOnglets.Discussions
     }
 
     donnees: {
@@ -55,6 +55,7 @@ export interface PronoteApiUserDiscussions {
           }
         }
 
+        ferme?: boolean
         fermable?: boolean
         messageFenetre?: {
           _T: number
@@ -69,6 +70,7 @@ export interface PronoteApiUserDiscussions {
         estNonPossede: boolean
 
         lu?: boolean
+        nbNonLus?: number
 
         /**
          * Only available if the item has been moved
@@ -86,7 +88,7 @@ export interface PronoteApiUserDiscussions {
 
       strSuperAdministrateurs: string
     }
-    nom: PronoteApiFunctions.Messages
+    nom: PronoteApiFunctions.Discussions
   }
 }
 

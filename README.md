@@ -99,10 +99,20 @@ It returns a boolean that is `true` when the server is a demo.
     - [ ] add a `patchRead(read)` method. should allow usage only if is an information.
   - [ ] parser: `StudentNewsItemQuestion`
     - Choices are not handled yet, but will be in the future...
+- [ ] Discussions
+  - [x] client: `getDiscussionsOverview()`
+  - [x] parser: `StudentDiscussionsOverview`
+  - [x] parser: `StudentDiscussionFolder`
+  - [x] parser: `StudentDiscussion`
+  - [ ] Create new discussion
 - [ ] Messages
-  - [x] Add base for discussions
-  - [ ] Add base for messages
-  - [ ] Add methods on parsers and clients
+  - [x] client: `getMessagesFromDiscussion(possessions)`
+  - [x] parser: `StudentMessage`
+  - [x] parser: `StudentDiscussion.fetchMessages()`
+  - [ ] Reply
+  - [ ] Get recipients ?
+  - [ ] Mark as read ?
+  - [ ] Handle folders triage
 - [ ] Error handlers
   - [x] PawnoteNetworkFail
   - [ ] PawnoteBadCredentials

@@ -10,6 +10,23 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
     deviceUUID: "my-device-uuid"
   });
 
-  const discussions = await pronote.getDiscussions();
-  console.log(discussions);
+  const { discussions } = await pronote.getDiscussionsOverview();
+  for (const discussion of discussions) {
+    console.group("Entering discussion:", discussion.subject);
+    console.info(discussion.numberOfMessages, "message(s) including", discussion.numberOfMessagesUnread, "message(s) unread");
+    console.info("This discussion is", discussion.closed ? "closed." : "still opened.");
+
+    const messages = await discussion.fetchMessages();
+    console.log("\n--- Messages (most recent first)\n"); // Line break for contents.
+
+    messages.forEach((message) => {
+      console.log(message.author ?? "(me)", ":", message.created.toLocaleString());
+      console.log(message.content);
+
+      console.log(); // Line break.
+    });
+
+    console.groupEnd();
+  }
 })();
+

@@ -7,5 +7,5 @@ export enum PronoteApiOnglets {
   Account = 49,
   Presence = 7,
   News = 8,
-  Messages = 131
+  Discussions = 131
 }

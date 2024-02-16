@@ -36,8 +36,11 @@ import { StudentTimetableLesson } from "~/parser/timetableLesson";
 import { StudentLessonResource } from "~/parser/lessonResource";
 import { callApiUserNews } from "~/api/user/news";
 import { StudentNews } from "~/parser/news";
-import { callApiUserMessages } from "~/api/user/discussions";
+import { callApiUserDiscussions } from "~/api/user/discussions";
 import { StudentDiscussionsOverview } from "~/parser/discussion";
+import type { PronoteApiMessagesPossessionsList } from "~/constants/messages";
+import { callApiUserMessages } from "~/api/user/messages";
+import { StudentMessage } from "~/parser/messages";
 
 export default class Pronote {
   /**
@@ -426,10 +429,19 @@ export default class Pronote {
     });
   }
 
-  public async getDiscussions (): Promise<StudentDiscussionsOverview> {
+  public async getDiscussionsOverview (): Promise<StudentDiscussionsOverview> {
     return this.queue.push(async () => {
-      const { data } = await callApiUserMessages(this.fetcher, { session: this.session });
-      return new StudentDiscussionsOverview(data.donnees);
+      const { data } = await callApiUserDiscussions(this.fetcher, { session: this.session });
+      return new StudentDiscussionsOverview(this, data.donnees);
+    });
+  }
+
+  public async getMessagesFromDiscussion (possessions: PronoteApiMessagesPossessionsList): Promise<StudentMessage[]> {
+    return this.queue.push(async () => {
+      const { data } = await callApiUserMessages(this.fetcher, { possessions, session: this.session });
+      return data.donnees.listeMessages.V
+        .map((message) => new StudentMessage(message))
+        .sort((a, b) => b.created.getTime() - a.created.getTime());
     });
   }
 }

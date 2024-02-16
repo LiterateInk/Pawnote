@@ -37,14 +37,15 @@ export { PronoteApiGradeType } from "./pronote/grades";
 export { PronoteApiHomeworkDifficulty, PronoteApiHomeworkReturnType } from "~/constants/homework";
 export { PronoteApiLessonContentCategory } from "~/constants/lessonCategory";
 export { PronoteApiAttachmentType } from "~/constants/attachments";
+export { PronoteApiNewsQuestionType } from "~/constants/news";
 export { PronoteApiAccountId } from "~/constants/accounts";
 
-// Type re-exports for parser classes, can be useful
-// when you pass data around your application and need to type it.
-export type { default as Pronote } from "~/client/Pronote";
-export type { StudentSubject } from "~/parser/subject";
-export type { StudentAttachment } from "~/parser/attachment";
-export type { StudentHomework } from "~/parser/homework";
-export type { StudentTheme } from "~/parser/theme";
-export type { StudentGrade } from "~/parser/grade";
-export type { Period } from "~/parser/period";
+// Exporting main classes.
+export { default as Pronote } from "~/client/Pronote";
+export { StudentSubject } from "~/parser/subject";
+export { StudentAttachment } from "~/parser/attachment";
+export { StudentHomework } from "~/parser/homework";
+export { StudentTheme } from "~/parser/theme";
+export { StudentGrade } from "~/parser/grade";
+export { Period } from "~/parser/period";
+export { StudentNews, StudentNewsCategory, StudentNewsItem, StudentNewsItemQuestion } from "~/parser/news";

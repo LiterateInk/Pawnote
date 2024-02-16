@@ -34,6 +34,8 @@ import { callApiUserLessonResource } from "~/api/user/lessonResource";
 import { callApiUserLessonHomework } from "~/api/user/lessonHomework";
 import { StudentTimetableLesson } from "~/parser/timetableLesson";
 import { StudentLessonResource } from "~/parser/lessonResource";
+import { callApiUserNews } from "~/api/user/news";
+import { StudentNews } from "~/parser/news";
 
 export default class Pronote {
   /**
@@ -412,6 +414,13 @@ export default class Pronote {
 
       return data.ListeCahierDeTextes.V[0].ListeTravailAFaire.V
         .map((homework) => new StudentHomework(this, homework));
+    });
+  }
+
+  public async getNews (): Promise<StudentNews> {
+    return this.queue.push(async () => {
+      const { data: { donnees: data }} = await callApiUserNews(this.fetcher, { session: this.session });
+      return new StudentNews(data);
     });
   }
 }

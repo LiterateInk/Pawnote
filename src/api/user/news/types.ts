@@ -12,8 +12,7 @@ export interface PronoteApiUserNews {
     donnees: {
       modesAffActus: {
         _T: 26
-        // NOTE: Not sure if there's any other value possible here ?
-        V: "[0]"
+        V: "[0]" // NOTE: See <PronoteApiNewsViewType>
       }
     }
   }

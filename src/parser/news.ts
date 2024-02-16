@@ -5,17 +5,11 @@ type RawData = PronoteApiUserNews["response"]["donnees"];
 
 export class StudentNews {
   public categories: StudentNewsCategory[];
-  public views: {
-    type: number; // NOTE: Hmmm ??
-    items: StudentNewsItem[];
-  }[];
+  public items: StudentNewsItem[];
 
   constructor (data: RawData) {
     this.categories = data.listeCategories.V.map((category) => new StudentNewsCategory(category));
-    this.views = data.listeModesAff.map((mode) => ({
-      type: mode.G,
-      items: mode.listeActualites.V.map((item) => new StudentNewsItem(item, this.categories))
-    }));
+    this.items = data.listeModesAff[0].listeActualites.V.map((item) => new StudentNewsItem(item, this.categories));
   }
 }
 

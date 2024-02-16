@@ -36,6 +36,8 @@ import { StudentTimetableLesson } from "~/parser/timetableLesson";
 import { StudentLessonResource } from "~/parser/lessonResource";
 import { callApiUserNews } from "~/api/user/news";
 import { StudentNews } from "~/parser/news";
+import { callApiUserMessages } from "~/api/user/discussions";
+import { StudentDiscussionsOverview } from "~/parser/discussion";
 
 export default class Pronote {
   /**
@@ -421,6 +423,13 @@ export default class Pronote {
     return this.queue.push(async () => {
       const { data: { donnees: data }} = await callApiUserNews(this.fetcher, { session: this.session });
       return new StudentNews(data);
+    });
+  }
+
+  public async getDiscussions (): Promise<StudentDiscussionsOverview> {
+    return this.queue.push(async () => {
+      const { data } = await callApiUserMessages(this.fetcher, { session: this.session });
+      return new StudentDiscussionsOverview(data.donnees);
     });
   }
 }

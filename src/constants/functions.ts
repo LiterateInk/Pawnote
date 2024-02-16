@@ -12,5 +12,6 @@ export enum PronoteApiFunctions {
   PersonalInformation = "PageInfosPerso",
   Presence = "Presence",
   LessonContentInResources = "donneesContenusCDT",
-  News = "PageActualites"
+  News = "PageActualites",
+  Messages = "ListeMessagerie"
 }

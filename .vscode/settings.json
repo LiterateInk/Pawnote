@@ -2,5 +2,14 @@
   "cSpell.language": "en,fr",
   "editor.insertSpaces": true,
   "editor.detectIndentation": false,
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "cSpell.words": [
+    "elmauteur",
+    "Reponses"
+  ],
+
+  "eslint.experimental.useFlatConfig": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
 }

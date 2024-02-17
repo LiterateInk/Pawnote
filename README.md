@@ -44,6 +44,8 @@ It returns a boolean that is `true` when the server is a demo.
 
 ## Features
 
+This list is more like a TODO list for me, but will be converted later to a more detailed list of features.
+
 - [x] Timetable (per week and from/to dates)
   - [x] parser: `StudentTimetableLesson`
   - [x] parser: `StudentSubject`
@@ -55,9 +57,9 @@ It returns a boolean that is `true` when the server is a demo.
   - [x] client: all homework for a specific lesson `.getLessonHomework(lessonResourceId)`
   - [x] parser: `StudentHomework`
   - [x] parser: parse attachments using `StudentAttachment`
-- [x] Update homework status
-  - [x] client: `.patchHomeworkStatus(homeworkID, done)`
-  - [x] parser: `StudentHomework.setDone(done)`
+  - [x] Update status
+    - [x] client: `.patchHomeworkStatus(homeworkID, done)`
+    - [x] parser: `StudentHomework.setDone(done)`
 - [x] Attachment
   - [x] parser: `StudentAttachment`
   - [x] parser: able to get/build attachment's URL
@@ -91,7 +93,7 @@ It returns a boolean that is `true` when the server is a demo.
   - [x] client: `.startPresenceRequests()`
   - [x] client: `.stopPresenceRequests()`
 - [ ] News
-  - [x] client: `.getNews()`
+  - [x] client: `Pronote.getNews()`
   - [ ] client: `.patchNewsRead(newsID, read)`
   - [x] parser: `StudentNews`
   - [x] parser: `StudentNewsCategory`
@@ -113,6 +115,9 @@ It returns a boolean that is `true` when the server is a demo.
   - [ ] Get recipients ?
   - [ ] Mark as read ?
   - [ ] Handle folders triage
+- [ ] Attendance : Absences, Punishments and Delays
+  - [ ] `Pronote.getAttendanceOverviewForPeriod(period)`
+  - [ ] `Period.getAttendanceOverview()`
 - [ ] Error handlers
   - [x] PawnoteNetworkFail
   - [ ] PawnoteBadCredentials

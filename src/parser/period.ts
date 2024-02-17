@@ -19,11 +19,18 @@ export class Period {
     this.end = readPronoteApiDate(period.dateFin.V);
   }
 
-  public async getGradesOverview () {
+  public getGradesOverview () {
     return this.client.getGradesOverviewForPeriod(this);
   }
 
-  public async getEvaluations () {
+  public getEvaluations () {
     return this.client.getEvaluationsForPeriod(this);
+  }
+
+  /**
+   * Retrieves delays, absences and punishments for this period.
+   */
+  public getAttendanceOverview () {
+    return this.client.getAttendanceOverviewForPeriod(this);
   }
 }

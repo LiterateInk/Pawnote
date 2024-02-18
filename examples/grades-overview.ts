@@ -13,9 +13,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeTyp
   const firstTrimester = pronote.periods.find((period) => period.name === "Trimestre 1");
   if (!firstTrimester) throw new Error("Wasn't able to find a period named 'Trimestre 1'.");
 
-  const gradesOverview = await firstTrimester.getGradesOverview();
-  // Or you can also the following syntax :
-  // const grades = await pronote.getGradesForPeriod(firstTrimester);
+  const gradesOverview = await pronote.getGradesOverviewForPeriod(firstTrimester);
 
   const handleGradeValue = (value: number | PronoteApiGradeType, outOf: number, coefficient: number): string => {
     // Handle custom grades.

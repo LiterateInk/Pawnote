@@ -11,7 +11,7 @@ import {
 } from "~/api";
 
 import { StudentHomework } from "~/parser/homework";
-import { Period } from "~/parser/period";
+import { Period, OngletPeriod, readOngletPeriods, OngletPeriods } from "~/parser/period";
 
 import { Session } from "~/session";
 import Queue from "~/utils/queue";
@@ -41,19 +41,28 @@ import { StudentDiscussionsOverview } from "~/parser/discussion";
 import type { PronoteApiMessagesPossessionsList } from "~/constants/messages";
 import { callApiUserMessages } from "~/api/user/messages";
 import { StudentMessage } from "~/parser/messages";
+import { PronoteApiOnglets } from "~/constants/onglets";
+import { callApiUserAttendance } from "~/api/user/attendance";
+import { PronoteApiAttendanceItemType } from "~/constants/attendance";
+import { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";
 
 export default class Pronote {
   /**
    * First day of the entire timetable.
    * Used to get week numbers relative to this date.
    */
-  public startDay: Date;
+  public firstMonday: Date;
 
   /**
-   * Last day of the entire timetable.
+   * First day of the entire year.
+   */
+  public firstDate: Date;
+
+  /**
+   * Last day of the entire year.
    * Used to get week numbers relative to this date.
    */
-  public endDay: Date;
+  public lastDate: Date;
 
   /**
    * Username that SHOULD be used for any further authentication.
@@ -107,6 +116,10 @@ export default class Pronote {
   /** An absolute URL giving the profile picture of the logged in student, if exists. */
   public studentProfilePictureURL?: string;
   public periods: Array<Period>;
+  private periodsByOnglet: Map<PronoteApiOnglets, OngletPeriods>;
+
+  public isDelegate: boolean;
+  public isMemberCA: boolean;
 
   private queue: Queue;
 
@@ -119,8 +132,9 @@ export default class Pronote {
     private user: ApiUserData["output"]["data"]["donnees"],
     public loginInformations: ApiLoginInformations["output"]["data"]
   ) {
-    this.startDay = readPronoteApiDate(loginInformations.donnees.General.PremierLundi.V);
-    this.endDay = readPronoteApiDate(loginInformations.donnees.General.DerniereDate.V);
+    this.firstMonday = readPronoteApiDate(loginInformations.donnees.General.PremierLundi.V);
+    this.firstDate = readPronoteApiDate(loginInformations.donnees.General.PremiereDate.V);
+    this.lastDate = readPronoteApiDate(loginInformations.donnees.General.DerniereDate.V);
 
     this.username = credentials.username;
     this.nextTimeToken = credentials.token;
@@ -144,6 +158,18 @@ export default class Pronote {
     for (const period of loginInformations.donnees.General.ListePeriodes) {
       this.periods.push(new Period(this, period));
     }
+
+    this.periodsByOnglet = new Map();
+    for (const ongletPeriods of user.ressource.listeOngletsPourPeriodes.V) {
+      this.periodsByOnglet.set(ongletPeriods.G, readOngletPeriods(this.periods, ongletPeriods));
+    }
+
+    this.isDelegate = user.ressource.estDelegue ?? false;
+    this.isMemberCA = user.ressource.estMembreCA ?? false;
+    // TODO: user.ressource.avecDiscussionResponsables;
+    // TODO: user.ressource.listeClassesDelegue;
+    // TODO: user.ressource.nbMaxJoursDeclarationAbsence;
+    // TODO: user.ressource.listeGroupes
 
     // For further requests, we implement a queue.
     this.queue = new Queue();
@@ -184,8 +210,8 @@ export default class Pronote {
       setDayToEnd(to);
     }
 
-    let fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
-    let toWeekNumber = translateToPronoteWeekNumber(to, this.startDay);
+    let fromWeekNumber = translateToPronoteWeekNumber(from, this.firstMonday);
+    let toWeekNumber = translateToPronoteWeekNumber(to, this.firstMonday);
 
     // Make sure to set the default to 1.
     if (fromWeekNumber <= 0) fromWeekNumber = 1;
@@ -223,12 +249,12 @@ export default class Pronote {
   /**
    * When `to` is not given, it'll default to the end of the year.
    */
-  public async getHomeworkForInterval (from: Date, to = this.endDay): Promise<StudentHomework[]> {
+  public async getHomeworkForInterval (from: Date, to = this.lastDate): Promise<StudentHomework[]> {
     from = getUTCDate(from);
     to   = getUTCDate(to);
 
-    let fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
-    let toWeekNumber   = translateToPronoteWeekNumber(to, this.startDay);
+    let fromWeekNumber = translateToPronoteWeekNumber(from, this.firstMonday);
+    let toWeekNumber   = translateToPronoteWeekNumber(to, this.firstMonday);
 
     // Make sure to set the default to 1.
     if (fromWeekNumber <= 0) fromWeekNumber = 1;
@@ -275,14 +301,14 @@ export default class Pronote {
 
   public async getResourcesForInterval (from: Date, to?: Date) {
     if (!(to instanceof Date)) {
-      to = readPronoteApiDate(this.loginInformations.donnees.General.DerniereDate.V);
+      to = this.lastDate;
     }
 
     from = getUTCDate(from);
     to   = getUTCDate(to);
 
-    let fromWeekNumber = translateToPronoteWeekNumber(from, this.startDay);
-    let toWeekNumber   = translateToPronoteWeekNumber(to, this.startDay);
+    let fromWeekNumber = translateToPronoteWeekNumber(from, this.firstMonday);
+    let toWeekNumber   = translateToPronoteWeekNumber(to, this.firstMonday);
 
     // Make sure to set the default to 1.
     if (fromWeekNumber <= 0) fromWeekNumber = 1;
@@ -347,9 +373,9 @@ export default class Pronote {
       const { data: { donnees: data } } = await callApiUserEvaluations(this.fetcher, {
         session: this.session,
         period: {
-          L: period.name,
           N: period.id,
-          G: 2
+          L: period.name,
+          G: period.genre
         }
       });
 
@@ -442,6 +468,51 @@ export default class Pronote {
       return data.donnees.listeMessages.V
         .map((message) => new StudentMessage(message))
         .sort((a, b) => b.created.getTime() - a.created.getTime());
+    });
+  }
+
+  public readDefaultPeriodForAttendanceOverview (): Period {
+    return this.periodsByOnglet.get(PronoteApiOnglets.Attendance)!.default;
+  }
+
+  public readPeriodsForAttendanceOverview (): Period[] {
+    return this.periodsByOnglet.get(PronoteApiOnglets.Attendance)!.values.map((period) => {
+      if (period.linkedPeriod) return period.linkedPeriod;
+
+      // When the period doesn't exist globally, we need
+      // to create one that goes from beginning of the year
+      // until the end !
+      return new Period(this, {
+        N: "0", // Not needed.
+        periodeNotation: 0, // Unused.
+
+        G: period.genre,
+        L: period.name,
+
+        dateDebut: this.loginInformations.donnees.General.PremiereDate,
+        dateFin: this.loginInformations.donnees.General.DerniereDate
+      });
+    });
+  }
+
+  public async getAttendanceOverview (period = this.readDefaultPeriodForAttendanceOverview()) {
+    return this.queue.push(async () => {
+      const { data } = await callApiUserAttendance(this.fetcher, {
+        session: this.session,
+        period
+      });
+
+      return data.donnees.listeAbsences.V.map((item) => {
+        if (item.G === PronoteApiAttendanceItemType.Absence) {
+          return new StudentAbsence(item);
+        }
+        else if (item.G === PronoteApiAttendanceItemType.Delay) {
+          return new StudentDelay(item);
+        }
+        else if (item.G === PronoteApiAttendanceItemType.Punishment) {
+          return new StudentPunishment(this, item);
+        }
+      }).filter(Boolean) as Array<StudentAbsence | StudentDelay | StudentPunishment>;
     });
   }
 }

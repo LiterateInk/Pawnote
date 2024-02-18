@@ -47,5 +47,6 @@ export { StudentAttachment } from "~/parser/attachment";
 export { StudentHomework } from "~/parser/homework";
 export { StudentTheme } from "~/parser/theme";
 export { StudentGrade } from "~/parser/grade";
-export { Period } from "~/parser/period";
+export { Period, OngletPeriod } from "~/parser/period";
 export { StudentNews, StudentNewsCategory, StudentNewsItem, StudentNewsItemQuestion } from "~/parser/news";
+export { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";

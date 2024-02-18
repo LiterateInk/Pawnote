@@ -68,3 +68,21 @@ export const translatePositionToTime = (
 
   return { hours, minutes };
 };
+
+/**
+ * @returns A string formatted as `$d/$m/$yyyy $H:$M:$S`.
+ * @example
+ * transformDateToPronoteString(new Date());
+ * // -> "21/1/2024 0:0:0"
+ */
+export const transformDateToPronoteString = (date: Date): string => {
+  const day = date.getDate();
+  const month = (date.getMonth() + 1);
+  const year = date.getFullYear();
+
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+};

@@ -26,6 +26,9 @@ export interface PronoteApiUserData {
           }
         }
 
+        estDelegue?: boolean
+        estMembreCA?: boolean
+
         /** Student have a profile picture. */
         avecPhoto: boolean
 

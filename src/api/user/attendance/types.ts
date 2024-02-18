@@ -1,4 +1,5 @@
 import type { PronoteValue } from "~/api/type";
+import type { PronoteApiAttendanceAbsence, PronoteApiAttendanceDelay, PronoteApiAttendanceItemType, PronoteApiAttendancePunishment } from "~/constants/attendance";
 import type { PronoteApiFunctions } from "~/constants/functions";
 import type { PronoteApiOnglets } from "~/constants/onglets";
 import type { Period } from "~/parser/period";
@@ -40,47 +41,11 @@ export interface PronoteApiUserAttendance {
         incident: boolean
         totalHeuresManquees: boolean
       }
-      listeAbsences: {
-        _T: 24
-        V: Array<{
-          N: string
-          G: number
-          dateDebut?: {
-            _T: 7
-            V: string
-          }
-          dateFin?: {
-            _T: 7
-            V: string
-          }
-          ouverte?: boolean
-          reglee: boolean
-          justifie: boolean
-          estMotifNonEncoreConnu: boolean
-          aJustifierParParents: boolean
-          NbrHeures?: string
-          NbrJours?: number
-          listeMotifs: {
-            _T: 24
-            V: Array<{
-              L: string
-              N: string
-            }>
-          }
-          page: {
-            Onglet: number
-            Membre: string
-            Absence: number
-            message: string
-          }
-          date?: {
-            _T: 7
-            V: string
-          }
-          justification?: string
-          duree?: number
-        }>
-      }
+      listeAbsences: PronoteValue<24, Array<(
+        | PronoteApiAttendanceDelay
+        | PronoteApiAttendanceAbsence
+        | PronoteApiAttendancePunishment
+      )>>
       Matieres: {
         _T: number
         V: Array<{

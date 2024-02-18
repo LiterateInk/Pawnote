@@ -76,13 +76,11 @@ This list is more like a TODO list for me, but will be converted later to a more
   - [x] client: `.periods` (property)
   - [x] parser: `Period`
 - [x] Grades & Averages
-  - [x] client: `.getGradesOverviewForPeriod(period)`
-  - [x] parser: `Period.getGradesOverview()`
+  - [x] client: `.getGradesOverviewForPeriod([period])`
   - [x] parser: `StudentGrade`
   - [x] parser: `StudentAverage`
 - [x] Evaluations and Skills (= Acquisition)
-  - [x] client: `.getEvaluationsForPeriod(period)`
-  - [x] parser: `Period.getEvaluations()`
+  - [x] client: `.getEvaluationsForPeriod([period])`
   - [x] parser: `StudentEvaluation`
   - [x] parser: `StudentSkill`
 - [x] Personal Information on Student Account
@@ -94,7 +92,7 @@ This list is more like a TODO list for me, but will be converted later to a more
   - [x] client: `.stopPresenceRequests()`
 - [ ] News
   - [x] client: `Pronote.getNews()`
-  - [ ] client: `.patchNewsRead(newsID, read)`
+  - [ ] client: `Pronote.patchNewsRead(newsID, read)`
   - [x] parser: `StudentNews`
   - [x] parser: `StudentNewsCategory`
   - [x] parser: `StudentNewsItem`
@@ -116,8 +114,7 @@ This list is more like a TODO list for me, but will be converted later to a more
   - [ ] Mark as read ?
   - [ ] Handle folders triage
 - [ ] Attendance : Absences, Punishments and Delays
-  - [ ] `Pronote.getAttendanceOverviewForPeriod(period)`
-  - [ ] `Period.getAttendanceOverview()`
+  - [ ] `Pronote.getAttendance([period])`
 - [ ] Error handlers
   - [x] PawnoteNetworkFail
   - [ ] PawnoteBadCredentials

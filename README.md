@@ -78,11 +78,12 @@ This list is more like a TODO list for me, but will be converted later to a more
   - [x] parser: `OngletPeriod` (only internally)
 - [x] Grades & Averages
   - [x] client: `.getGradesOverview([period])`
-  - Read periods using `Pronote.readDefaultPeriodForGradesOverview()` and `Pronote.readPeriodsForGradesOverview()`
+  - [x] Read periods using `Pronote.readDefaultPeriodForGradesOverview()` and `Pronote.readPeriodsForGradesOverview()`
   - [x] parser: `StudentGrade`
   - [x] parser: `StudentAverage`
 - [x] Evaluations and Skills (= Acquisition)
-  - [x] client: `.getEvaluationsForPeriod([period])`
+  - [x] client: `.getEvaluations([period])`
+  - [x] Read periods using `Pronote.readDefaultPeriodForEvaluations()` and `Pronote.readPeriodsForEvaluations()`
   - [x] parser: `StudentEvaluation`
   - [x] parser: `StudentSkill`
 - [x] Personal Information on Student Account

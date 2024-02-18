@@ -11,7 +11,7 @@ import {
 } from "~/api";
 
 import { StudentHomework } from "~/parser/homework";
-import { Period, OngletPeriod, readOngletPeriods, OngletPeriods } from "~/parser/period";
+import { Period, readOngletPeriods, OngletPeriods } from "~/parser/period";
 
 import { Session } from "~/session";
 import Queue from "~/utils/queue";
@@ -377,7 +377,16 @@ export default class Pronote {
     });
   }
 
-  public async getEvaluationsForPeriod (period: Period): Promise<StudentEvaluation[]> {
+  public readPeriodsForEvaluations (): Period[] {
+    return this.periodsByOnglet.get(PronoteApiOnglets.Evaluations)!.values.map((period) => period.linkedPeriod)
+      .filter(Boolean) as Period[];
+  }
+
+  public readDefaultPeriodForEvaluations (): Period {
+    return this.periodsByOnglet.get(PronoteApiOnglets.Evaluations)!.default;
+  }
+
+  public async getEvaluations (period = this.readDefaultPeriodForEvaluations()): Promise<StudentEvaluation[]> {
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserEvaluations(this.fetcher, {
         session: this.session,

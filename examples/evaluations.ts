@@ -10,10 +10,11 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
     deviceUUID: "my-device-uuid"
   });
 
-  const firstTrimester = pronote.periods.find((period) => period.name === "Trimestre 1");
-  if (!firstTrimester) throw new Error("Wasn't able to find a period named 'Trimestre 1'.");
 
-  const evaluations = await firstTrimester.getEvaluations();
+  const period = pronote.readDefaultPeriodForEvaluations();
+  console.log("Fetching for period:", period.name, "\n");
+
+  const evaluations = await pronote.getEvaluations(period);
 
   evaluations.forEach((evaluation) => {
     console.log(evaluation.name, "::", evaluation.description || "(no description)");

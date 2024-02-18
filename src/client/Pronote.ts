@@ -471,11 +471,11 @@ export default class Pronote {
     });
   }
 
-  public readDefaultPeriodForAttendanceOverview (): Period {
+  public readDefaultPeriodForAttendance (): Period {
     return this.periodsByOnglet.get(PronoteApiOnglets.Attendance)!.default;
   }
 
-  public readPeriodsForAttendanceOverview (): Period[] {
+  public readPeriodsForAttendance (): Period[] {
     return this.periodsByOnglet.get(PronoteApiOnglets.Attendance)!.values.map((period) => {
       if (period.linkedPeriod) return period.linkedPeriod;
 
@@ -495,7 +495,7 @@ export default class Pronote {
     });
   }
 
-  public async getAttendanceOverview (period = this.readDefaultPeriodForAttendanceOverview()) {
+  public async getAttendance (period = this.readDefaultPeriodForAttendance()) {
     return this.queue.push(async () => {
       const { data } = await callApiUserAttendance(this.fetcher, {
         session: this.session,

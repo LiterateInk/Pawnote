@@ -10,10 +10,10 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeTyp
     deviceUUID: "my-device-uuid"
   });
 
-  const firstTrimester = pronote.periods.find((period) => period.name === "Trimestre 1");
-  if (!firstTrimester) throw new Error("Wasn't able to find a period named 'Trimestre 1'.");
+  const period = pronote.readDefaultPeriodForGradesOverview();
+  console.log("Fetching for period:", period.name, "\n");
 
-  const gradesOverview = await pronote.getGradesOverviewForPeriod(firstTrimester);
+  const gradesOverview = await pronote.getGradesOverview(period);
 
   const handleGradeValue = (value: number | PronoteApiGradeType, outOf: number, coefficient: number): string => {
     // Handle custom grades.

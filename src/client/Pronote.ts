@@ -341,6 +341,15 @@ export default class Pronote {
     });
   }
 
+  public readPeriodsForGradesOverview (): Period[] {
+    return this.periodsByOnglet.get(PronoteApiOnglets.Grades)!.values.map((period) => period.linkedPeriod)
+      .filter(Boolean) as Period[];
+  }
+
+  public readDefaultPeriodForGradesOverview (): Period {
+    return this.periodsByOnglet.get(PronoteApiOnglets.Grades)!.default;
+  }
+
   /**
    * Get grades overview for a specific period.
    * Including student's grades with averages and the global averages.
@@ -348,7 +357,7 @@ export default class Pronote {
    * @remark Internally used in the `Period` class.
    * @param period - Period the grades overview will be from.
    */
-  public async getGradesOverviewForPeriod (period: Period) {
+  public async getGradesOverview (period = this.readDefaultPeriodForGradesOverview()) {
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserGrades(this.fetcher, {
         session: this.session,

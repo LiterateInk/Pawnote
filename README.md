@@ -75,8 +75,10 @@ This list is more like a TODO list for me, but will be converted later to a more
 - [x] Periods
   - [x] client: `.periods` (property)
   - [x] parser: `Period`
+  - [x] parser: `OngletPeriod` (only internally)
 - [x] Grades & Averages
-  - [x] client: `.getGradesOverviewForPeriod([period])`
+  - [x] client: `.getGradesOverview([period])`
+  - Read periods using `Pronote.readDefaultPeriodForGradesOverview()` and `Pronote.readPeriodsForGradesOverview()`
   - [x] parser: `StudentGrade`
   - [x] parser: `StudentAverage`
 - [x] Evaluations and Skills (= Acquisition)
@@ -113,8 +115,9 @@ This list is more like a TODO list for me, but will be converted later to a more
   - [ ] Get recipients ?
   - [ ] Mark as read ?
   - [ ] Handle folders triage
-- [ ] Attendance : Absences, Punishments and Delays
-  - [ ] `Pronote.getAttendance([period])`
+- [x] Attendance : Absences, Punishments and Delays
+  - [x] `Pronote.getAttendance([period])`
+  - [x] Read periods using `Pronote.readDefaultPeriodForAttendance()` and `Pronote.readPeriodsForAttendance()`
 - [ ] Error handlers
   - [x] PawnoteNetworkFail
   - [ ] PawnoteBadCredentials

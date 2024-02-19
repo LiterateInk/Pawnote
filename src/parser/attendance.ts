@@ -32,7 +32,7 @@ export class StudentDelay {
 
 export class StudentPunishment {
   public id: string;
-  public reason: string | null;
+  public reasons: string[];
 
   public isDuringLesson: boolean;
   public exclusion: boolean;
@@ -50,7 +50,7 @@ export class StudentPunishment {
 
   constructor (client: Pronote, item: PronoteApiAttendancePunishment) {
     this.id = item.N;
-    this.reason = item.listeMotifs.V?.[0].L || null;
+    this.reasons = item.listeMotifs.V.map((motif) => motif.L);
 
     this.exclusion = item.estUneExclusion;
     this.isDuringLesson = !item.horsCours;

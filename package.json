@@ -1,6 +1,6 @@
 {
   "name": "pawnote",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "description": "A simple wrapper around Index-Education's Pronote internal API.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

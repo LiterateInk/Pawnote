@@ -465,7 +465,7 @@ export default class Pronote {
   public async getNews (): Promise<StudentNews> {
     return this.queue.push(async () => {
       const { data: { donnees: data }} = await callApiUserNews(this.fetcher, { session: this.session });
-      return new StudentNews(data);
+      return new StudentNews(this, data);
     });
   }
 

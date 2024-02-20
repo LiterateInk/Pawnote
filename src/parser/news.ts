@@ -1,15 +1,17 @@
 import type { PronoteApiUserNews } from "~/api/user/news/types";
 import type { PronoteApiNewsQuestionType } from "~/constants/news";
 import { readPronoteApiDate } from "~/pronote/dates";
+import { StudentAttachment } from "./attachment";
+import type Pronote from "~/client/Pronote";
 type RawData = PronoteApiUserNews["response"]["donnees"];
 
 export class StudentNews {
   public categories: StudentNewsCategory[];
   public items: StudentNewsItem[];
 
-  constructor (data: RawData) {
+  constructor (client: Pronote, data: RawData) {
     this.categories = data.listeCategories.V.map((category) => new StudentNewsCategory(category));
-    this.items = data.listeModesAff[0].listeActualites.V.map((item) => new StudentNewsItem(item, this.categories));
+    this.items = data.listeModesAff[0].listeActualites.V.map((item) => new StudentNewsItem(client, item, this.categories));
   }
 }
 
@@ -60,7 +62,7 @@ export class StudentNewsItem {
 
   public questions: StudentNewsItemQuestion[];
 
-  constructor (data: RawData["listeModesAff"][number]["listeActualites"]["V"][number], categories: StudentNewsCategory[]) {
+  constructor (client: Pronote, data: RawData["listeModesAff"][number]["listeActualites"]["V"][number], categories: StudentNewsCategory[]) {
     this.id = data.N;
     this.title = data.L;
 
@@ -78,7 +80,7 @@ export class StudentNewsItem {
     this.creationDate = readPronoteApiDate(data.dateCreation.V);
 
     this.author = data.auteur;
-    this.questions = data.listeQuestions.V.map((question) => new StudentNewsItemQuestion(question));
+    this.questions = data.listeQuestions.V.map((question) => new StudentNewsItemQuestion(client, question));
   }
 }
 
@@ -94,8 +96,9 @@ export class StudentNewsItemQuestion {
   public maximumChoices: number;
 
   public content: string;
+  public attachments: StudentAttachment[];
 
-  constructor (data: RawData["listeModesAff"][number]["listeActualites"]["V"][number]["listeQuestions"]["V"][number]) {
+  constructor (client: Pronote, data: RawData["listeModesAff"][number]["listeActualites"]["V"][number]["listeQuestions"]["V"][number]) {
     this.id = data.N;
     this.fullTitle = data.L;
     this.title = data.titre;
@@ -108,6 +111,6 @@ export class StudentNewsItemQuestion {
     this.content = data.texte.V;
 
     // TODO: Handle `listeChoix`
-    // TODO: Handle `listePiecesJointes`
+    this.attachments = data.listePiecesJointes.V.map((attachment) => new StudentAttachment(client, attachment));
   }
 }

@@ -185,7 +185,11 @@ export interface PronoteApiUserNews {
               nombreReponsesMax: number
 
               // TODO: Add attachments and see what this gives.
-              listePiecesJointes: PronoteValue<24, Array<unknown>>
+              listePiecesJointes: PronoteValue<24, Array<{
+                N: string
+                G: number
+                L: string
+              }>>
 
               listeChoix: PronoteValue<24, Array<{
                 L: string

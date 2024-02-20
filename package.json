@@ -2,6 +2,7 @@
   "name": "pawnote",
   "version": "0.13.2",
   "description": "A simple wrapper around Index-Education's Pronote internal API.",
+  "repository": "github:LiterateInk/Pawnote",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -29,6 +30,10 @@
     "France"
   ],
   "author": "Mikkel RINGAUD <mikkel@milescode.dev> (https://github.com/Vexcited)",
+  "homepage": "https://github.com/LiterateInk/Pawnote#README",
+  "bugs": {
+    "url": "https://github.com/LiterateInk/Pawnote/issues"
+  },
   "license": "MIT",
   "engines": {
     "node": ">=18"

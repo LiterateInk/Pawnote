@@ -7,7 +7,11 @@ import { PronoteApiFunctions } from "~/constants/functions";
 export const callApiUserEvaluations = makeApiHandler<ApiUserEvaluations>(async (fetcher, input) => {
   const request_payload = input.session.writePronoteFunctionPayload<PronoteApiUserEvaluations["request"]>({
     donnees: {
-      periode: input.period
+      periode: {
+        N: input.period.id,
+        G: input.period.genre,
+        L: input.period.name
+      }
     },
 
     _Signature_: { onglet: PronoteApiOnglets.Evaluations }

@@ -390,11 +390,7 @@ export default class Pronote {
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserEvaluations(this.fetcher, {
         session: this.session,
-        period: {
-          N: period.id,
-          L: period.name,
-          G: period.genre
-        }
+        period
       });
 
       return data.listeEvaluations.V

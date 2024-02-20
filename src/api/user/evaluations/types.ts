@@ -1,5 +1,6 @@
 import type { PronoteApiFunctions } from "~/constants/functions";
 import type { PronoteApiOnglets } from "~/constants/onglets";
+import type { Period } from "~/parser/period";
 import type { Session } from "~/session";
 
 export interface PronoteApiUserEvaluations {
@@ -161,7 +162,7 @@ export interface PronoteApiUserEvaluations {
 export interface ApiUserEvaluations {
   input: {
     session: Session
-    period: { N: string, L: string, G: number }
+    period: Period
   }
 
   output: {

@@ -24,7 +24,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
 
     evaluation.skills.forEach((skill) => {
       console.group(`-> ${skill.item?.name ?? "Unknown skill"}`);
-      console.log(`${skill.value} : ${skill.abbreviationValue} (x${skill.coefficient})`);
+      console.log(`${skill.level} : ${skill.abbreviation} (x${skill.coefficient})`);
       console.log(`${skill.pillar.name} in the domain of ${skill.domain.name}`);
       console.groupEnd();
     });

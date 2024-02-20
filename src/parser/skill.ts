@@ -15,9 +15,9 @@ export class StudentSkill {
   public order: number;
 
   /** @example "Très bonne maîtrise" */
-  public value: string;
+  public level: string;
   /** @example "A+" */
-  public abbreviationValue: string;
+  public abbreviation: string;
 
   /** Apparently there's a coefficient on skills... not sure how it's calculated though. */
   public coefficient: number;
@@ -71,10 +71,8 @@ export class StudentSkill {
   constructor (skill: PronoteApiUserEvaluations["response"]["donnees"]["listeEvaluations"]["V"][number]["listeNiveauxDAcquisitions"]["V"][number]) {
     this.id = skill.N;
 
-    this.order = skill.ordre;
-
-    this.value = skill.L;
-    this.abbreviationValue = skill.abbreviation;
+    this.level = skill.L;
+    this.abbreviation = skill.abbreviation;
 
     this.coefficient = skill.coefficient;
 
@@ -89,6 +87,8 @@ export class StudentSkill {
         name: skill.item.V.L
       };
     }
+
+    this.order = skill.ordre;
 
     this.pillar = {
       id: skill.pilier.V.N,

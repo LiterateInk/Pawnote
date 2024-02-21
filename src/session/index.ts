@@ -163,28 +163,36 @@ export class Session {
   }
 
   public readPronoteFunctionPayload <Res>(response_body: string): Res {
-    if (response_body.includes("La page a expir")) {
-      throw new Error("The page has expired.");
-    }
+    let response: PronoteApiFunctionPayload<Res>;
 
-    if (response_body.includes("Votre adresse IP a ")) {
-      throw new Error("Your IP address is temporarily suspended.");
+    try {
+      response = JSON.parse(response_body);
     }
+    catch {
+      if (response_body.includes("La page a expir")) {
+        throw new Error("The page has expired.");
+      }
 
-    if (response_body.includes("La page dem")) {
-      throw new Error("The requested page does not exist.");
-    }
+      else if (response_body.includes("Votre adresse IP a ")) {
+        throw new Error("Your IP address is temporarily suspended.");
+      }
 
-    if (response_body.includes("Impossible d'a")) {
-      throw new Error("Page unaccessible.");
-    }
+      else if (response_body.includes("La page dem")) {
+        throw new Error("The requested page does not exist.");
+      }
 
-    if (response_body.includes("Vous avez d")) {
-      throw new Error("You've been rate-limited.");
+      else if (response_body.includes("Impossible d'a")) {
+        throw new Error("Page unaccessible.");
+      }
+
+      else if (response_body.includes("Vous avez d")) {
+        throw new Error("You've been rate-limited.");
+      }
+
+      throw new Error("Failed to parse JSON from response.");
     }
 
     this.instance.order++;
-    const response = JSON.parse(response_body) as PronoteApiFunctionPayload<Res>;
 
     try {
       // Check the local order number with the received one.

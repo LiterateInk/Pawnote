@@ -19,7 +19,7 @@ export class StudentLessonResource {
   public homeworkDate?: Date;
   /** Color of the resource in HEX. */
   public backgroundColor: string;
-  public contents: unknown[];
+  public contents: StudentLessonContent[];
   public teacherNames: string[];
   public groupNames: string[];
 

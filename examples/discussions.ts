@@ -14,17 +14,32 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
   for (const discussion of discussions) {
     console.group("Entering discussion:", discussion.subject);
     console.info(discussion.numberOfMessages, "message(s) including", discussion.numberOfMessagesUnread, "message(s) unread");
-    console.info("This discussion is", discussion.closed ? "closed." : "still opened.");
+
+    console.info(
+      "This discussion is", discussion.closed ? "closed" : "still opened",
+      "and located in the folder", discussion.folders.map((folder) => folder.name).join(", ") || "(no folder)"
+    );
 
     const messages = await discussion.fetchMessages();
     console.log("\n--- Messages (most recent first)\n"); // Line break for contents.
 
-    messages.forEach((message) => {
-      console.log(message.author ?? "(me)", ":", message.created.toLocaleString());
+    for (const message of messages) {
+      // Author is undefined when the message is sent by the student.
+      const author = message.author ?? "(me)";
+      // Receiver is undefined when the message is sent to the student.
+      // So to know if the message was sent to multiple people, we can check if the amount of recipients is greater than 1.
+      // Otherwise, we can just assume it was sent to the student.
+      const receiver = message.receiver ?? (
+        message.amountOfRecipients === 1
+          ? "(me)"
+          : `(${message.amountOfRecipients} people)`
+      );
+
+      console.log(`[${message.created.toLocaleString()}]`, author, "to", receiver);
       console.log(message.content);
 
       console.log(); // Line break.
-    });
+    }
 
     console.groupEnd();
   }

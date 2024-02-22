@@ -44,85 +44,32 @@ It returns a boolean that is `true` when the server is a demo.
 
 ## Features
 
-This list is more like a TODO list for me, but will be converted later to a more detailed list of features.
-
-- [x] Timetable (per week and from/to dates)
-  - [x] parser: `StudentTimetableLesson`
-  - [x] parser: `StudentSubject`
-  - [x] client: `.requestTimetableForWeek(weekNumber)`
-  - [x] client: `.requestLessonsForInterval(from[, to])`
-- [x] Homework (per week and from/to dates)
-  - [x] client: `.getHomeworkForInterval(from[, to])`
-  - [x] client: `.getHomeworkForWeek(weekNumber)`
-  - [x] client: all homework for a specific lesson `.getLessonHomework(lessonResourceId)`
-  - [x] parser: `StudentHomework`
-  - [x] parser: parse attachments using `StudentAttachment`
-  - [x] Update status
-    - [x] client: `.patchHomeworkStatus(homeworkID, done)`
-    - [x] parser: `StudentHomework.setDone(done)`
-- [x] Attachment
-  - [x] parser: `StudentAttachment`
-  - [x] parser: able to get/build attachment's URL
-- [x] Resources (per week and from/to dates)
-  - [x] client: `.getResourcesForInterval(from[, to])`
-  - [x] client: `.getResourcesForWeek(weekNumber)`
-  - [x] client: `.getLessonResource(lessonResourceId)`
-  - [x] parser: `StudentLessonResource`
-- [x] Find Pronote instances with longitude and latitude
-  - [x] `findPronoteInstances(fetcher, { longitude, latitude })`
-- [x] Get information about an instance from its URL
-  - [x] `getPronoteInstanceInformation(fetcher, { pronoteURL })`
-- [x] Periods
-  - [x] client: `.periods` (property)
-  - [x] parser: `Period`
-  - [x] parser: `OngletPeriod` (only internally)
-- [x] Grades & Averages
-  - [x] client: `.getGradesOverview([period])`
-  - [x] Read periods using `Pronote.readDefaultPeriodForGradesOverview()` and `Pronote.readPeriodsForGradesOverview()`
-  - [x] parser: `StudentGrade`
-  - [x] parser: `StudentAverage`
-- [x] Evaluations and Skills (= Acquisition)
-  - [x] client: `.getEvaluations([period])`
-  - [x] Read periods using `Pronote.readDefaultPeriodForEvaluations()` and `Pronote.readPeriodsForEvaluations()`
-  - [x] parser: `StudentEvaluation`
-  - [x] parser: `StudentSkill`
-- [x] Personal Information on Student Account
-  - [x] client: `.getPersonalInformation()`
-  - [x] parser: `StudentPersonalInformation`
-- [x] Custom `fetcher` to call the API with another API than [`fetch`](https://developer.mozilla.org/docs/Web/API/Fetch_API)
-- [x] Sends `Presence` requests to keep alive the connection
-  - [x] client: `.startPresenceRequests()`
-  - [x] client: `.stopPresenceRequests()`
-- [ ] News
-  - [x] client: `Pronote.getNews()`
-  - [ ] client: `Pronote.patchNewsRead(newsID, read)`
-  - [x] parser: `StudentNews`
-  - [x] parser: `StudentNewsCategory`
-  - [x] parser: `StudentNewsItem`
-    - [ ] add a `patchRead(read)` method. should allow usage only if is an information.
-  - [ ] parser: `StudentNewsItemQuestion`
-    - Choices are not handled yet, but will be in the future...
-- [ ] Discussions
-  - [x] client: `getDiscussionsOverview()`
-  - [x] parser: `StudentDiscussionsOverview`
-  - [x] parser: `StudentDiscussionFolder`
-  - [x] parser: `StudentDiscussion`
-  - [ ] Create new discussion
-- [ ] Messages
-  - [x] client: `getMessagesFromDiscussion(possessions)`
-  - [x] parser: `StudentMessage`
-  - [x] parser: `StudentDiscussion.fetchMessages()`
-  - [ ] Reply
-  - [ ] Get recipients ?
-  - [ ] Mark as read ?
-  - [ ] Handle folders triage
-- [x] Attendance : Absences, Punishments and Delays
-  - [x] `Pronote.getAttendance([period])`
-  - [x] Read periods using `Pronote.readDefaultPeriodForAttendance()` and `Pronote.readPeriodsForAttendance()`
-- [ ] Error handlers
-  - [x] PawnoteNetworkFail
-  - [ ] PawnoteBadCredentials
-  - [ ] ... (more to come)
+- Timetable (per week and from/to dates)
+- Homework (per week and from/to dates)
+  - Able to update status of an homework (done / not done)
+- Attachments
+  - Able to generate URLs from API
+- Resources (per week and from/to dates)
+- Find Pronote instances using `longitude` and `latitude`
+- Get informations about an instance from its URL
+- Periods
+- Grades & Averages
+  - Read periods using `Pronote.readDefaultPeriodForGradesOverview()` and `Pronote.readPeriodsForGradesOverview()`
+- Evaluations and Skills (= Acquisition)
+  - Read periods using `Pronote.readDefaultPeriodForEvaluations()` and `Pronote.readPeriodsForEvaluations()`
+- Personal informations
+- Custom `fetcher` to call the API with another API than [`fetch`](https://developer.mozilla.org/docs/Web/API/Fetch_API)
+- Send `Presence` requests to keep alive the connection
+  - Manually setup : `Pronote.startPresenceRequests()` and `Pronote.stopPresenceRequests()`
+- News
+  - Read informations and surveys
+- Discussions
+  - Read available discussions and categories
+  - Read messages from a discussion
+- Attendance : Absences, Punishments and Delays
+  - Read periods using `Pronote.readDefaultPeriodForAttendance()` and `Pronote.readPeriodsForAttendance()`
+- Error handlers
+  - `PawnoteNetworkFail`
 
 ## Installation
 

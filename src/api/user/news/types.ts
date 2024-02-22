@@ -1,6 +1,7 @@
 import type { PronoteValue } from "~/api/type";
+import type { PronoteApiAttachment } from "~/constants/attachments";
 import type { PronoteApiFunctions } from "~/constants/functions";
-import { PronoteApiNewsQuestionType } from "~/constants/news";
+import type { PronoteApiNewsQuestionType } from "~/constants/news";
 import type { PronoteApiOnglets } from "~/constants/onglets";
 import type { Session } from "~/session";
 
@@ -12,7 +13,7 @@ export interface PronoteApiUserNews {
     donnees: {
       modesAffActus: {
         _T: 26
-        V: "[0]" // NOTE: See <PronoteApiNewsViewType>
+        V: "[0]" // TODO: See <PronoteApiNewsViewType>
       }
     }
   }
@@ -184,12 +185,7 @@ export interface PronoteApiUserNews {
               avecMaximum: boolean
               nombreReponsesMax: number
 
-              // TODO: Add attachments and see what this gives.
-              listePiecesJointes: PronoteValue<24, Array<{
-                N: string
-                G: number
-                L: string
-              }>>
+              listePiecesJointes: PronoteValue<24, Array<PronoteApiAttachment>>
 
               listeChoix: PronoteValue<24, Array<{
                 L: string

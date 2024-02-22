@@ -1,0 +1,44 @@
+---
+title: Use easily the internal API of Pronote
+description: Introducing Pawnote, an unofficial wrapper for Pronote's internal API
+template: splash
+banner:
+  content: |
+    Pawnote is still in beta !
+hero:
+  title: Pawnote
+  tagline: An unofficial wrapper written in TypeScript for interacting with Pronote's internal API.
+  image:
+    alt: Pawnote logo
+    dark: ../../assets/logo-dark.webp
+    light: ../../assets/logo-light.webp
+  actions:
+    - text: Getting started
+      link: /guides/intro/
+      icon: right-arrow
+      variant: primary
+    - text: See examples
+      link: https://github.com/LiterateInk/Pawnote/tree/main/examples
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Why Pawnote ?
+
+<CardGrid stagger>
+  <Card title="Fully typed" icon="rocket">
+    Each request payload and response is fully typed in the library, making both your and our code more reliable.
+  </Card>
+  <Card title="Support for 2023 version" icon="approve-check">
+    Pawnote supports the latest version of PRONOTE, and should also support version 2022 and earlier
+    but some properties can be wrong or `undefined`.
+  </Card>
+  <Card title="Adapted for every usage" icon="star">
+    You can customize the fetcher used within the library to use whatever HTTP API you need.
+    By default, it uses `fetch` API so Node.js, React Native and more are supported out of the box !
+  </Card>
+  <Card title="Same flow as the UI" icon="puzzle">
+    Pawnote tries to have the same flow as the official UI, so that it can provide full context depending on what is requested.
+  </Card>
+</CardGrid>

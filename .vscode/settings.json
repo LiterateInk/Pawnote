@@ -1,8 +1,9 @@
 {
-  "cSpell.language": "en,fr",
   "editor.insertSpaces": true,
   "editor.detectIndentation": false,
   "editor.tabSize": 2,
+
+  "cSpell.language": "en,fr",
   "cSpell.words": [
     "elmauteur",
     "periode",
@@ -12,5 +13,10 @@
   "eslint.experimental.useFlatConfig": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
+  },
+
+  "markdownlint.config": {
+    "$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint/main/schema/markdownlint-config-schema.json",
+    "no-inline-html": false
   }
 }

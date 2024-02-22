@@ -35,6 +35,7 @@ export { PronoteApiGradeType } from "./pronote/grades";
 
 // Exporting constants from Pronote API.
 export { PronoteApiHomeworkDifficulty, PronoteApiHomeworkReturnType } from "~/constants/homework";
+export { PronoteApiUserMessageRecipientType as PronoteApiUserDiscussionsRecipientType } from "~/constants/recipients";
 export { PronoteApiLessonContentCategory } from "~/constants/lessonCategory";
 export { PronoteApiAttachmentType } from "~/constants/attachments";
 export { PronoteApiNewsQuestionType } from "~/constants/news";

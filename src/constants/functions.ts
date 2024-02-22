@@ -16,5 +16,5 @@ export enum PronoteApiFunctions {
   Discussions = "ListeMessagerie",
   Messages = "ListeMessages",
   Attendance = "PagePresence",
-  DiscussionsRecipients = "SaisiePublicMessage"
+  MessageRecipients = "SaisiePublicMessage"
 }

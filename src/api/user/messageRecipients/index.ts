@@ -18,7 +18,7 @@ export const callApiUserMessageRecipients = makeApiHandler<ApiUserMessageRecipie
     }
   });
 
-  const response = await createPronoteAPICall(fetcher, PronoteApiFunctions.DiscussionsRecipients, {
+  const response = await createPronoteAPICall(fetcher, PronoteApiFunctions.MessageRecipients, {
     session_instance: input.session.instance,
     payload: request_payload
   });

@@ -1,20 +1,23 @@
 import type { PronoteApiUserMessages } from "~/api/user/messages/types";
+import { BaseMessageRecipient, FetchedMessageRecipient } from "~/parser/recipient";
 import type Pronote from "~/client/Pronote";
 
 import { readPronoteApiDate } from "~/pronote/dates";
 import { StudentAttachment } from "~/parser/attachment";
 import { PRONOTE_MESSAGE_MYSELF_NAME } from "~/constants/messages";
+import { PronoteApiUserMessageRecipientType } from "~/constants/recipients";
+import { makeDummyRecipient, parseHintToType } from "~/pronote/recipients";
 
 export class StudentMessage {
   readonly #client: Pronote;
-  readonly #myself: string;
+  readonly #myself: BaseMessageRecipient;
 
   readonly #id: string;
   readonly #content: string;
   readonly #created: Date;
 
-  readonly #author: string;
-  readonly #receiver?: string;
+  readonly #author: BaseMessageRecipient;
+  readonly #receiver?: BaseMessageRecipient;
 
   readonly #partialVisibility: boolean;
   readonly #amountOfRecipients: number;
@@ -23,15 +26,15 @@ export class StudentMessage {
 
   constructor (client: Pronote, data: PronoteApiUserMessages["response"]["donnees"]["listeMessages"]["V"][number]) {
     this.#client = client;
-    // Reproduce the recipient format.
-    this.#myself = `${client.studentName} (${client.studentClass})`;
+    this.#myself = makeDummyRecipient(`${client.studentName} (${client.studentClass})`, PronoteApiUserMessageRecipientType.Student);
 
     this.#id = data.N;
     this.#content = data.estHTML ? data.contenu.V : data.contenu;
     this.#created = readPronoteApiDate(data.date.V);
 
-    this.#author = data.public_gauche === PRONOTE_MESSAGE_MYSELF_NAME ? this.#myself : data.public_gauche;
-    this.#receiver = data.public_droite === PRONOTE_MESSAGE_MYSELF_NAME ? this.#myself : data.public_droite;
+    this.#author = data.public_gauche === PRONOTE_MESSAGE_MYSELF_NAME ? this.#myself : makeDummyRecipient(data.public_gauche, parseHintToType(data.hint_gauche));
+    if (data.public_droite === PRONOTE_MESSAGE_MYSELF_NAME) this.#receiver = this.#myself;
+    else if (typeof data.public_droite === "string") this.#receiver = makeDummyRecipient(data.public_droite, parseHintToType(data.hint_droite!));
 
     this.#partialVisibility = data.estUnAparte;
     this.#amountOfRecipients = (data.nbPublic ?? 1) + 1; // `+1` because the author is also a recipient.
@@ -39,11 +42,7 @@ export class StudentMessage {
     this.#files = data.listeDocumentsJoints?.V.map((file) => new StudentAttachment(client, file)) ?? [];
   }
 
-  public async getRecipients (): Promise<string[]> {
-    if (this.#amountOfRecipients === 2 && typeof this.#receiver === "string") {
-      return [this.#author, this.#receiver];
-    }
-
+  public async getRecipients (): Promise<FetchedMessageRecipient[]> {
     return this.#client.getRecipientsForMessage(this.#id);
   }
 
@@ -59,14 +58,14 @@ export class StudentMessage {
     return this.#created;
   }
 
-  get author (): string {
+  get author (): BaseMessageRecipient {
     return this.#author;
   }
 
   /**
    * @remark `undefined` when there's more than two recipients.
    */
-  get receiver (): string | undefined {
+  get receiver (): BaseMessageRecipient | undefined {
     return this.#receiver;
   }
 

@@ -24,12 +24,12 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
     console.log("\n--- Messages (most recent first)\n"); // Line break for contents.
 
     for (const message of messages) {
-      const receiver = message.receiver ?? `(${message.amountOfRecipients} people)`;
+      const receiver = message.receiver?.name ?? `(${message.amountOfRecipients} people)`;
       const recipients = await message.getRecipients();
 
-      console.log(`[${message.created.toLocaleString()}]`, message.author, "to", receiver);
+      console.log(`[${message.created.toLocaleString()}]`, message.author.name, "to", receiver);
       console.log("Partial visibility:", message.partialVisibility ? "yes" : "no");
-      console.log("Actual recipients:", recipients.join(", ") || "(no recipient)");
+      console.log("Actual recipients:", recipients.map((x) => x.name).join(", ") || "(no recipient)");
       console.log(message.content);
 
       for (const file of message.files) {

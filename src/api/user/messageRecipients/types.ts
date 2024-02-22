@@ -1,7 +1,7 @@
 import type { PronoteValue } from "~/api/type";
 import type { PronoteApiFunctions } from "~/constants/functions";
 import type { PronoteApiOnglets } from "~/constants/onglets";
-import type { PronoteApiUserMessageRecipientType } from "~/constants/recipients";
+import type { PronoteApiUserMessageRecipient } from "~/constants/recipients";
 import type { Session } from "~/session";
 
 export interface PronoteApiUserMessageRecipients {
@@ -20,19 +20,9 @@ export interface PronoteApiUserMessageRecipients {
   }
 
   response: {
-    nom: PronoteApiFunctions.DiscussionsRecipients
+    nom: PronoteApiFunctions.MessageRecipients
     donnees: {
-      listeDest: PronoteValue<24, Array<{
-        L: string
-        N: string
-        /**
-         * Type of the recipient.
-         * Tells whether the recipient is a teacher, student, ...
-         */
-        G: PronoteApiUserMessageRecipientType
-        P: number
-        refusMess?: boolean
-      }>>
+      listeDest: PronoteValue<24, Array<PronoteApiUserMessageRecipient>>
     }
   }
 }

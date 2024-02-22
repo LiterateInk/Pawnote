@@ -46,6 +46,7 @@ import { callApiUserAttendance } from "~/api/user/attendance";
 import { PronoteApiAttendanceItemType } from "~/constants/attendance";
 import { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";
 import { callApiUserMessageRecipients } from "~/api/user/messageRecipients";
+import { FetchedMessageRecipient } from "~/parser/recipient";
 
 export default class Pronote {
   /**
@@ -494,17 +495,14 @@ export default class Pronote {
     await this.getMessagesFromDiscussion(possessions, true);
   }
 
-  /**
-   * Work in progress, should be updated asap.
-   */
-  public async getRecipientsForMessage (messageID: string): Promise<string[]> {
+  public async getRecipientsForMessage (messageID: string): Promise<FetchedMessageRecipient[]> {
     return this.queue.push(async () => {
       const { data } = await callApiUserMessageRecipients(this.fetcher, {
         session: this.session,
         messageID
       });
 
-      return data.donnees.listeDest.V.map((dest) => dest.L);
+      return data.donnees.listeDest.V.map((dest) => new FetchedMessageRecipient(dest));
     });
   }
 

@@ -2,7 +2,15 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: 
+      - main
+    paths:
+      - 'docs/**'
+      - '!docs/README.md'
+  pull_request:
+    paths:
+      - "docs/**"
+      - "!docs/README.md"
   workflow_dispatch:
 
 # Allow this job to clone the repo and create a page deployment

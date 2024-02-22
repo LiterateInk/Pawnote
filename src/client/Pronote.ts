@@ -477,13 +477,21 @@ export default class Pronote {
     });
   }
 
-  public async getMessagesFromDiscussion (possessions: PronoteApiMessagesPossessionsList): Promise<StudentMessage[]> {
+  public async getMessagesFromDiscussion (possessions: PronoteApiMessagesPossessionsList, markAsRead = false): Promise<StudentMessage[]> {
     return this.queue.push(async () => {
-      const { data } = await callApiUserMessages(this.fetcher, { possessions, session: this.session });
+      const { data } = await callApiUserMessages(this.fetcher, { possessions, session: this.session, markAsRead });
       return data.donnees.listeMessages.V
         .map((message) => new StudentMessage(this, message))
         .sort((a, b) => b.created.getTime() - a.created.getTime());
     });
+  }
+
+  /**
+   * Mark a discussion as read.
+   * @remark Shortcut for `getMessagesFromDiscussion` but here we don't return anything.
+   */
+  public async markDiscussionAsRead (possessions: PronoteApiMessagesPossessionsList): Promise<void> {
+    await this.getMessagesFromDiscussion(possessions, true);
   }
 
   /**

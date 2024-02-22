@@ -13,6 +13,7 @@ export interface PronoteApiUserMessages {
 
     donnees: {
       listePossessionsMessages: PronoteApiMessagesPossessionsList
+      marquerCommeLu: boolean
     }
   }
 
@@ -97,6 +98,8 @@ export interface PronoteApiUserMessages {
         L: string
       }>>
 
+      /** Is defined only when `marquerCommeLu` is set to `true` in the payload. */
+      nbMarquerLu?: number
       nbPossessionsMessage: number
     }
 
@@ -106,7 +109,8 @@ export interface PronoteApiUserMessages {
 
 export interface ApiUserMessages {
   input: {
-    session: Session,
+    session: Session
+    markAsRead: boolean
     possessions: PronoteApiMessagesPossessionsList
   }
 

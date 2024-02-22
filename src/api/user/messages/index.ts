@@ -11,7 +11,10 @@ export const callApiUserMessages = makeApiHandler<ApiUserMessages>(async (fetche
       onglet: PronoteApiOnglets.Discussions
     },
 
-    donnees: { listePossessionsMessages: input.possessions }
+    donnees: {
+      listePossessionsMessages: input.possessions,
+      marquerCommeLu: input.markAsRead
+    }
   });
 
   const response = await createPronoteAPICall(fetcher, PronoteApiFunctions.Messages, {

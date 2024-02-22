@@ -4,7 +4,7 @@ import tailwind from "@astrojs/tailwind";
 
 export default defineConfig({
   site: "https://literateink.github.io",
-  base: "/pawnote",
+  base: "/Pawnote",
 
   integrations: [
     starlight({

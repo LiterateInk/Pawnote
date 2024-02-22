@@ -38,6 +38,10 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
       console.log(`[${message.created.toLocaleString()}]`, author, "to", receiver);
       console.log(message.content);
 
+      for (const file of message.files) {
+        console.log("(attachment):", file.name, "=>", file.url);
+      }
+
       console.log(); // Line break.
     }
 

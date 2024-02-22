@@ -45,6 +45,7 @@ import { PronoteApiOnglets } from "~/constants/onglets";
 import { callApiUserAttendance } from "~/api/user/attendance";
 import { PronoteApiAttendanceItemType } from "~/constants/attendance";
 import { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";
+import { callApiUserMessageRecipients } from "~/api/user/messageRecipients";
 
 export default class Pronote {
   /**
@@ -480,8 +481,22 @@ export default class Pronote {
     return this.queue.push(async () => {
       const { data } = await callApiUserMessages(this.fetcher, { possessions, session: this.session });
       return data.donnees.listeMessages.V
-        .map((message) => new StudentMessage(message))
+        .map((message) => new StudentMessage(this, message))
         .sort((a, b) => b.created.getTime() - a.created.getTime());
+    });
+  }
+
+  /**
+   * Work in progress, should be updated asap.
+   */
+  public async getRecipientsForMessage (messageID: string): Promise<string[]> {
+    return this.queue.push(async () => {
+      const { data } = await callApiUserMessageRecipients(this.fetcher, {
+        session: this.session,
+        messageID
+      });
+
+      return data.donnees.listeDest.V.map((dest) => dest.L);
     });
   }
 

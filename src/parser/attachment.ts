@@ -10,7 +10,8 @@ export class StudentAttachment {
 
   constructor (
     client: Pronote,
-    attachment: PronoteApiAttachment
+    attachment: PronoteApiAttachment,
+    additionalParameters = {}
   ) {
     this.name = attachment.L ?? "";
     this.type = attachment.G;
@@ -25,7 +26,9 @@ export class StudentAttachment {
       // Some magical stuff Pronote requires.
       const data = JSON.stringify({
         N: this.id,
-        Actif: true
+        Actif: true,
+        // In some cases classes, this is required.
+        ...additionalParameters
       });
 
       // Encrypt that magical stuff to add it in the URL.

@@ -3,8 +3,9 @@ import type Pronote from "~/client/Pronote";
 import { StudentSubject } from "~/parser/subject";
 import { type PronoteApiGradeType, readPronoteApiGrade } from "~/pronote/grades";
 import { readPronoteApiDate } from "~/pronote/dates";
-import { StudentAttachment } from "./attachment";
-import { PronoteApiAttachmentType } from "..";
+import { StudentAttachment } from "~/parser//attachment";
+import { PronoteApiAttachmentType } from "~/constants/attachments";
+import { PronoteApiGradeAttachmentType } from "~/constants/grades";
 
 export class StudentGrade {
   readonly #id: string;
@@ -46,6 +47,8 @@ export class StudentGrade {
         G: PronoteApiAttachmentType.File,
         L: grade.libelleCorrige,
         N: this.#id
+      }, { // Additional genre.
+        G: PronoteApiGradeAttachmentType.CorrectionFile
       });
     }
 
@@ -54,6 +57,8 @@ export class StudentGrade {
         G: PronoteApiAttachmentType.File,
         L: grade.libelleSujet,
         N: this.#id
+      }, { // Additional genre.
+        G: PronoteApiGradeAttachmentType.SubjectFile
       });
     }
   }

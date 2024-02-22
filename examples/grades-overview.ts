@@ -1,10 +1,10 @@
 import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeType } from "../src";
 
 (async () => {
-  const pronote = await authenticatePronoteCredentials("https://demo.index-education.net/pronote", {
+  const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev/pronote", {
     accountTypeID: PronoteApiAccountId.Eleve,
-    username: "demonstration",
-    password: "pronotevs",
+    username: "lisa.boulanger", // using my VM credentials here because the demo instance doesn't have any messages.
+    password: "12345678",
 
     // Because this is just an example, don't forget to change this.
     deviceUUID: "my-device-uuid"
@@ -45,7 +45,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeTyp
 
   gradesOverview.grades.forEach((grade) => {
     console.log(grade.subject.name, ":", grade.comment || "(no description)");
-    console.log("Registered the", grade.date.toLocaleString(), "//", grade.period.name);
+    console.log("Registered the", grade.date.toLocaleString(), "//", period.name);
 
     // If there
     if (typeof grade.outOf === "number") {
@@ -60,6 +60,8 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeTyp
       console.log("Average:", handleGradeValue(grade.average, grade.outOf, grade.coefficient));
       console.log("Minimum:", handleGradeValue(grade.min, grade.outOf, grade.coefficient));
       console.log("Maximum:", handleGradeValue(grade.max, grade.outOf, grade.coefficient));
+      if (grade.subjectFile) console.log("Subject:", grade.subjectFile.name, "=>", grade.subjectFile.url);
+      if (grade.correctionFile) console.log("Correction:", grade.correctionFile.name, "=>", grade.correctionFile.url);
     }
     else {
       console.log("Grade doesn't have a valid 'outOf', shouldn't be counted.");

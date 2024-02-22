@@ -24,18 +24,12 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
     console.log("\n--- Messages (most recent first)\n"); // Line break for contents.
 
     for (const message of messages) {
-      // Author is undefined when the message is sent by the student.
-      const author = message.author ?? "(me)";
-      // Receiver is undefined when the message is sent to the student.
-      // So to know if the message was sent to multiple people, we can check if the amount of recipients is greater than 1.
-      // Otherwise, we can just assume it was sent to the student.
-      const receiver = message.receiver ?? (
-        message.amountOfRecipients === 1
-          ? "(me)"
-          : `(${message.amountOfRecipients} people)`
-      );
+      const receiver = message.receiver ?? `(${message.amountOfRecipients} people)`;
+      const recipients = await message.getRecipients();
 
-      console.log(`[${message.created.toLocaleString()}]`, author, "to", receiver);
+      console.log(`[${message.created.toLocaleString()}]`, message.author, "to", receiver);
+      console.log("Partial visibility:", message.partialVisibility ? "yes" : "no");
+      console.log("Actual recipients:", recipients.join(", ") || "(no recipient)");
       console.log(message.content);
 
       for (const file of message.files) {

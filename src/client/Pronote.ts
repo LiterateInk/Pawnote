@@ -368,7 +368,7 @@ export default class Pronote {
 
       return {
         grades: data.listeDevoirs.V
-          .map((grade) => new StudentGrade(this, period, grade)),
+          .map((grade) => new StudentGrade(this, grade)),
         averages: data.listeServices.V
           .map((average) => new StudentAverage(average)),
 

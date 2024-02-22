@@ -169,6 +169,11 @@ export interface PronoteApiUserGrades {
           estBonus: boolean
           estRamenerSur20: boolean
 
+          /** Name of the correction file. */
+          libelleCorrige?: string
+          /** Name of the subject file. */
+          libelleSujet?: string
+
           /** Available when the grade was based on a quiz. */
           executionQCM?: {
             _T: 24

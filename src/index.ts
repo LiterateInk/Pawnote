@@ -51,4 +51,4 @@ export { StudentGrade } from "~/parser/grade";
 export { Period, OngletPeriod } from "~/parser/period";
 export { StudentNews, StudentNewsCategory, StudentNewsItem, StudentNewsItemQuestion } from "~/parser/news";
 export { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";
-export { StudentDiscussionsOverview, StudentDiscussion, StudentDiscussionFolder} from "~/parser/discussion";
+export { StudentDiscussionsOverview, StudentDiscussion, StudentDiscussionFolder } from "~/parser/discussion";

@@ -1,13 +1,13 @@
 export enum PronoteApiAccountId {
-  Commun = 0,
-  Eleve = 6,
+  Common = 0,
+  Student = 6,
   Parent = 7,
-  Professeur = 8,
+  Teacher = 8,
   Accompagnant = 26,
-  Entreprise = 4,
+  Enterprise = 4,
   VieScolaire = 14,
   Direction = 17,
-  Academie = 5
+  Academy = 5
 }
 
 export interface PronoteApiAccountType {
@@ -18,12 +18,12 @@ export interface PronoteApiAccountType {
 
 export const PRONOTE_ACCOUNT_TYPES: PronoteApiAccountType[] = [
   {
-    id: PronoteApiAccountId.Commun,
+    id: PronoteApiAccountId.Common,
     name: "Commun",
     path: "" // No path since the "Commun" account is on root path.
   },
   {
-    id: PronoteApiAccountId.Eleve,
+    id: PronoteApiAccountId.Student,
     name: "Élève",
     path: "mobile.eleve.html"
   },
@@ -33,7 +33,7 @@ export const PRONOTE_ACCOUNT_TYPES: PronoteApiAccountType[] = [
     path: "mobile.parent.html"
   },
   {
-    id: PronoteApiAccountId.Professeur,
+    id: PronoteApiAccountId.Teacher,
     name: "Professeur",
     path: "mobile.professeur.html"
   },
@@ -43,7 +43,7 @@ export const PRONOTE_ACCOUNT_TYPES: PronoteApiAccountType[] = [
     path: "mobile.accompagnant.html"
   },
   {
-    id: PronoteApiAccountId.Entreprise,
+    id: PronoteApiAccountId.Enterprise,
     name: "Entreprise",
     path: "mobile.entreprise.html"
   },
@@ -58,7 +58,7 @@ export const PRONOTE_ACCOUNT_TYPES: PronoteApiAccountType[] = [
     path: "mobile.direction.html"
   },
   {
-    id: PronoteApiAccountId.Academie,
+    id: PronoteApiAccountId.Academy,
     name: "Académie",
     path: "mobile.academie.html"
   }

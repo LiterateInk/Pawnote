@@ -2,7 +2,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiHomework
 
 (async () => {
   const pronote = await authenticatePronoteCredentials("https://demo.index-education.net/pronote", {
-    accountTypeID: PronoteApiAccountId.Eleve,
+    accountTypeID: PronoteApiAccountId.Student,
     username: "demonstration",
     password: "pronotevs",
 

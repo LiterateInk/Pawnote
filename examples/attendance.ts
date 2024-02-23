@@ -2,7 +2,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, StudentPunishment 
 
 (async () => {
   const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev/pronote", {
-    accountTypeID: PronoteApiAccountId.Eleve,
+    accountTypeID: PronoteApiAccountId.Student,
     username: "lisa.boulanger", // using my VM credentials here because the demo instance doesn't have any messages.
     password: "12345678",
 

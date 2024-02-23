@@ -6,7 +6,7 @@ import { authenticatePronoteCredentials, authenticateToken, PronoteApiAccountId 
   console.log("------ CREDS:");
 
   const pronote = await authenticatePronoteCredentials(pronoteBaseURL, {
-    accountTypeID: PronoteApiAccountId.Eleve,
+    accountTypeID: PronoteApiAccountId.Student,
     username: "demonstration",
     password: "pronotevs",
 

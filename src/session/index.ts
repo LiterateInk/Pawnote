@@ -57,11 +57,11 @@ export class Session {
 
     // `a` parameter is not available in `Commun`.
     if (typeof session_data.a !== "number") {
-      session_data.a = PronoteApiAccountId.Commun;
+      session_data.a = PronoteApiAccountId.Common;
     }
 
     // We have to setup IV for our session when we're not in `Commun`.
-    if (session_data.a !== PronoteApiAccountId.Commun) {
+    if (session_data.a !== PronoteApiAccountId.Common) {
       aes_iv = forge.random.getBytesSync(16);
     }
 

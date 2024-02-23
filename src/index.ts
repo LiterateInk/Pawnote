@@ -44,6 +44,7 @@ export { PronoteApiUserMessageRecipientType } from "~/constants/recipients";
 
 // Exporting main classes.
 export { default as Pronote } from "~/client/Pronote";
+export { default as Holiday } from "~/parser/holiday";
 export { StudentSubject } from "~/parser/subject";
 export { StudentAttachment } from "~/parser/attachment";
 export { StudentHomework } from "~/parser/homework";

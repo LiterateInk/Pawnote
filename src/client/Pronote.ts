@@ -47,6 +47,7 @@ import { PronoteApiAttendanceItemType } from "~/constants/attendance";
 import { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";
 import { callApiUserMessageRecipients } from "~/api/user/messageRecipients";
 import { FetchedMessageRecipient } from "~/parser/recipient";
+import { Holiday } from "..";
 
 export default class Pronote {
   /**
@@ -117,11 +118,13 @@ export default class Pronote {
 
   /** An absolute URL giving the profile picture of the logged in student, if exists. */
   public studentProfilePictureURL?: string;
-  public periods: Array<Period>;
+  public periods: Period[];
   private periodsByOnglet: Map<PronoteApiOnglets, OngletPeriods>;
 
   public isDelegate: boolean;
   public isMemberCA: boolean;
+
+  public holidays: Holiday[];
 
   private queue: Queue;
 
@@ -172,6 +175,8 @@ export default class Pronote {
     // TODO: user.ressource.listeClassesDelegue;
     // TODO: user.ressource.nbMaxJoursDeclarationAbsence;
     // TODO: user.ressource.listeGroupes
+
+    this.holidays = loginInformations.donnees.General.listeJoursFeries.V.map((holiday) => new Holiday(holiday));
 
     // For further requests, we implement a queue.
     this.queue = new Queue();

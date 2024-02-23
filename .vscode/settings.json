@@ -4,11 +4,6 @@
   "editor.tabSize": 2,
 
   "cSpell.language": "en,fr",
-  "cSpell.words": [
-    "elmauteur",
-    "periode",
-    "Reponses"
-  ],
 
   "eslint.experimental.useFlatConfig": true,
   "editor.codeActionsOnSave": {

@@ -197,10 +197,14 @@ export interface PronoteApiUserNews {
               reponse: PronoteValue<24, {
                 N: string
                 avecReponse: boolean
+                estRepondant: boolean
                 estReponseAttendue: boolean
+                /** @example "23/02/2024 08:34:38" */
+                reponduLe?: PronoteValue<7, string>
 
-                // NOTE: Not sure about this one.
-                valeurReponse?: {
+                strRepondant?: string
+
+                valeurReponse?: string | {
                   _T: number
                   V: string
                 }

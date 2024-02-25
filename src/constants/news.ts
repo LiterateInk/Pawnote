@@ -1,3 +1,5 @@
+import type { PronoteApiUserType } from "./users";
+
 export enum PronoteApiNewsQuestionType {
   InformationText = 0,
   UniqueChoice = 2,
@@ -11,4 +13,15 @@ export enum PronoteApiNewsViewType {
   Broadcast = 1,
   Draft = 2,
   Template = 3
+}
+
+export interface PronoteApiNewsPublicSelf {
+  id: string
+  name: string
+  type: PronoteApiUserType
+}
+
+export interface PronoteApiNewsAnswer {
+  id: string
+  type: number
 }

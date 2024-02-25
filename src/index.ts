@@ -35,12 +35,11 @@ export { PronoteApiGradeType } from "./pronote/grades";
 
 // Exporting constants from Pronote API.
 export { PronoteApiHomeworkDifficulty, PronoteApiHomeworkReturnType } from "~/constants/homework";
-export { PronoteApiUserMessageRecipientType as PronoteApiUserDiscussionsRecipientType } from "~/constants/recipients";
 export { PronoteApiLessonContentCategory } from "~/constants/lessonCategory";
 export { PronoteApiAttachmentType } from "~/constants/attachments";
 export { PronoteApiNewsQuestionType } from "~/constants/news";
 export { PronoteApiAccountId } from "~/constants/accounts";
-export { PronoteApiUserMessageRecipientType } from "~/constants/recipients";
+export { PronoteApiUserType } from "~/constants/users";
 
 // Exporting main classes.
 export { default as Pronote } from "~/client/Pronote";
@@ -51,7 +50,7 @@ export { StudentHomework } from "~/parser/homework";
 export { StudentTheme } from "~/parser/theme";
 export { StudentGrade } from "~/parser/grade";
 export { Period, OngletPeriod } from "~/parser/period";
-export { StudentNews, StudentNewsCategory, StudentNewsItem, StudentNewsItemQuestion } from "~/parser/news";
+export { StudentNews, StudentNewsCategory, StudentNewsSurvey, StudentNewsInformation, StudentNewsItemQuestion } from "~/parser/news";
 export { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";
 export { StudentDiscussionsOverview, StudentDiscussion, StudentDiscussionFolder } from "~/parser/discussion";
 export { StudentMessage } from "~/parser/messages";

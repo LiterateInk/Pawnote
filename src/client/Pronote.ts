@@ -35,7 +35,7 @@ import { callApiUserLessonHomework } from "~/api/user/lessonHomework";
 import { StudentTimetableLesson } from "~/parser/timetableLesson";
 import { StudentLessonResource } from "~/parser/lessonResource";
 import { callApiUserNews } from "~/api/user/news";
-import { StudentNews } from "~/parser/news";
+import { StudentNews, StudentNewsItemQuestion } from "~/parser/news";
 import { callApiUserDiscussions } from "~/api/user/discussions";
 import { StudentDiscussionsOverview } from "~/parser/discussion";
 import type { PronoteApiMessagesPossessionsList } from "~/constants/messages";
@@ -47,7 +47,9 @@ import { PronoteApiAttendanceItemType } from "~/constants/attendance";
 import { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";
 import { callApiUserMessageRecipients } from "~/api/user/messageRecipients";
 import { FetchedMessageRecipient } from "~/parser/recipient";
-import { Holiday } from "..";
+import Holiday from "~/parser/holiday";
+import type { PronoteApiNewsPublicSelf } from "~/constants/news";
+import { callApiUserNewsStatus } from "~/api/user/newsStatus";
 
 export default class Pronote {
   /**
@@ -553,6 +555,29 @@ export default class Pronote {
           return new StudentPunishment(this, item);
         }
       }).filter(Boolean) as Array<StudentAbsence | StudentDelay | StudentPunishment>;
+    });
+  }
+
+  public async patchNewsState (information: {
+    id: string
+    name: string
+    public: PronoteApiNewsPublicSelf
+  }, answers: StudentNewsItemQuestion[], extra = {
+    markAsRead: true,
+    markAsReadOnly: false
+  }) {
+    return this.queue.push(async () => {
+      await callApiUserNewsStatus(this.fetcher, {
+        session: this.session,
+        id: information.id,
+        name: information.name,
+        publicSelfData: information.public,
+        markAsRead: extra.markAsRead,
+        markAsReadOnly: extra.markAsReadOnly,
+        answers: extra.markAsReadOnly ? [] : answers
+      });
+
+      return void 0;
     });
   }
 }

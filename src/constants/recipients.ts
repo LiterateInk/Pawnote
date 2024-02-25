@@ -1,9 +1,5 @@
-export enum PronoteApiUserMessageRecipientType {
-  Teacher = 3,
-  Student = 4,
-  Personal = 34
-  // TODO: Find other types
-}
+import { PronoteApiUserType } from "./users";
+
 
 export interface PronoteApiUserMessageRecipient {
   N: string
@@ -15,7 +11,7 @@ export interface PronoteApiUserMessageRecipient {
    * Type of the recipient.
    * Tells whether the recipient is a teacher, student, ...
    */
-  G: PronoteApiUserMessageRecipientType
+  G: PronoteApiUserType
 
   /** NOTE: Not sure what this is. */
   P: number

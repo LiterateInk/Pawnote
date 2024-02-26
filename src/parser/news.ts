@@ -4,6 +4,7 @@ import { readPronoteApiDate } from "~/pronote/dates";
 import { StudentAttachment } from "./attachment";
 import type Pronote from "~/client/Pronote";
 type RawData = PronoteApiUserNews["response"]["donnees"];
+type CategoryItem = RawData["listeCategories"]["V"][number];
 type NewsItem = RawData["listeModesAff"][number]["listeActualites"]["V"][number];
 
 export class StudentNews {
@@ -25,18 +26,29 @@ export class StudentNews {
 }
 
 export class StudentNewsCategory {
-  public id: string;
-  public name: string;
+  readonly #id: string;
+  readonly #name: string;
+  readonly #default: boolean;
+
+  constructor (data: CategoryItem) {
+    this.#id = data.N;
+    this.#name = data.L;
+    this.#default = data.estDefaut ?? false;
+  }
+
+  public get id (): string {
+    return this.#id;
+  }
+
+  public get name (): string {
+    return this.#name;
+  }
 
   /**
    * Whether this category is the default selected in the UI.
    */
-  public isDefault?: boolean;
-
-  constructor (data: Omit<RawData["listeCategories"]["V"][number], "estDefaut"> & { estDefaut?: boolean }) {
-    this.id = data.N;
-    this.name = data.L;
-    this.isDefault = data.estDefaut;
+  public get default (): boolean {
+    return this.#default;
   }
 }
 

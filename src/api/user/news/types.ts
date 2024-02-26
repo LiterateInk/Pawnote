@@ -33,7 +33,7 @@ export interface PronoteApiUserNews {
         /**
          * Whether this category is the default selected in the UI.
          */
-        estDefaut: boolean
+        estDefaut?: boolean
       }>>
 
       listeModesAff: Array<{

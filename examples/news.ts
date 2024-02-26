@@ -14,7 +14,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiAttachme
 
   console.group("--- Available categories :");
   news.categories.forEach((category) => {
-    console.log(category.name, category.isDefault ? "(default)" : "");
+    console.log(category.name, category.default ? "(default)" : "");
   });
   console.groupEnd();
 

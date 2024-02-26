@@ -1,3 +1,4 @@
+import { PronoteApiUserNews } from "~/api/user/news/types";
 import type { PronoteApiUserType } from "./users";
 
 export enum PronoteApiNewsQuestionType {
@@ -19,10 +20,28 @@ export enum PronoteApiNewsViewType {
   Template = 3
 }
 
-export interface PronoteApiNewsPublicSelf {
-  id: string
-  name: string
-  type: PronoteApiUserType
+export class PronoteApiNewsPublicSelf {
+  readonly #id: string;
+  readonly #name: string;
+  readonly #type: PronoteApiUserType;
+
+  constructor (value: PronoteApiUserNews["response"]["donnees"]["listeModesAff"][number]["listeActualites"]["V"][number]["public"]["V"]) {
+    this.#id = value.N;
+    this.#name = value.L;
+    this.#type = value.G;
+  }
+
+  get id() {
+    return this.#id;
+  }
+
+  get name() {
+    return this.#name;
+  }
+
+  get type() {
+    return this.#type;
+  }
 }
 
 export interface PronoteApiNewsAnswer {

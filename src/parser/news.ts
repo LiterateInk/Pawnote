@@ -52,43 +52,98 @@ export class StudentNewsCategory {
   }
 }
 
-export class StudentNewsSurvey {
+class StudentNewsItem {
   readonly #id: string;
   readonly #title?: string;
   readonly #category: StudentNewsCategory;
-
-  /** Whether your response is anonymous or not. */
-  readonly #anonymousResponse: boolean;
-
-  /** Whether this news have been read or not. */
-  readonly #read: boolean;
 
   readonly #creationDate: Date;
   readonly #startDate: Date;
   readonly #endDate: Date;
 
-  /**
-   * Name of the author of the information / survey.
-   * @example "John D."
-   */
   readonly #author: string;
-  readonly #questions: StudentNewsItemQuestion[];
+  readonly #publicSelfData: PronoteApiNewsPublicSelf;
 
-  constructor (client: Pronote, data: NewsItem, categories: StudentNewsCategory[]) {
+  constructor (data: NewsItem, categories: StudentNewsCategory[]) {
     this.#id = data.N;
     this.#title = data.L;
     this.#category = categories.find((category) => category.id === data.categorie.V.N)!;
-
-    this.#anonymousResponse = data.reponseAnonyme;
-
-    this.#read = data.lue;
 
     this.#creationDate = readPronoteApiDate(data.dateCreation.V);
     this.#startDate = readPronoteApiDate(data.dateDebut.V);
     this.#endDate = readPronoteApiDate(data.dateFin.V);
 
     this.#author = data.auteur;
+    this.#publicSelfData = new PronoteApiNewsPublicSelf(data.public.V);
+  }
+
+  public get id (): string {
+    return this.#id;
+  }
+
+  public get title (): string | undefined {
+    return this.#title;
+  }
+
+  public get category (): StudentNewsCategory {
+    return this.#category;
+  }
+
+  public get creationDate (): Date {
+    return this.#creationDate;
+  }
+
+  public get startDate (): Date {
+    return this.#startDate;
+  }
+
+  public get endDate (): Date {
+    return this.#endDate;
+  }
+
+  /**
+   * Name of the author of the information / survey.
+   * @example "John D."
+   */
+  public get author (): string {
+    return this.#author;
+  }
+
+  protected get publicSelfData (): PronoteApiNewsPublicSelf {
+    return this.#publicSelfData;
+  }
+}
+
+export class StudentNewsSurvey extends StudentNewsItem {
+  readonly #client: Pronote;
+
+  readonly #questions: StudentNewsItemQuestion[];
+  /** Whether your response is anonymous or not. */
+  readonly #isAnonymous: boolean;
+  #read: boolean;
+
+  constructor (client: Pronote, data: NewsItem, categories: StudentNewsCategory[]) {
+    super(data, categories);
+    this.#client = client;
+
     this.#questions = data.listeQuestions.V.map((question) => new StudentNewsItemQuestion(client, question));
+    this.#isAnonymous = data.reponseAnonyme;
+    this.#read = data.lue;
+  }
+
+  public get questions (): StudentNewsItemQuestion[] {
+    return this.#questions;
+  }
+
+  /**
+   * Whether your response is anonymous or not.
+   */
+  public get isAnonymous (): boolean {
+    return this.#isAnonymous;
+  }
+
+  public get read (): boolean {
+    return this.#read;
   }
 }
 
@@ -114,6 +169,7 @@ export class StudentNewsItemQuestion {
   readonly #answerID: string;
   #answered: boolean;
   readonly #shouldAnswer: boolean;
+  #answerDate?: Date;
 
   // TODO: Make it into a class
   readonly #choices: Array<{
@@ -142,6 +198,7 @@ export class StudentNewsItemQuestion {
     this.#answerID = data.reponse.V.N;
     this.#answered = data.reponse.V.avecReponse;
     this.#shouldAnswer = data.reponse.V.estReponseAttendue;
+    this.#answerDate = data.reponse.V.reponduLe?.V ? readPronoteApiDate(data.reponse.V.reponduLe.V) : undefined;
 
     // On `TextInput`, we have two choices by default : `Yes` and `No`.
     // Those two choices are literally USELESS and misleading for the user,
@@ -204,6 +261,7 @@ export class StudentNewsItemQuestion {
   public set answer (answer: "" | number[] | undefined) {
     this.#answer = answer;
     this.#answered = typeof answer !== "undefined";
+    this.#answerDate = new Date();
   }
 
   public get answerID (): string {
@@ -218,6 +276,10 @@ export class StudentNewsItemQuestion {
     return this.#shouldAnswer;
   }
 
+  public get answerDate (): Date | undefined {
+    return this.#answerDate;
+  }
+
   public get choices (): Array<{ // TODO: Use a class, see TODO from above.
     value: string;
     position: number;
@@ -227,56 +289,22 @@ export class StudentNewsItemQuestion {
   }
 }
 
-export class StudentNewsInformation {
+export class StudentNewsInformation extends StudentNewsItem {
   readonly #client: Pronote;
-
-  readonly #id: string;
-  readonly #title?: string;
-  readonly #category: StudentNewsCategory;
-
-  readonly #creationDate: Date;
-  readonly #startDate: Date;
-  readonly #endDate: Date;
 
   readonly #question: StudentNewsItemQuestion;
   readonly #attachments: StudentAttachment[];
 
   #read: boolean;
-  #acknowledged: boolean;
-  #acknowledgedDate?: Date;
-  readonly #needToAcknowledge: boolean;
-
-  readonly #author: string;
-  readonly #content: string;
-  readonly #publicSelfData: PronoteApiNewsPublicSelf;
 
   constructor (client: Pronote, data: NewsItem, categories: StudentNewsCategory[]) {
+    super(data, categories);
     this.#client = client;
 
-    this.#id = data.N;
-    this.#title = data.L;
-    this.#category = categories.find((category) => category.id === data.categorie.V.N)!;
-
-    this.#creationDate = readPronoteApiDate(data.dateCreation.V);
-    this.#startDate = readPronoteApiDate(data.dateDebut.V);
-    this.#endDate = readPronoteApiDate(data.dateFin.V);
-
-    const question = data.listeQuestions.V[0];
-    this.#question = new StudentNewsItemQuestion(client, question);
+    this.#question = new StudentNewsItemQuestion(client, data.listeQuestions.V[0]);
     this.#attachments = this.#question.attachments;
 
     this.#read = data.lue;
-    this.#acknowledged = question.reponse.V.avecReponse;
-    if (question.reponse.V.reponduLe) this.#acknowledgedDate = readPronoteApiDate(question.reponse.V.reponduLe.V);
-    this.#needToAcknowledge = this.#question.shouldAnswer;
-
-    this.#author = data.auteur;
-    this.#content = question.texte.V;
-    this.#publicSelfData = {
-      id: data.public.V.N,
-      type: data.public.V.G,
-      name: data.public.V.L
-    };
   }
 
   /**
@@ -285,24 +313,19 @@ export class StudentNewsInformation {
    * or is already `acknowledged`, we will just mark it as read.
    */
   public async acknowledge (): Promise<void> {
-    if (!this.#needToAcknowledge || this.#acknowledged) return this.markAsRead(true);
+    if (!this.needToAcknowledge || this.acknowledged) return this.markAsRead(true);
 
     // An empty string is needed to acknowledge.
     this.#question.answer = "";
 
     await this.#client.patchNewsState({
-      id: this.#id,
-      name: this.#title ?? "",
-      public: this.#publicSelfData
+      id: this.id,
+      name: this.title ?? "",
+      public: this.publicSelfData
     }, [this.#question], {
       markAsRead: true,
-      markAsReadOnly: !this.#needToAcknowledge
+      markAsReadOnly: !this.needToAcknowledge
     });
-
-    if (this.#needToAcknowledge) {
-      this.#acknowledged = true;
-      this.#acknowledgedDate = new Date();
-    }
   }
 
   /**
@@ -313,25 +336,13 @@ export class StudentNewsInformation {
     if (this.#read === status) return;
 
     await this.#client.patchNewsState({
-      id: this.#id,
-      name: this.#title ?? "",
-      public: this.#publicSelfData
+      id: this.id,
+      name: this.title ?? "",
+      public: this.publicSelfData
     }, [], {
       markAsRead: status,
       markAsReadOnly: true
     });
-  }
-
-  public get id (): string {
-    return this.#id;
-  }
-
-  public get title (): string | undefined {
-    return this.#title;
-  }
-
-  public get category (): StudentNewsCategory {
-    return this.#category;
   }
 
   /**
@@ -347,7 +358,7 @@ export class StudentNewsInformation {
    * @remark This is not the same as reading the news, see `read` property.
    */
   public get acknowledged (): boolean {
-    return this.#acknowledged;
+    return this.#question.answered;
   }
 
   /**
@@ -355,36 +366,16 @@ export class StudentNewsInformation {
    * Only available if `acknowledged` is `true`.
   */
   public get acknowledgedDate (): Date | undefined {
-    return this.#acknowledgedDate;
+    return this.#question.answerDate;
   }
 
   public get needToAcknowledge (): boolean {
-    return this.#needToAcknowledge;
-  }
-
-  public get creationDate (): Date {
-    return this.#creationDate;
-  }
-
-  public get startDate (): Date {
-    return this.#startDate;
-  }
-
-  public get endDate (): Date {
-    return this.#endDate;
-  }
-
-  /**
-   * Name of the author of the information / survey.
-   * @example "John D."
-   */
-  public get author (): string {
-    return this.#author;
+    return this.#question.shouldAnswer;
   }
 
   /** HTML string containing the news. */
   public get content (): string {
-    return this.#content;
+    return this.#question.content;
   }
 
   public get attachments (): StudentAttachment[] {

@@ -1,5 +1,5 @@
 import type { PronoteApiUserNews } from "~/api/user/news/types";
-import type { PronoteApiNewsPublicSelf, PronoteApiNewsQuestionType } from "~/constants/news";
+import { PronoteApiNewsPublicSelf, PronoteApiNewsQuestionType } from "~/constants/news";
 import { readPronoteApiDate } from "~/pronote/dates";
 import { StudentAttachment } from "./attachment";
 import type Pronote from "~/client/Pronote";
@@ -81,52 +81,137 @@ export class StudentNewsSurvey {
 }
 
 export class StudentNewsItemQuestion {
-  public id: string;
-  public fullTitle: string;
-  public title: string;
-  public position: number;
-  public type: PronoteApiNewsQuestionType;
+  readonly #id: string;
 
-  public maximumLength: number;
-  public shouldRespectMaximumChoices: boolean;
-  public maximumChoices: number;
+  readonly #fullTitle: string;
+  readonly #title: string;
+  readonly #position: number;
+  readonly #type: PronoteApiNewsQuestionType;
 
-  public content: string;
-  public attachments: StudentAttachment[];
+  readonly #maximumLength: number;
+  readonly #shouldRespectMaximumChoices: boolean;
+  readonly #maximumChoices: number;
 
-  public genre: number;
+  readonly #content: string;
+  readonly #attachments: StudentAttachment[];
 
-  public answer?: "" | number[];
-  public answerID: string;
-  public answered: boolean;
-  public shouldAnswer: boolean;
+  readonly #genre: number;
 
-  constructor (client: Pronote, data: RawData["listeModesAff"][number]["listeActualites"]["V"][number]["listeQuestions"]["V"][number]) {
-    this.id = data.N;
-    this.fullTitle = data.L;
-    this.title = data.titre;
-    this.position = data.rang;
-    this.type = data.genreReponse;
+  #answer?: "" | number[];
 
-    this.maximumLength = data.tailleReponse;
-    this.shouldRespectMaximumChoices = data.avecMaximum;
-    this.maximumChoices = data.nombreReponsesMax;
-    this.content = data.texte.V;
+  readonly #answerID: string;
+  #answered: boolean;
+  readonly #shouldAnswer: boolean;
 
-    // TODO: Handle `listeChoix`
-    this.attachments = data.listePiecesJointes.V.map((attachment) => new StudentAttachment(client, attachment));
+  // TODO: Make it into a class
+  readonly #choices: Array<{
+    value: string;
+    position: number;
+    isTextInput: boolean;
+  }>;
 
-    this.genre = data.genreReponse;
+  constructor (client: Pronote, data: NewsItem["listeQuestions"]["V"][number]) {
+    this.#id = data.N;
+    this.#fullTitle = data.L;
+    this.#title = data.titre;
+    this.#position = data.rang;
+    this.#type = data.genreReponse;
+
+    this.#maximumLength = data.tailleReponse;
+    this.#shouldRespectMaximumChoices = data.avecMaximum;
+    this.#maximumChoices = data.nombreReponsesMax;
+    this.#content = data.texte.V;
+
+    this.#attachments = data.listePiecesJointes.V.map((attachment) => new StudentAttachment(client, attachment));
+
+    this.#genre = data.genreReponse;
 
     // value handling.
-    this.answerID = data.reponse.V.N;
-    this.answered = data.reponse.V.avecReponse;
-    this.shouldAnswer = data.reponse.V.estReponseAttendue;
+    this.#answerID = data.reponse.V.N;
+    this.#answered = data.reponse.V.avecReponse;
+    this.#shouldAnswer = data.reponse.V.estReponseAttendue;
+
+    // On `TextInput`, we have two choices by default : `Yes` and `No`.
+    // Those two choices are literally USELESS and misleading for the user,
+    // so we provide an empty array instead if the type is TextInput.
+    this.#choices = this.#type === PronoteApiNewsQuestionType.TextInput ? [] : data.listeChoix.V.map((choice) => ({
+      value: choice.L,
+      position: choice.rang,
+      isTextInput: !!choice.estReponseLibre
+    }));
   }
 
-  public setAnswer (answer?: "" | number[]) {
-    this.answer = answer;
-    this.answered = typeof answer !== "undefined";
+  public get id (): string {
+    return this.#id;
+  }
+
+  public get fullTitle (): string {
+    return this.#fullTitle;
+  }
+
+  public get title (): string {
+    return this.#title;
+  }
+
+  public get position (): number {
+    return this.#position;
+  }
+
+  public get type (): PronoteApiNewsQuestionType {
+    return this.#type;
+  }
+
+  public get maximumLength (): number {
+    return this.#maximumLength;
+  }
+
+  public get shouldRespectMaximumChoices (): boolean {
+    return this.#shouldRespectMaximumChoices;
+  }
+
+  public get maximumChoices (): number {
+    return this.#maximumChoices;
+  }
+
+  public get content (): string {
+    return this.#content;
+  }
+
+  public get attachments (): StudentAttachment[] {
+    return this.#attachments;
+  }
+
+  public get genre (): number {
+    return this.#genre;
+  }
+
+  public get answer (): "" | number[] | undefined {
+    return this.#answer;
+  }
+
+  public set answer (answer: "" | number[] | undefined) {
+    this.#answer = answer;
+    this.#answered = typeof answer !== "undefined";
+  }
+
+  public get answerID (): string {
+    return this.#answerID;
+  }
+
+  public get answered (): boolean {
+    return this.#answered;
+  }
+
+  public get shouldAnswer (): boolean {
+    return this.#shouldAnswer;
+  }
+
+  public get choices (): Array<{ // TODO: Use a class, see TODO from above.
+    value: string;
+    position: number;
+    isTextInput: boolean;
+  }> {
+    return this.#choices;
   }
 }
 
@@ -183,15 +268,15 @@ export class StudentNewsInformation {
   }
 
   /**
-   * Will acknowledge the news if needed :
-   * - When the news doesn't need to be acknowledged (`!needToAcknowledge`), we will just mark it as read.
-   * - If the news is already `acknowledged`, we'll mark it as read.
+   * Will acknowledge the news if needed,
+   * so if the news doesn't need to be acknowledged (`!needToAcknowledge`)
+   * or is already `acknowledged`, we will just mark it as read.
    */
   public async acknowledge (): Promise<void> {
     if (!this.#needToAcknowledge || this.#acknowledged) return this.markAsRead(true);
 
     // An empty string is needed to acknowledge.
-    this.#question.setAnswer("");
+    this.#question.answer = "";
 
     await this.#client.patchNewsState({
       id: this.#id,
@@ -214,6 +299,15 @@ export class StudentNewsInformation {
    */
   public async markAsRead (status = true): Promise<void> {
     if (this.#read === status) return;
+
+    await this.#client.patchNewsState({
+      id: this.#id,
+      name: this.#title ?? "",
+      public: this.#publicSelfData
+    }, [], {
+      markAsRead: status,
+      markAsReadOnly: true
+    });
   }
 
   public get id (): string {

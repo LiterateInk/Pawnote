@@ -17,7 +17,7 @@ export interface PronoteApiUserNewsStatus {
         /** ID of the news */
         N: string
         L: string
-        E: number
+        E?: number
         validationDirecte: boolean
         genrePublic: PronoteApiUserType
         public: {
@@ -32,7 +32,7 @@ export interface PronoteApiUserNewsStatus {
         listeQuestions: Array<{
           N: string
           L: string
-          E: number
+          E?: number
           genreReponse: number
           reponse: {
             N: number

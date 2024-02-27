@@ -19,12 +19,9 @@ export const callApiUserNewsStatus = makeApiHandler<ApiUserNewsStatus>(async (fe
           L: input.publicSelfData.name
         },
 
-        E: 2, // TODO
         validationDirecte: true,
 
         listeQuestions: input.answers.map((answer) => ({
-          E: 2, // TODO
-
           N: answer.id,
           L: answer.fullTitle,
           genreReponse: answer.genre,

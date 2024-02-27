@@ -1,4 +1,4 @@
-import { authenticatePronoteCredentials, PronoteApiAccountId, StudentNewsSurvey } from "../src";
+import { authenticatePronoteCredentials, PronoteApiAccountId, StudentNewsSurvey } from "../../src";
 
 (async () => {
   const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev/pronote", {

@@ -9,10 +9,11 @@ A simple wrapper around [Index-Education's Pronote](https://www.index-education.
 
 ### Versions
 
-> Note about versions before 2022 : This package wasn't tested concerning those, so not sure if it works but it should since not a lot of breaking changes were made.
-
 - [x] 2022
-- [x] Latest, 2023
+- [x] 2023 (latest)
+
+> [!WARNING]  
+> This package wasn't tested for versions before 2022, so if anything is not working, please open an issue about it and mention that it's probably a breaking change between versions.
 
 ### Sessions
 
@@ -32,7 +33,8 @@ A support for other accounts will be added in the future.
 - [x] By `username` and `token`
 - [x] By [QR Code](https://forum.index-education.com/upfiles/qrcode.png)
 
-**ENT native support is not and will never be supported by Pawnote**, for the simple reason that implementing all of them with all of their specificities requires a lot of time and effort. It's simply a pain to implement and track, as a matter of fact, most of the issues on [pronotepy](https://github.com/bain3/pronotepy/issues) - a similar project - are related to ENTs.
+> [!IMPORTANT]  
+> **ENT native support is not and will never be supported by Pawnote**, for the reason that implementing each of them with every specificities requires a lot of time and effort. It's a pain to implement and track; as a matter of fact, most of the issues on [pronotepy](https://github.com/bain3/pronotepy/issues) - a similar project - are related to ENTs.
 
 #### Note about demonstration servers
 

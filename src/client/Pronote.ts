@@ -558,9 +558,16 @@ export default class Pronote {
     });
   }
 
+  /**
+   * Updates the status of a news item.
+   * Could be a read, or answer to a survey.
+   *
+   * Should only be used internally, but if you know
+   * what you're doing, you can use it.
+   */
   public async patchNewsState (information: {
     id: string
-    name: string
+    title: string
     public: PronoteApiNewsPublicSelf
   }, answers: StudentNewsItemQuestion[], extra = {
     markAsRead: true,
@@ -570,7 +577,7 @@ export default class Pronote {
       await callApiUserNewsStatus(this.fetcher, {
         session: this.session,
         id: information.id,
-        name: information.name,
+        name: information.title,
         publicSelfData: information.public,
         markAsRead: extra.markAsRead,
         markAsReadOnly: extra.markAsReadOnly,

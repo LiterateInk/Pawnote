@@ -62,7 +62,10 @@ It returns a boolean that is `true` when the server is a demo.
 - Send `Presence` requests to keep alive the connection
   - Manually setup : `Pronote.startPresenceRequests()` and `Pronote.stopPresenceRequests()`
 - News
-  - Read informations and surveys
+  - Read content of informations and/or surveys
+  - Update, edit and publish answers to surveys
+  - Mark informations and/or surveys as read/unread
+  - Acknowledge informations
 - Discussions
   - Read available discussions and categories
   - Read messages from a discussion

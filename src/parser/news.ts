@@ -3,6 +3,7 @@ import { PronoteApiNewsPublicSelf, PronoteApiNewsQuestionType } from "~/constant
 import { readPronoteApiDate } from "~/pronote/dates";
 import { StudentAttachment } from "./attachment";
 import type Pronote from "~/client/Pronote";
+import { parseSelection } from "~/pronote/select";
 type RawData = PronoteApiUserNews["response"]["donnees"];
 type CategoryItem = RawData["listeCategories"]["V"][number];
 type NewsItem = RawData["listeModesAff"][number]["listeActualites"]["V"][number];
@@ -229,7 +230,8 @@ export class StudentNewsItemQuestion {
 
   readonly #genre: number;
 
-  #answer?: "" | number[];
+  #selectedAnswers?: number[];
+  #textInputAnswer?: string;
 
   readonly #answerID: string;
   #answered: boolean;
@@ -259,9 +261,11 @@ export class StudentNewsItemQuestion {
 
     this.#genre = data.genreReponse;
 
-    // value handling.
     this.#answerID = data.reponse.V.N;
     this.#answered = data.reponse.V.avecReponse;
+
+
+
     this.#shouldAnswer = data.reponse.V.estReponseAttendue;
     this.#answerDate = data.reponse.V.reponduLe?.V ? readPronoteApiDate(data.reponse.V.reponduLe.V) : undefined;
 
@@ -273,6 +277,16 @@ export class StudentNewsItemQuestion {
       position: choice.rang,
       isTextInput: !!choice.estReponseLibre
     }));
+
+    if (this.#answered && data.reponse.V.valeurReponse) {
+      if (typeof data.reponse.V.valeurReponse === "string") {
+        this.#textInputAnswer = data.reponse.V.valeurReponse;
+      }
+      else {
+        this.#selectedAnswers = parseSelection(data.reponse.V.valeurReponse.V);
+        this.#textInputAnswer = data.reponse.V.valeurReponseLibre;
+      }
+    }
   }
 
   public get id (): string {
@@ -319,14 +333,27 @@ export class StudentNewsItemQuestion {
     return this.#genre;
   }
 
-  public get answer (): "" | number[] | undefined {
-    return this.#answer;
+  public get selectedAnswers (): number[] | undefined {
+    return this.#selectedAnswers;
   }
 
-  public set answer (answer: "" | number[] | undefined) {
-    this.#answer = answer;
-    this.#answered = typeof answer !== "undefined";
-    this.#answerDate = new Date();
+  public get textInputAnswer (): string | undefined {
+    return this.#textInputAnswer;
+  }
+
+  public patch (textInputAnswer?: string): void;
+  public patch (selectedAnswers?: number[], otherFieldTextValue?: string): void;
+  public patch (answers?: number[] | string, textInput?: string): void {
+    if (this.#type === PronoteApiNewsQuestionType.TextInput || this.type === PronoteApiNewsQuestionType.InformationText) {
+      this.#textInputAnswer = answers as string | undefined;
+    }
+    else {
+      this.#selectedAnswers = answers as number[] | undefined;
+      this.#textInputAnswer = textInput;
+    }
+
+    this.#answered = typeof answers !== "undefined";
+    this.#answerDate = this.#answered ? new Date() : undefined;
   }
 
   public get answerID (): string {
@@ -377,7 +404,7 @@ export class StudentNewsInformation extends StudentNewsItem {
     if (!this.needToAcknowledge || this.acknowledged) return this.markAsRead(alsoMarkAsRead);
 
     // An empty string is needed to acknowledge.
-    this.#question.answer = "";
+    this.#question.patch("");
 
     return this.patchQuestions([this.#question], alsoMarkAsRead);
   }

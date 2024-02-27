@@ -209,6 +209,9 @@ export interface PronoteApiUserNews {
                   _T: number
                   V: string
                 }
+
+                /** Value when replying to `Autre` in a choice question. */
+                valeurReponseLibre?: string;
               }>
             }>>
           }>

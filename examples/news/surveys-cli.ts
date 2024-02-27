@@ -82,8 +82,8 @@ import { select, input, checkbox } from "@inquirer/prompts"; // Their kit is rea
       const answers = await checkbox({
         message: question.content,
         validate (items) {
-          // if (question.shouldRespectMaximumChoices && items.length > question.maximumChoices)
-          //   return "You can't select more than " + question.maximumChoices + " choices.";
+          if (question.shouldRespectMaximumChoices && items.length > question.maximumChoices)
+            return "You can't select more than " + question.maximumChoices + " choices.";
 
           return true;
         },

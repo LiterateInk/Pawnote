@@ -1,9 +1,12 @@
 import type { ApiUserNewsStatus, PronoteApiUserNewsStatus } from "./types";
+import { makeApiHandler } from "~/utils/api";
 
+import { PronoteApiNewsQuestionType } from "~/constants/news";
 import { PronoteApiFunctions } from "~/constants/functions";
 import { PronoteApiOnglets } from "~/constants/onglets";
+
 import { createPronoteAPICall } from "~/pronote/requestAPI";
-import { makeApiHandler } from "~/utils/api";
+import { createSelectionFrom } from "~/pronote/select";
 
 export const callApiUserNewsStatus = makeApiHandler<ApiUserNewsStatus>(async (fetcher, input) => {
   const request_payload = input.session.writePronoteFunctionPayload<PronoteApiUserNewsStatus["request"]>({
@@ -28,13 +31,21 @@ export const callApiUserNewsStatus = makeApiHandler<ApiUserNewsStatus>(async (fe
 
           reponse: {
             N: parseInt(answer.answerID, 10),
-            E: 1,
             Actif: true,
 
-            valeurReponse: answer.answer ? {
-              _T: 8,
-              V: JSON.stringify(answer.answer) // [1,2]
-            } : "",
+            // Should give a string directly when we reply to an information
+            // or when the question is just a text input.
+            valeurReponse: (answer.type === PronoteApiNewsQuestionType.InformationText || answer.type === PronoteApiNewsQuestionType.TextInput)
+              ? answer.textInputAnswer ?? ""
+              : { // Otherwise, pass the choices as an array of numbers.
+                _T: 8,
+                V: createSelectionFrom(answer.selectedAnswers ?? [])
+              },
+
+            // Defined when the question have choices which can have a text input : "Other" choice.
+            valeurReponseLibre: (answer.choices.filter((choice) => choice.isTextInput).length > 0)
+              ? answer.textInputAnswer
+              : undefined,
 
             avecReponse: answer.answered,
             estReponseAttendue: answer.shouldAnswer,
@@ -47,6 +58,7 @@ export const callApiUserNewsStatus = makeApiHandler<ApiUserNewsStatus>(async (fe
         supprimee: false, // TODO
         saisieActualite: false
       }],
+
       saisieActualite: false
     },
 

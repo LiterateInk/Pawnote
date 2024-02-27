@@ -36,11 +36,11 @@ export interface PronoteApiUserNewsStatus {
           genreReponse: number
           reponse: {
             N: number
-            E: number
+            E?: number
             Actif: boolean
             avecReponse: boolean
             estReponseAttendue: boolean
-            valeurReponse: "" | PronoteValue<8, string>
+            valeurReponse: string | PronoteValue<8, string>
             _validationSaisie: boolean
           }
         }>

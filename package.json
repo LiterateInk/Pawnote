@@ -1,6 +1,6 @@
 {
   "name": "pawnote",
-  "version": "0.17.0",
+  "version": "0.17.1",
   "description": "A simple wrapper around Index-Education's Pronote internal API.",
   "repository": "github:LiterateInk/Pawnote",
   "main": "./dist/index.js",

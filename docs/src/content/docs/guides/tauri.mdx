@@ -1,0 +1,37 @@
+---
+title: Tauri
+description: Want to make Pawnote run under Tauri ? Here's how to do it.
+---
+
+## Fetcher (for Tauri v1)
+
+Since Pawnote uses [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) as default fetcher, you need to create a custom fetcher to make it work with the [Tauri HTTP API](https://tauri.app/v1/api/js/http).
+
+Here's a simple one that should always work for Pawnote:
+
+```typescript
+import { type PawnoteFetcher } from "pawnote";
+import { Body, ResponseType, getClient } from "@tauri-apps/api/http";
+
+const tauriPawnoteFetcher: PawnoteFetcher = async (url, options) => {
+  const client = await getClient(options.redirect === "manual" ? {
+    maxRedirections: 0
+  } : void 0);
+
+  const response = await client.request<string>({
+    url,
+    method: options.method,
+    headers: options.headers,
+    body: options.method !== "GET" && options.body ? Body.text(options.body) : void 0,
+    responseType: ResponseType.Text
+  });
+
+  return {
+    headers: response.headers,
+    text: async () => response.data,
+    json: async <T>() => JSON.parse(response.data) as T
+  }
+};
+
+export default tauriPawnoteFetcher;
+```

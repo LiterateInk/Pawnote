@@ -53,6 +53,8 @@ export class StudentNewsCategory {
 }
 
 class StudentNewsItem {
+  readonly #client: Pronote;
+
   readonly #id: string;
   readonly #title?: string;
   readonly #category: StudentNewsCategory;
@@ -62,9 +64,13 @@ class StudentNewsItem {
   readonly #endDate: Date;
 
   readonly #author: string;
-  readonly #publicSelfData: PronoteApiNewsPublicSelf;
+  readonly #public: PronoteApiNewsPublicSelf;
 
-  constructor (data: NewsItem, categories: StudentNewsCategory[]) {
+  #read: boolean;
+
+  constructor (client: Pronote, data: NewsItem, categories: StudentNewsCategory[]) {
+    this.#client = client;
+
     this.#id = data.N;
     this.#title = data.L;
     this.#category = categories.find((category) => category.id === data.categorie.V.N)!;
@@ -74,7 +80,48 @@ class StudentNewsItem {
     this.#endDate = readPronoteApiDate(data.dateFin.V);
 
     this.#author = data.auteur;
-    this.#publicSelfData = new PronoteApiNewsPublicSelf(data.public.V);
+    this.#public = new PronoteApiNewsPublicSelf(data.public.V);
+
+    this.#read = data.lue;
+  }
+
+  /**
+   * Patches the `read` state of the news to the given value.
+   * @remark Will do nothing if `this.read === status`.
+   */
+  public async markAsRead (status = true): Promise<void> {
+    if (this.#read === status) return;
+
+    await this.#client.patchNewsState({
+      id: this.id,
+      title: this.title ?? "",
+      public: this.public
+    }, [], {
+      markAsRead: status,
+      markAsReadOnly: true
+    });
+
+    // Update local state.
+    this.#read = status;
+  }
+
+  /**
+   * Low level method, used internally to patch questions (from `acknowledge()` and `answer()`).
+   *
+   * Most of the time, you won't need this.
+   */
+  public async patchQuestions (questions: StudentNewsItemQuestion[], alsoMarkAsRead = true): Promise<void> {
+    await this.#client.patchNewsState({
+      id: this.id,
+      title: this.title ?? "",
+      public: this.public
+    }, questions, {
+      markAsRead: alsoMarkAsRead,
+      markAsReadOnly: false
+    });
+
+    // Update local state.
+    if (alsoMarkAsRead) this.#read = true;
   }
 
   public get id (): string {
@@ -109,41 +156,59 @@ class StudentNewsItem {
     return this.#author;
   }
 
-  protected get publicSelfData (): PronoteApiNewsPublicSelf {
-    return this.#publicSelfData;
+  /**
+   * Low level data about the public information of the user that'll send answers.
+   * Used internally when sending answers to the server.
+   *
+   * Most of the time, you won't need this.
+   */
+  public get public (): PronoteApiNewsPublicSelf {
+    return this.#public;
+  }
+
+  /**
+   * Whether this news have been read or not.
+   */
+  public get read (): boolean {
+    return this.#read;
   }
 }
 
 export class StudentNewsSurvey extends StudentNewsItem {
-  readonly #client: Pronote;
-
   readonly #questions: StudentNewsItemQuestion[];
-  /** Whether your response is anonymous or not. */
   readonly #isAnonymous: boolean;
-  #read: boolean;
 
   constructor (client: Pronote, data: NewsItem, categories: StudentNewsCategory[]) {
-    super(data, categories);
-    this.#client = client;
+    super(client, data, categories);
 
     this.#questions = data.listeQuestions.V.map((question) => new StudentNewsItemQuestion(client, question));
     this.#isAnonymous = data.reponseAnonyme;
-    this.#read = data.lue;
   }
 
+  /**
+   * List of the questions contained in this survey.
+   * You can answer them by reassigning the `answer` property.
+   *
+   * @example
+   * question.answer = "[1..2]";
+   */
   public get questions (): StudentNewsItemQuestion[] {
     return this.#questions;
   }
 
-  /**
-   * Whether your response is anonymous or not.
-   */
+  /** Whether your response is anonymous or not. */
   public get isAnonymous (): boolean {
     return this.#isAnonymous;
   }
 
-  public get read (): boolean {
-    return this.#read;
+  /**
+   * Answers the survey with the given answers.
+   * By default, it'll answer with the questions that were given when the survey was created.
+   *
+   * You can either manipulate the questions directly or pass in your own answers.
+   */
+  public async answer (answers = this.#questions, alsoMarkAsRead = true): Promise<void> {
+    return this.patchQuestions(answers, alsoMarkAsRead);
   }
 }
 
@@ -290,67 +355,35 @@ export class StudentNewsItemQuestion {
 }
 
 export class StudentNewsInformation extends StudentNewsItem {
-  readonly #client: Pronote;
-
   readonly #question: StudentNewsItemQuestion;
-  readonly #attachments: StudentAttachment[];
-
-  #read: boolean;
 
   constructor (client: Pronote, data: NewsItem, categories: StudentNewsCategory[]) {
-    super(data, categories);
-    this.#client = client;
+    super(client, data, categories);
 
     this.#question = new StudentNewsItemQuestion(client, data.listeQuestions.V[0]);
-    this.#attachments = this.#question.attachments;
-
-    this.#read = data.lue;
   }
 
   /**
    * Will acknowledge the news if needed,
    * so if the news doesn't need to be acknowledged (`!needToAcknowledge`)
-   * or is already `acknowledged`, we will just mark it as read.
+   * or is already `acknowledged`, we will just do the read step.
+   *
+   * When acknowledging, the news will be directly marked as read.
+   * If you want to change this behavior, you can change the `alsoMarkAsRead` parameter.
+   *
+   * @remark You can't un-acknowledge a news.
    */
-  public async acknowledge (): Promise<void> {
-    if (!this.needToAcknowledge || this.acknowledged) return this.markAsRead(true);
+  public async acknowledge (alsoMarkAsRead = true): Promise<void> {
+    if (!this.needToAcknowledge || this.acknowledged) return this.markAsRead(alsoMarkAsRead);
 
     // An empty string is needed to acknowledge.
     this.#question.answer = "";
 
-    await this.#client.patchNewsState({
-      id: this.id,
-      name: this.title ?? "",
-      public: this.publicSelfData
-    }, [this.#question], {
-      markAsRead: true,
-      markAsReadOnly: !this.needToAcknowledge
-    });
+    return this.patchQuestions([this.#question], alsoMarkAsRead);
   }
 
-  /**
-   * Patches the `read` state of the news to the given value.
-   * @remark Will do nothing if `this.read === status`.
-   */
-  public async markAsRead (status = true): Promise<void> {
-    if (this.#read === status) return;
-
-    await this.#client.patchNewsState({
-      id: this.id,
-      name: this.title ?? "",
-      public: this.publicSelfData
-    }, [], {
-      markAsRead: status,
-      markAsReadOnly: true
-    });
-  }
-
-  /**
-   * Whether this news have been read or not.
-   * @remark This is not the same as acknowledging the news, see `acknowledged` property.
-   */
-  public get read (): boolean {
-    return this.#read;
+  public get attachments (): StudentAttachment[] {
+    return this.#question.attachments;
   }
 
   /**
@@ -378,7 +411,18 @@ export class StudentNewsInformation extends StudentNewsItem {
     return this.#question.content;
   }
 
-  public get attachments (): StudentAttachment[] {
-    return this.#attachments;
+  /**
+   * Low level data about the "question" contained inside this information.
+   *
+   * You can use this to serialize the question and
+   * finally send it back to the server using `pronote.patchNewsState(data, [question], extra)`.
+   *
+   * Internally, `acknowledged`, `content`, `attachments`, ... are based on this,
+   * we're just renaming the properties and adding some sugar on top of it.
+   *
+   * @remark Most of the time, you won't need this, but it's here if you need it.
+   */
+  public get question (): StudentNewsItemQuestion {
+    return this.#question;
   }
 }

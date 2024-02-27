@@ -28,11 +28,8 @@ A support for other accounts will be added in the future.
 - [x] By `username` and `password` (no ENT)
 - [x] By `username` and `token`
 - [x] By [QR Code](https://forum.index-education.com/upfiles/qrcode.png)
-- [ ] By injecting ENT cookies (see below)
 
 **ENT native support is not and will never be supported by Pawnote**, for the simple reason that implementing all of them with all of their specificities requires a lot of time and effort. It's simply a pain to implement and track, as a matter of fact, most of the issues on [pronotepy](https://github.com/bain3/pronotepy/issues) - a similar project - are related to ENTs.
-
-Even though, if you want to, you can code your own ENT solution and feed the cookies to Pawnote in the `authenticateFromENTCookies` (not done yet) function. That'll authenticate you using the ENT cookies you provided and will give you back a `Pronote` instance with a nextTimeToken that you can use to authenticate next time, just like every other authentication methods.
 
 #### Note about demonstration servers
 

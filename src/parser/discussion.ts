@@ -1,5 +1,6 @@
 import type { PronoteApiMessagesPossessionsList } from "~/constants/messages";
 import type { PronoteApiUserDiscussions } from "~/api/user/discussions/types";
+import type { FetchedMessageRecipient } from "~/parser/recipient";
 import type { StudentMessage } from "~/parser/messages";
 import type Pronote from "~/client/Pronote";
 
@@ -64,6 +65,12 @@ export class StudentDiscussion {
   readonly #closed: boolean;
   readonly #folders: StudentDiscussionFolder[];
 
+  /**
+   * Internal string containing the ID of the message
+   * needed to fetch the participants of the discussion.
+   */
+  readonly #participantsMessageID: string;
+
   constructor (client: Pronote, data: UserDiscussionMessages, folders: StudentDiscussionFolder[]) {
     this.#client = client;
 
@@ -76,6 +83,9 @@ export class StudentDiscussion {
     this.#creator = data.initiateur;
     this.#closed = data.ferme ?? false;
     this.#folders = data.listeEtiquettes?.V.map((folder) => folders.find((f) => f.id === folder.N)!) ?? [];
+
+    // Always exist in `data`, safe to non-null.
+    this.#participantsMessageID = data.messagePourParticipants!.V.N;
   }
 
   /**
@@ -97,6 +107,15 @@ export class StudentDiscussion {
    */
   public async markAsRead (): Promise<void> {
     return this.#client.markDiscussionAsRead(this.#possessions);
+  }
+
+  /**
+   * Fetches the recipients of the discussion.
+   * A recipient is someone who is part of the discussion.
+   * They don't have to send a message to be considered as a recipient.
+   */
+  public async fetchRecipients (): Promise<FetchedMessageRecipient[]> {
+    return this.#client.getRecipientsForMessage(this.#participantsMessageID);
   }
 
   /**

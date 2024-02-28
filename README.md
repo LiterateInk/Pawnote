@@ -71,6 +71,7 @@ It returns a boolean that is `true` when the server is a demo.
 - Discussions
   - Read available discussions and categories
   - Read messages from a discussion
+  - Fetch recipients of a message/discussion
 - Attendance : Absences, Punishments and Delays
   - Read periods using `Pronote.readDefaultPeriodForAttendance()` and `Pronote.readPeriodsForAttendance()`
 - Error handlers

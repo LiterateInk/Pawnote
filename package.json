@@ -34,7 +34,7 @@
   "bugs": {
     "url": "https://github.com/LiterateInk/Pawnote/issues"
   },
-  "license": "MIT",
+  "license": "GPL-3.0",
   "engines": {
     "node": ">=18"
   },

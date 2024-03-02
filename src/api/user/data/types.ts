@@ -211,12 +211,35 @@ export interface PronoteApiUserData {
 
       /** Authorization for the current student. */
       autorisations: {
-        /** Allow messages tab. */
-        AvecDiscussion: boolean
-        /** Allow messages with the staff. */
-        AvecDiscussionPersonnels: boolean
-        /** Allow messages with the teachers. */
-        AvecDiscussionProfesseurs: boolean
+        /** Is allowed to create discussions ? */
+        AvecDiscussion?: boolean
+
+        /** Whether the user is disallowed to read/create discussions. */
+        discussionInterdit?: boolean
+
+        /**
+         * Is allowed to create discussions with staff ?
+         * @available Student | Teacher
+         */
+        AvecDiscussionPersonnels?: boolean
+
+        /**
+         * Is allowed to create discussions with teachers ?
+         * @available Student | Teacher
+         */
+        AvecDiscussionProfesseurs?: boolean
+
+        /**
+         * Is allowed to create discussions with students' parents ?
+         * @available Teacher
+         */
+        AvecDiscussionParents?: boolean
+
+        /**
+         * Is allowed to create discussions with students ?
+         * @available Teacher
+         */
+        AvecDiscussionEleves?: boolean
 
         incidents: unknown
         intendance: unknown

@@ -39,11 +39,12 @@ export { PronoteApiLessonContentCategory } from "~/constants/lessonCategory";
 export { PronoteApiAttachmentType } from "~/constants/attachments";
 export { PronoteApiNewsQuestionType } from "~/constants/news";
 export { PronoteApiAccountId } from "~/constants/accounts";
-export { PronoteApiUserType } from "~/constants/users";
+export { PronoteApiResourceType as PronoteApiResource } from "~/constants/resources";
 
 // Exporting main classes.
 export { default as Pronote } from "~/client/Pronote";
 export { default as Holiday } from "~/parser/holiday";
+export { default as Authorizations } from "~/parser/authorizations";
 export { StudentSubject } from "~/parser/subject";
 export { StudentAttachment } from "~/parser/attachment";
 export { StudentHomework } from "~/parser/homework";

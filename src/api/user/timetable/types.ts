@@ -1,5 +1,5 @@
 import type { PronoteApiFunctions } from "~/constants/functions";
-import type { PronoteApiResource } from "~/constants/resources";
+import type { PronoteApiResourceType } from "~/constants/resources";
 import type { PronoteApiOnglets } from "~/constants/onglets";
 import type { PronoteApiUserData } from "~/api";
 import type { Session } from "~/session";
@@ -93,19 +93,19 @@ export interface PronoteApiUserTimetable {
           _T: 24
           V: Array<{ L: string } & (
             | {
-              G: PronoteApiResource.Matiere
+              G: PronoteApiResourceType.Subject
               N: string
               estServiceGroupe?: boolean
             }
             | {
-              G: PronoteApiResource.Salle
+              G: PronoteApiResourceType.Room
               N: string
             }
             | {
-              G: PronoteApiResource.Groupe
+              G: PronoteApiResourceType.Groupe
             }
             | {
-              G: PronoteApiResource.Enseignant
+              G: PronoteApiResourceType.Teacher
             }
           )>
         }

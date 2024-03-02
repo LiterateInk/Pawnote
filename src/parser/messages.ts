@@ -4,8 +4,8 @@ import type Pronote from "~/client/Pronote";
 
 import { readPronoteApiDate } from "~/pronote/dates";
 import { StudentAttachment } from "~/parser/attachment";
+import { PronoteApiResourceType } from "~/constants/resources";
 import { PRONOTE_MESSAGE_MYSELF_NAME } from "~/constants/messages";
-import { PronoteApiUserType } from "~/constants/users";
 import { makeDummyRecipient, parseHintToType } from "~/pronote/recipients";
 
 export class StudentMessage {
@@ -26,7 +26,7 @@ export class StudentMessage {
 
   constructor (client: Pronote, data: PronoteApiUserMessages["response"]["donnees"]["listeMessages"]["V"][number]) {
     this.#client = client;
-    this.#myself = makeDummyRecipient(`${client.studentName} (${client.studentClass})`, PronoteApiUserType.Student);
+    this.#myself = makeDummyRecipient(`${client.studentName} (${client.studentClass})`, PronoteApiResourceType.Student);
 
     this.#id = data.N;
     this.#content = data.estHTML ? data.contenu.V : data.contenu;

@@ -3,7 +3,7 @@ import type { PronoteApiAttachment } from "~/constants/attachments";
 import type { PronoteApiFunctions } from "~/constants/functions";
 import type { PronoteApiNewsQuestionType } from "~/constants/news";
 import type { PronoteApiOnglets } from "~/constants/onglets";
-import type { PronoteApiUserType } from "~/constants/users";
+import type { PronoteApiUserResourceType } from "~/constants/users";
 import type { Session } from "~/session";
 
 export interface PronoteApiUserNews {
@@ -148,7 +148,7 @@ export interface PronoteApiUserNews {
             public: PronoteValue<24, {
               L: string
               N: string
-              G: PronoteApiUserType
+              G: PronoteApiUserResourceType
               P: number
             }>
 

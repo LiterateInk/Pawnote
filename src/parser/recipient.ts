@@ -1,9 +1,9 @@
 import type { PronoteApiUserMessageRecipient } from "~/constants/recipients";
-import type { PronoteApiUserType } from "~/constants/users";
+import type { PronoteApiUserResourceType } from "~/constants/users";
 
 export class BaseMessageRecipient {
   readonly #name: string;
-  readonly #type: PronoteApiUserType;
+  readonly #type: PronoteApiUserResourceType;
 
   constructor (data: Omit<PronoteApiUserMessageRecipient, "N" | "P" | "refusMess">) {
     this.#name = data.L;
@@ -14,7 +14,7 @@ export class BaseMessageRecipient {
     return this.#name;
   }
 
-  public get type (): PronoteApiUserType {
+  public get type (): PronoteApiUserResourceType {
     return this.#type;
   }
 }

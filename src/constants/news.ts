@@ -1,5 +1,5 @@
-import { PronoteApiUserNews } from "~/api/user/news/types";
-import type { PronoteApiUserType } from "./users";
+import type { PronoteApiUserNews } from "~/api/user/news/types";
+import type { PronoteApiUserResourceType } from "./users";
 
 export enum PronoteApiNewsQuestionType {
   /** Text from an information news. */
@@ -23,7 +23,7 @@ export enum PronoteApiNewsViewType {
 export class PronoteApiNewsPublicSelf {
   readonly #id: string;
   readonly #name: string;
-  readonly #type: PronoteApiUserType;
+  readonly #type: PronoteApiUserResourceType;
 
   constructor (value: PronoteApiUserNews["response"]["donnees"]["listeModesAff"][number]["listeActualites"]["V"][number]["public"]["V"]) {
     this.#id = value.N;
@@ -31,20 +31,16 @@ export class PronoteApiNewsPublicSelf {
     this.#type = value.G;
   }
 
-  get id() {
+  public get id () {
     return this.#id;
   }
 
-  get name() {
+  public get name () {
     return this.#name;
   }
 
-  get type() {
+  public get type () {
     return this.#type;
   }
 }
 
-export interface PronoteApiNewsAnswer {
-  id: string
-  type: number
-}

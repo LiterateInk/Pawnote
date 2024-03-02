@@ -1,5 +1,4 @@
-import { PronoteApiUserType } from "./users";
-
+import type { PronoteApiUserResourceType } from "./users";
 
 export interface PronoteApiUserMessageRecipient {
   N: string
@@ -11,7 +10,7 @@ export interface PronoteApiUserMessageRecipient {
    * Type of the recipient.
    * Tells whether the recipient is a teacher, student, ...
    */
-  G: PronoteApiUserType
+  G: PronoteApiUserResourceType
 
   /** NOTE: Not sure what this is. */
   P: number

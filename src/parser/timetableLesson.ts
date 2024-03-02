@@ -2,10 +2,9 @@ import type { PronoteApiUserTimetable } from "~/api/user/timetable/types";
 import type Pronote from "~/client/Pronote";
 
 import type { StudentLessonResource } from "./lessonResource";
-import type { StudentHomework } from "./homework";
 
 import { translatePositionToTime, readPronoteApiDate } from "~/pronote/dates";
-import { PronoteApiResource } from "~/constants/resources";
+import { PronoteApiResourceType } from "~/constants/resources";
 import { StudentSubject } from "~/parser/subject";
 
 /**
@@ -78,16 +77,16 @@ export class StudentTimetableLesson {
 
     for (const data of lesson.ListeContenus?.V ?? []) {
       switch (data.G) {
-        case PronoteApiResource.Matiere:
+        case PronoteApiResourceType.Subject:
           this.subject = new StudentSubject(data);
           break;
-        case PronoteApiResource.Enseignant:
+        case PronoteApiResourceType.Teacher:
           this.teacherNames.push(data.L);
           break;
-        case PronoteApiResource.Salle:
+        case PronoteApiResourceType.Room:
           this.classrooms.push(data.L);
           break;
-        case PronoteApiResource.Groupe:
+        case PronoteApiResourceType.Groupe:
           this.groupNames.push(data.L);
           break;
       }

@@ -1,8 +1,8 @@
-import { PronoteValue } from "~/api/type";
+import type { PronoteValue } from "~/api/type";
 import type { PronoteApiFunctions } from "~/constants/functions";
 import type { PronoteApiNewsPublicSelf } from "~/constants/news";
 import type { PronoteApiOnglets } from "~/constants/onglets";
-import type { PronoteApiUserType } from "~/constants/users";
+import type { PronoteApiUserResourceType } from "~/constants/users";
 import type { StudentNewsItemQuestion } from "~/parser/news";
 import type { Session } from "~/session";
 
@@ -19,10 +19,10 @@ export interface PronoteApiUserNewsStatus {
         L: string
         E?: number
         validationDirecte: boolean
-        genrePublic: PronoteApiUserType
+        genrePublic: PronoteApiUserResourceType
         public: {
           N: string
-          G: PronoteApiUserType
+          G: PronoteApiUserResourceType
           L: string
         }
         lue: boolean

@@ -1,24 +1,25 @@
-import { PronoteApiUserType } from "~/constants/users";
+import type { PronoteApiUserResourceType } from "~/constants/users";
+import { PronoteApiResourceType } from "~/constants/resources";
 import { BaseMessageRecipient } from "~/parser/recipient";
 
-export const parseHintToType = (hint: string): PronoteApiUserType => {
-  let type: PronoteApiUserType;
+export const parseHintToType = (hint: string): PronoteApiUserResourceType => {
+  let type: PronoteApiUserResourceType;
 
   switch (hint) {
     case "Professeur":
-      type = PronoteApiUserType.Teacher;
+      type = PronoteApiResourceType.Teacher;
       break;
     case "Personnel":
-      type = PronoteApiUserType.Personal;
+      type = PronoteApiResourceType.Personal;
       break;
     default:
-      type = PronoteApiUserType.Student;
+      type = PronoteApiResourceType.Student;
   }
 
   return type;
 };
 
-export const makeDummyRecipient = (name: string, type: PronoteApiUserType): BaseMessageRecipient => {
+export const makeDummyRecipient = (name: string, type: PronoteApiUserResourceType): BaseMessageRecipient => {
   return new BaseMessageRecipient({
     L: name,
     G: type

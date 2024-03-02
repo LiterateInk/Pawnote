@@ -1,0 +1,52 @@
+---
+title: Code Structure
+description: What all these folders do ?
+---
+
+## `api`
+
+The `api` folder contains the core of Pawnote, it's the part that contains the types and the functions to interact with the Pronote API.
+
+In there, we have a folder for each requests. Each folder contains two files :
+
+- `index.ts` : the handler
+- `types.ts` : the types
+
+You can also nest folders, example : `api/login/informations/types.ts`
+
+## `constants`
+
+As the name suggests, here we'll only have constants for `api`. Mostly to to avoid magic numbers and strings.
+
+Enumerations, interfaces and types for the Pronote API can be added here.
+
+## `pronote`
+
+The naming is a bit misleading, but this folder contains the code to parse and/or generate stuff from/for Pronote.
+
+Some of their internals are in there, it's like a `utils` but specific to Pronote.
+
+You can find the function to read a date from their API here, for example.
+
+## `utils`
+
+Global utilities, outside of the Pronote scope.
+
+You can find the logic for the `fetcher` here, but also the one for `haversine` and more.
+
+## `errors`
+
+Custom errors for Pawnote, to give a better developer experience.
+
+Allows for better error handling by `catch`ing a specific error using `instanceof`.
+
+## `parser`
+
+Transforms responses of the Pronote API into something more readable and usable, for a globally better developer experience.
+
+## `client`
+
+First-layer of Pawnote, it's the part that will be used by the developers.
+It uses the `api` to call the Pronote API, and the `parser` to parse the responses.
+
+If anything goes wrong, it'll give an error depending on the ones defined in the `errors` folder.

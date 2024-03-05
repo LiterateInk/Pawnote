@@ -50,6 +50,7 @@ import { FetchedMessageRecipient } from "~/parser/recipient";
 import Holiday from "~/parser/holiday";
 import type { PronoteApiNewsPublicSelf } from "~/constants/news";
 import { callApiUserNewsStatus } from "~/api/user/newsStatus";
+import Authorizations from "~/parser/authorizations";
 
 export default class Pronote {
   /**
@@ -57,6 +58,11 @@ export default class Pronote {
    * Used to get week numbers relative to this date.
    */
   public firstMonday: Date;
+
+  #authorizations: Authorizations;
+  public get authorizations (): Authorizations {
+    return this.#authorizations;
+  }
 
   /**
    * First day of the entire year.
@@ -142,6 +148,8 @@ export default class Pronote {
     this.firstMonday = readPronoteApiDate(loginInformations.donnees.General.PremierLundi.V);
     this.firstDate = readPronoteApiDate(loginInformations.donnees.General.PremiereDate.V);
     this.lastDate = readPronoteApiDate(loginInformations.donnees.General.DerniereDate.V);
+
+    this.#authorizations = new Authorizations(user.autorisations);
 
     this.username = credentials.username;
     this.nextTimeToken = credentials.token;

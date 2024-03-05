@@ -32,7 +32,16 @@ export interface PronoteApiUserCreateDiscussionRecipients {
         P: number
         G: PronoteApiUserResourceType
 
+        /**
+         * Whether this user can discuss with the current user.
+         */
         avecDiscussion?: boolean
+
+        /**
+         * Whether this user is the "Professeur Principal"
+         */
+        estPrincipal?: boolean
+
         listeRessources: PronoteValue<24, Array<{
           L: string
           N: string

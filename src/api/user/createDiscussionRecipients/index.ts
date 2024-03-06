@@ -5,7 +5,7 @@ import { PronoteApiOnglets } from "~/constants/onglets";
 import { createPronoteAPICall } from "~/pronote/requestAPI";
 import { makeApiHandler } from "~/utils/api";
 
-export const callApiUserHomeworkStatus = makeApiHandler<ApiUserCreateDiscussionRecipients>(async (fetcher, input) => {
+export const callApiUserCreateDiscussionRecipients = makeApiHandler<ApiUserCreateDiscussionRecipients>(async (fetcher, input) => {
   const request_payload = input.session.writePronoteFunctionPayload<PronoteApiUserCreateDiscussionRecipients["request"]>({
     donnees: {
       filtreElement: {

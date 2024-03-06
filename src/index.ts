@@ -39,7 +39,7 @@ export { PronoteApiLessonContentCategory } from "~/constants/lessonCategory";
 export { PronoteApiAttachmentType } from "~/constants/attachments";
 export { PronoteApiNewsQuestionType } from "~/constants/news";
 export { PronoteApiAccountId } from "~/constants/accounts";
-export { PronoteApiResourceType as PronoteApiResource } from "~/constants/resources";
+export { PronoteApiResourceType } from "~/constants/resources";
 
 // Exporting main classes.
 export { default as Pronote } from "~/client/Pronote";

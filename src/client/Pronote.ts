@@ -51,6 +51,8 @@ import Holiday from "~/parser/holiday";
 import type { PronoteApiNewsPublicSelf } from "~/constants/news";
 import { callApiUserNewsStatus } from "~/api/user/newsStatus";
 import Authorizations from "~/parser/authorizations";
+import type { PronoteApiUserResourceType } from "~/constants/users";
+import { callApiUserCreateDiscussionRecipients } from "~/api/user/createDiscussionRecipients";
 
 export default class Pronote {
   /**
@@ -593,6 +595,28 @@ export default class Pronote {
       });
 
       return void 0;
+    });
+  }
+
+  /**
+   * Returns a list of possible recipients when creating a discussion.
+   *
+   * This step is required before creating a discussion.
+   * It allows to know who can be the recipient of the discussion.
+   */
+  public async getRecipientsForDiscussionCreation (type: PronoteApiUserResourceType) {
+    return this.queue.push(async () => {
+      const response = await callApiUserCreateDiscussionRecipients(this.fetcher, {
+        recipientType: type,
+        session: this.session,
+        user: {
+          type: this.user.ressource.G,
+          name: this.user.ressource.L,
+          id: this.user.ressource.N
+        }
+      });
+
+      return response.data.donnees.listeRessourcesPourCommunication.V.filter((recipient) => recipient.avecDiscussion);
     });
   }
 }

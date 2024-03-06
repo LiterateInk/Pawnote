@@ -45,6 +45,10 @@ export interface PronoteApiUserCreateDiscussionRecipients {
         listeRessources: PronoteValue<24, Array<{
           L: string
           N: string
+          estUneSousMatiere?: boolean
+        } & {
+          estUneSousMatiere: true
+          libelleMatiere: string
         }>>
       }>>
     }

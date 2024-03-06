@@ -1,5 +1,6 @@
 import type { PronoteApiFunctions } from "~/constants/functions";
 import type { PronoteApiOnglets } from "~/constants/onglets";
+import type { PronoteApiUserResourceType } from "~/constants/users";
 import type { Session } from "~/session";
 
 export interface PronoteApiUserData {
@@ -13,7 +14,7 @@ export interface PronoteApiUserData {
         /** Account ID. */
         N: string
 
-        G: number
+        G: PronoteApiUserResourceType
         P: number
 
         Etablissement: {

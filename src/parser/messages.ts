@@ -1,5 +1,5 @@
 import type { PronoteApiUserMessages } from "~/api/user/messages/types";
-import { BaseMessageRecipient, FetchedMessageRecipient } from "~/parser/recipient";
+import { BaseRecipient, FetchedMessageRecipient } from "~/parser/recipient";
 import type Pronote from "~/client/Pronote";
 
 import { readPronoteApiDate } from "~/pronote/dates";
@@ -10,14 +10,14 @@ import { makeDummyRecipient, parseHintToType } from "~/pronote/recipients";
 
 export class StudentMessage {
   readonly #client: Pronote;
-  readonly #myself: BaseMessageRecipient;
+  readonly #myself: BaseRecipient;
 
   readonly #id: string;
   readonly #content: string;
   readonly #created: Date;
 
-  readonly #author: BaseMessageRecipient;
-  readonly #receiver?: BaseMessageRecipient;
+  readonly #author: BaseRecipient;
+  readonly #receiver?: BaseRecipient;
 
   readonly #partialVisibility: boolean;
   readonly #amountOfRecipients: number;
@@ -58,14 +58,14 @@ export class StudentMessage {
     return this.#created;
   }
 
-  get author (): BaseMessageRecipient {
+  get author (): BaseRecipient {
     return this.#author;
   }
 
   /**
    * @remark `undefined` when there's more than two recipients.
    */
-  get receiver (): BaseMessageRecipient | undefined {
+  get receiver (): BaseRecipient | undefined {
     return this.#receiver;
   }
 

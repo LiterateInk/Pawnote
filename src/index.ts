@@ -55,4 +55,4 @@ export { StudentNews, StudentNewsCategory, StudentNewsSurvey, StudentNewsInforma
 export { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";
 export { StudentDiscussionsOverview, StudentDiscussion, StudentDiscussionFolder } from "~/parser/discussion";
 export { StudentMessage } from "~/parser/messages";
-export { BaseMessageRecipient, FetchedMessageRecipient } from "~/parser/recipient";
+export * from "~/parser/recipient";

@@ -46,7 +46,7 @@ import { callApiUserAttendance } from "~/api/user/attendance";
 import { PronoteApiAttendanceItemType } from "~/constants/attendance";
 import { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";
 import { callApiUserMessageRecipients } from "~/api/user/messageRecipients";
-import { FetchedMessageRecipient } from "~/parser/recipient";
+import { DiscussionCreationRecipient, FetchedMessageRecipient } from "~/parser/recipient";
 import Holiday from "~/parser/holiday";
 import type { PronoteApiNewsPublicSelf } from "~/constants/news";
 import { callApiUserNewsStatus } from "~/api/user/newsStatus";
@@ -604,7 +604,7 @@ export default class Pronote {
    * This step is required before creating a discussion.
    * It allows to know who can be the recipient of the discussion.
    */
-  public async getRecipientsForDiscussionCreation (type: PronoteApiUserResourceType) {
+  public async getRecipientsForDiscussionCreation (type: PronoteApiUserResourceType): Promise<DiscussionCreationRecipient[]> {
     return this.queue.push(async () => {
       const response = await callApiUserCreateDiscussionRecipients(this.fetcher, {
         recipientType: type,
@@ -616,7 +616,9 @@ export default class Pronote {
         }
       });
 
-      return response.data.donnees.listeRessourcesPourCommunication.V.filter((recipient) => recipient.avecDiscussion);
+      return response.data.donnees.listeRessourcesPourCommunication.V
+        .filter((recipient) => recipient.avecDiscussion)
+        .map((r) => new DiscussionCreationRecipient(r));
     });
   }
 }

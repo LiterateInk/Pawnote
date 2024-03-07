@@ -18,5 +18,6 @@ export enum PronoteApiFunctions {
   Attendance = "PagePresence",
   MessageRecipients = "SaisiePublicMessage",
   PatchNews = "SaisieActualites",
-  CreateDiscussionRecipients = "ListeRessourcesPourCommunication"
+  CreateDiscussionRecipients = "ListeRessourcesPourCommunication",
+  CreateMessage = "SaisieMessage"
 }

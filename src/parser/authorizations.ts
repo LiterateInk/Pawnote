@@ -8,6 +8,8 @@ class Authorizations {
   readonly #canDiscussWithStudents: boolean;
   readonly #canDiscussWithTeachers: boolean;
 
+  readonly #hasAdvancedDiscussionEditor: boolean;
+
   constructor (data: ApiUserData["output"]["data"]["donnees"]["autorisations"]) {
     this.#canDiscuss = (data.AvecDiscussion ?? false) && !(data.discussionInterdit ?? false);
 
@@ -15,6 +17,8 @@ class Authorizations {
     this.#canDiscussWithParents = this.#canDiscuss && (data.AvecDiscussionParents ?? false);
     this.#canDiscussWithStudents = this.#canDiscuss && (data.AvecDiscussionEleves ?? false);
     this.#canDiscussWithTeachers = this.#canDiscuss && (data.AvecDiscussionProfesseurs ?? false);
+
+    this.#hasAdvancedDiscussionEditor = data.AvecDiscussionAvancee ?? false;
   }
 
   /**
@@ -50,6 +54,14 @@ class Authorizations {
    */
   public get canDiscussWithTeachers (): boolean {
     return this.#canDiscussWithTeachers;
+  }
+
+  /**
+   * Whether the user is allowed to send HTML through discussions.
+   * Otherwise the user should send plain text.
+  */
+  public get hasAdvancedDiscussionEditor (): boolean {
+    return this.#hasAdvancedDiscussionEditor;
   }
 }
 

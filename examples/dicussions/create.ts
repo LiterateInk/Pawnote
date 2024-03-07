@@ -12,8 +12,27 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiResource
 
   if (!pronote.authorizations.canDiscuss) throw new Error("This account can't discuss, review the permissions.");
   const teachers = await pronote.getRecipientsForDiscussionCreation(PronoteApiResourceType.Teacher);
-  for (const teacher of teachers) {
-    console.log(teacher.name, teacher.isPrincipal, teacher.subjects.map((r) => r.sub));
-  }
+  console.info("Sending a message to every teachers:", teachers.map((teacher) => teacher.name).join(", "));
+
+  await pronote.createDiscussion(
+    // Enter the subject of the discussion.
+    `Hello World, ${Date.now()} !`,
+
+    // Enter the content of the first message.
+    // Note that this will be sent as HTML when
+    // `pronote.authorizations.hasAdvancedDiscussionEditor === true`
+    // otherwise, it's all plain text.
+    `
+We're currently ${new Date().toLocaleDateString()}
+
+This is a message sent over Pawnote !
+Don't forget to star the project on GitHub :p
+    `.trim(),
+
+    // Finally, give the recipients that will receive that first message.
+    teachers
+  );
+
+  console.info("Done ! Hope they'll like this cute message.");
 })();
 

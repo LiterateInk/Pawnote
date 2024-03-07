@@ -242,6 +242,13 @@ export interface PronoteApiUserData {
          */
         AvecDiscussionEleves?: boolean
 
+        /**
+         * Whether the user is allowed to send HTML through discussions.
+         * Otherwise the API should send plain text : **if not checked properly, an
+         * empty message will be sent**.
+         */
+        AvecDiscussionAvancee?: boolean
+
         incidents: unknown
         intendance: unknown
         services: unknown

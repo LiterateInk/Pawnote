@@ -53,6 +53,8 @@ import { callApiUserNewsStatus } from "~/api/user/newsStatus";
 import Authorizations from "~/parser/authorizations";
 import type { PronoteApiUserResourceType } from "~/constants/users";
 import { callApiUserCreateDiscussionRecipients } from "~/api/user/createDiscussionRecipients";
+import { PronoteApiResourceType } from "..";
+import { callApiUserCreateDiscussion } from "~/api/user/createDiscussion";
 
 export default class Pronote {
   /**
@@ -598,6 +600,25 @@ export default class Pronote {
     });
   }
 
+  #throwIfNotAllowedRecipientType (type: PronoteApiUserResourceType): void {
+    if (!this.authorizations.canDiscuss) throw new Error("You don't have access to discussion.");
+
+    switch (type) {
+      case PronoteApiResourceType.Teacher:
+        if (!this.authorizations.canDiscussWithTeachers)
+          throw new Error("You can't discuss with teachers.");
+        break;
+      case PronoteApiResourceType.Student:
+        if (!this.authorizations.canDiscussWithStudents)
+          throw new Error("You can't discuss with students.");
+        break;
+      case PronoteApiResourceType.Personal:
+        if (!this.authorizations.canDiscussWithStaff)
+          throw new Error("You can't discuss with staff.");
+        break;
+    }
+  }
+
   /**
    * Returns a list of possible recipients when creating a discussion.
    *
@@ -605,6 +626,8 @@ export default class Pronote {
    * It allows to know who can be the recipient of the discussion.
    */
   public async getRecipientsForDiscussionCreation (type: PronoteApiUserResourceType): Promise<DiscussionCreationRecipient[]> {
+    this.#throwIfNotAllowedRecipientType(type);
+
     return this.queue.push(async () => {
       const response = await callApiUserCreateDiscussionRecipients(this.fetcher, {
         recipientType: type,
@@ -619,6 +642,22 @@ export default class Pronote {
       return response.data.donnees.listeRessourcesPourCommunication.V
         .filter((recipient) => recipient.avecDiscussion)
         .map((r) => new DiscussionCreationRecipient(r));
+    });
+  }
+
+  public async createDiscussion (subject: string, content: string, recipients: DiscussionCreationRecipient[]): Promise<void> {
+    if (recipients.length <= 0) throw new Error("You need to select at least one recipient to create a discussion.");
+
+    return this.queue.push(async () => {
+      await callApiUserCreateDiscussion(this.fetcher, {
+        session: this.session,
+        recipients,
+        subject,
+        content: {
+          isHTML: this.authorizations.hasAdvancedDiscussionEditor,
+          value: content
+        }
+      });
     });
   }
 }

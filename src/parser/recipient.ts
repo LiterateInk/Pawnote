@@ -88,6 +88,7 @@ class DiscussionCreationRecipientResource {
 }
 
 export class DiscussionCreationRecipient extends BaseRecipient {
+  readonly #id: string;
   readonly #isPrincipal: boolean;
   readonly #subjects: Array<DiscussionCreationRecipientResource>;
 
@@ -100,6 +101,11 @@ export class DiscussionCreationRecipient extends BaseRecipient {
       .map((r) => new DiscussionCreationRecipientResource(r, sub.filter((s) => s.from === r.L)));
 
     this.#isPrincipal = data.estPrincipal ?? false;
+    this.#id = data.N;
+  }
+
+  public get id (): string {
+    return this.#id;
   }
 
   public get isPrincipal (): boolean {

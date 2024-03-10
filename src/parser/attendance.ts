@@ -77,10 +77,6 @@ export class StudentAbsence {
   public justified: boolean;
   public opened: boolean;
 
-  /**
-   * In the format : `HH{h}MM`
-   * @example "2h00"
-   */
   public hoursMissed: number;
   public minutesMissed: number;
   public daysMissedInReport: number;

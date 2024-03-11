@@ -29,6 +29,12 @@ export default defineConfig({
           autogenerate: {
             directory: "contributing"
           }
+        },
+        {
+          label: "Pronote Internals",
+          autogenerate: {
+            directory: "pronote-internals"
+          }
         }
       ],
 

@@ -23,6 +23,12 @@ export default defineConfig({
           autogenerate: {
             directory: "guides"
           }
+        },
+        {
+          label: "Contributing",
+          autogenerate: {
+            directory: "contributing"
+          }
         }
       ],
 

@@ -1,0 +1,21 @@
+---
+title: Instance URL parameters - Pronote internals
+description: Those parameters that some of y'all know about, but some of them are unknown to the public.
+---
+
+## Bypass the ENT using `login=1`
+
+Sometimes, you don't login using your credentials on Pronote, but with a web portal and this is called an ENT.
+It's setup by your school, and it's a way to authenticate you without giving your credentials to Pronote.
+
+Even though, there's a way to bypass it and use your Pronote credentials to authenticate.
+
+Use the `login=1` parameter in the URL to bypass the ENT.
+
+Example: `https://example.com/?login=1`
+
+## Bypass potential incompatibility with browsers using `fd=1`
+
+On a browser such like this one : `Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15`, you might encounter a warning when loading the website that says that your browser is not compatible.
+
+Anyway, you can bypass this warning by adding the `fd=1` parameter in the URL.

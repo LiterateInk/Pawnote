@@ -56,3 +56,5 @@ export { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attend
 export { StudentDiscussionsOverview, StudentDiscussion, StudentDiscussionFolder } from "~/parser/discussion";
 export { StudentMessage } from "~/parser/messages";
 export * from "~/parser/recipient";
+export { PronoteApiSessionAccessType } from "~/pronote/session";
+export { cleanPronoteUrl } from "~/pronote/url";

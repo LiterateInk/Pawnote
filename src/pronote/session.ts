@@ -55,14 +55,6 @@ export interface PronoteApiSession {
 }
 
 export const extractPronoteSessionFromHTML = (html: string): PronoteApiSession => {
-  if (html.includes("Votre adresse IP est provisoirement suspendue")) {
-    throw new Error("Your IP address is temporarily suspended.");
-  }
-
-  if (html.includes("Le site n'est pas disponible")) {
-    throw new Error("The site is not available.");
-  }
-
   try {
     // Remove all spaces and line breaks.
     const body_cleaned = html.replace(/ /ug, "").replace(/\n/ug, "");
@@ -84,6 +76,21 @@ export const extractPronoteSessionFromHTML = (html: string): PronoteApiSession =
     return JSON.parse(session_data_string) as PronoteApiSession;
   }
   catch (error) {
-    throw new Error("Failed to extract session from HTML.");
+    if (html.includes("Votre adresse IP est provisoirement suspendue")) {
+      throw new Error("Your IP address is temporarily suspended.");
+    }
+    else if (html.includes("Le site n'est pas disponible")) {
+      throw new Error("The site is not available.");
+    }
+    else if (html.includes("Le site est momentanément indisponible")) {
+      let error = "The site is temporarily unavailable";
+      if (html.includes("Toutes les sessions utilisateurs sont occupées")) {
+        error += ", all user sessions are busy";
+      }
+
+      throw new Error(error + ".");
+    }
+
+    throw new Error("Failed to extract session from HTML, for an unknown reason.");
   }
 };

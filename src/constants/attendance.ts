@@ -1,14 +1,9 @@
 import type { PronoteValue } from "~/api/type";
-
-export enum PronoteApiAttendanceItemType {
-  Absence = 13,
-  Delay = 14,
-  Punishment = 41
-}
+import type { PronoteApiResourceType } from "~/constants/resources";
 
 export interface PronoteApiAttendanceAbsence {
   N: string
-  G: PronoteApiAttendanceItemType.Absence
+  G: PronoteApiResourceType.Absence
   dateDebut: PronoteValue<7, string>
   dateFin: PronoteValue<7, string>
   ouverte: boolean
@@ -35,7 +30,7 @@ export interface PronoteApiAttendanceAbsence {
 
 export interface PronoteApiAttendanceDelay {
   N: string
-  G: PronoteApiAttendanceItemType.Delay
+  G: PronoteApiResourceType.Delay
   date: PronoteValue<7, string>
   reglee: boolean
   justifie: boolean
@@ -61,7 +56,7 @@ export interface PronoteApiAttendanceDelay {
 
 export interface PronoteApiAttendancePunishment {
   N: string
-  G: PronoteApiAttendanceItemType.Punishment
+  G: PronoteApiResourceType.Punishment
   dateDemande: PronoteValue<7, string>
   /** Position in the timetable for the day related to `dateDemande` */
   placeDemande: number

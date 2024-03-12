@@ -43,7 +43,6 @@ import { callApiUserMessages } from "~/api/user/messages";
 import { StudentMessage } from "~/parser/messages";
 import { PronoteApiOnglets } from "~/constants/onglets";
 import { callApiUserAttendance } from "~/api/user/attendance";
-import { PronoteApiAttendanceItemType } from "~/constants/attendance";
 import { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";
 import { callApiUserMessageRecipients } from "~/api/user/messageRecipients";
 import { DiscussionCreationRecipient, FetchedMessageRecipient } from "~/parser/recipient";
@@ -445,7 +444,8 @@ export default class Pronote {
   private presenceRequestsInterval?: ReturnType<typeof setInterval>;
 
   /**
-   * @param interval Custom interval (in ms) for `Presence` requests. Default to 2 minutes.
+   * @param interval Custom interval (in ms) for `Presence` requests.
+   * Defaults to 2 minutes: same value as from Pronote.
    */
   public startPresenceRequests (interval = 2 * 60 * 1000): void {
     if (this.presenceRequestsInterval) this.stopPresenceRequests();
@@ -557,15 +557,21 @@ export default class Pronote {
       });
 
       return data.donnees.listeAbsences.V.map((item) => {
-        if (item.G === PronoteApiAttendanceItemType.Absence) {
-          return new StudentAbsence(item);
+        let instance: StudentAbsence | StudentDelay | StudentPunishment;
+
+        switch (item.G) {
+          case PronoteApiResourceType.Absence:
+            instance = new StudentAbsence(item);
+            break;
+          case PronoteApiResourceType.Delay:
+            instance = new StudentDelay(item);
+            break;
+          case PronoteApiResourceType.Punishment:
+            instance = new StudentPunishment(this, item);
+            break;
         }
-        else if (item.G === PronoteApiAttendanceItemType.Delay) {
-          return new StudentDelay(item);
-        }
-        else if (item.G === PronoteApiAttendanceItemType.Punishment) {
-          return new StudentPunishment(this, item);
-        }
+
+        return instance;
       }).filter(Boolean) as Array<StudentAbsence | StudentDelay | StudentPunishment>;
     });
   }
@@ -645,6 +651,13 @@ export default class Pronote {
     });
   }
 
+  /**
+   * Creates a discussion.
+   *
+   * Sadly, we can't get the ID of the created discussion
+   * or anything else related to it, you need to request the
+   * discussions list once again using `getDiscussionsOverview()`.
+  */
   public async createDiscussion (subject: string, content: string, recipients: DiscussionCreationRecipient[]): Promise<void> {
     if (recipients.length <= 0) throw new Error("You need to select at least one recipient to create a discussion.");
 
@@ -660,4 +673,10 @@ export default class Pronote {
       });
     });
   }
+
+  // public async createDiscussionMessage(replyTo: string, content: string): Promise<void> {
+  //   return this.queue.push(async () => {
+
+  //   });
+  // }
 }

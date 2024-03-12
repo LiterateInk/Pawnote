@@ -46,33 +46,33 @@ export class StudentMessage {
     return this.#client.getRecipientsForMessage(this.#id);
   }
 
-  get id (): string {
+  public get id (): string {
     return this.#id;
   }
 
-  get content (): string {
+  public get content (): string {
     return this.#content;
   }
 
-  get created (): Date {
+  public get created (): Date {
     return this.#created;
   }
 
-  get author (): BaseRecipient {
+  public get author (): BaseRecipient {
     return this.#author;
   }
 
   /**
    * @remark `undefined` when there's more than two recipients.
    */
-  get receiver (): BaseRecipient | undefined {
+  public get receiver (): BaseRecipient | undefined {
     return this.#receiver;
   }
 
   /**
    * `true` when only some people can see the message.
    */
-  get partialVisibility (): boolean {
+  public get partialVisibility (): boolean {
     return this.#partialVisibility;
   }
 
@@ -82,11 +82,11 @@ export class StudentMessage {
    * // In the situation when there's you and a teacher.
    * message.amountOfRecipients === 2; // 1 (you) + 1 (teacher)
    */
-  get amountOfRecipients (): number {
+  public get amountOfRecipients (): number {
     return this.#amountOfRecipients;
   }
 
-  get files (): StudentAttachment[] {
+  public get files (): StudentAttachment[] {
     return this.#files;
   }
 }

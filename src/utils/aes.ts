@@ -5,7 +5,7 @@ class AES {
     key = forge.md.md5.create().update(key.bytes()).digest();
     iv = iv.length() ? forge.md.md5.create().update(iv.bytes()).digest() : forge.util.createBuffer().fillWithByte(0, 16);
 
-    const buffer = forge.util.createBuffer(forge.util.hexToBytes(data));
+    const buffer = forge.util.createBuffer(forge.util.binary.hex.decode(data));
     const decipher = forge.cipher.createDecipher("AES-CBC", key);
 
     decipher.start({ iv });

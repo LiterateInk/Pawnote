@@ -36,10 +36,6 @@ export const callApiLoginInformations = makeApiHandler<ApiLoginInformations>(asy
   );
 
   const aes_iv = session.encryption.aes.iv;
-  if (typeof aes_iv === "undefined") { // Should never happen though.
-    throw new Error("AES IV is undefined.");
-  }
-
   // Create "Uuid" property for the request.
   let rsa_uuid: string;
 

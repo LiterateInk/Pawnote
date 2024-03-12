@@ -163,35 +163,7 @@ export class Session {
   }
 
   public readPronoteFunctionPayload <Res>(response_body: string): Res {
-    let response: PronoteApiFunctionPayload<Res>;
-
-    try {
-      response = JSON.parse(response_body);
-    }
-    catch {
-      if (response_body.includes("La page a expir")) {
-        throw new Error("The page has expired.");
-      }
-
-      else if (response_body.includes("Votre adresse IP a ")) {
-        throw new Error("Your IP address is temporarily suspended.");
-      }
-
-      else if (response_body.includes("La page dem")) {
-        throw new Error("The requested page does not exist.");
-      }
-
-      else if (response_body.includes("Impossible d'a")) {
-        throw new Error("Page unaccessible.");
-      }
-
-      else if (response_body.includes("Vous avez d")) {
-        throw new Error("You've been rate-limited.");
-      }
-
-      throw new Error("Failed to parse JSON from response.");
-    }
-
+    const response = JSON.parse(response_body) as PronoteApiFunctionPayload<Res>;
     this.instance.order++;
 
     try {
@@ -226,8 +198,27 @@ export class Session {
       return final_data;
     }
     catch (error) {
-      console.error(error);
-      throw new Error("Failed to read payload from response.");
+      if (response_body.includes("La page a expir")) {
+        throw new Error("The page has expired.");
+      }
+
+      else if (response_body.includes("Votre adresse IP a ") || response_body.includes("Votre adresse IP est provisoirement suspendue")) {
+        throw new Error("Your IP address is temporarily suspended.");
+      }
+
+      else if (response_body.includes("La page dem")) {
+        throw new Error("The requested page does not exist.");
+      }
+
+      else if (response_body.includes("Impossible d'a")) {
+        throw new Error("Page unaccessible.");
+      }
+
+      else if (response_body.includes("Vous avez d")) {
+        throw new Error("You've been rate-limited.");
+      }
+
+      throw error;
     }
   }
 }

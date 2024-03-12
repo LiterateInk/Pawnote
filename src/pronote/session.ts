@@ -1,18 +1,40 @@
 import type { PronoteApiAccountId } from "~/constants/accounts";
 
+export enum PronoteApiSessionAccessType {
+  CookieConnection = 5,
+  DirectConnection = 2,
+  AccountConnection = 1,
+  TokenDirectConnection = 4,
+  TokenAccountConnection = 3,
+  Account = 0
+}
+
 export interface PronoteApiSession {
-  /** Session ID as a **string**. */
+  /**
+   * Session ID as a string.
+   * Can be converted to a number, if needed.
+   */
   h: string
-  /** Account Type ID. */
+
+  /**
+   * Account Type ID.
+   */
   a: PronoteApiAccountId
+
   /** Whether the instance is demo or not. */
   d?: boolean
 
   /** ENT Username. */
   e?: string
+
   /** ENT Password. */
   f?: string
-  g?: number
+
+  /**
+   * How the session is accessed.
+   * @default PronoteApiSessionAccessType.Account
+   */
+  g?: PronoteApiSessionAccessType
 
   /**
    * Modulus for RSA encryption.
@@ -26,30 +48,30 @@ export interface PronoteApiSession {
    */
   ER?: string
 
-  /// The following properties are assigned
-  /// to `CommunicationProduit.optionsSecurite`.
-
   /**
-   * Skip request encryption.
-   * > Assigned to `.sansCryptageAES`.
+   * Whether we should skip request encryption or not.
    */
   sCrA?: boolean
 
   /**
-   * Skip request compression.
-   * > Assigned to `.sansCompressionAES`.
+   * Whether we should skip request compression or not.
    */
   sCoA?: boolean
 
   /**
-   * ???, but we know it changes how the encryption is made.
-   * > Assigned to `.http`.
+   * Only defined and `true` when the instance doesn't have an SSL certificate
+   * that is linked directly inside the PRONOTE.net server.
+   *
+   * On latest versions of Pronote, this adds an encryption layer
+   * on the request and responses.
    */
   http?: boolean
 
   /**
-   * Whether polling should be made. We can ignore this.
-   * > Assigned to `.avecPollingActif`.
+   * Whether polling should be used instead of presence.
+   *
+   * Pawnote doesn't take this into account
+   * and only sends presence requests.
    */
   poll?: boolean
 }

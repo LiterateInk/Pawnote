@@ -37,10 +37,10 @@ import { StudentLessonResource } from "~/parser/lessonResource";
 import { callApiUserNews } from "~/api/user/news";
 import { StudentNews, StudentNewsItemQuestion } from "~/parser/news";
 import { callApiUserDiscussions } from "~/api/user/discussions";
-import { StudentDiscussionsOverview } from "~/parser/discussion";
-import type { PronoteApiMessagesPossessionsList } from "~/constants/messages";
+import { StudentDiscussion, StudentDiscussionsOverview } from "~/parser/discussion";
+import { PronoteApiMessagesButtonType } from "~/constants/messages";
 import { callApiUserMessages } from "~/api/user/messages";
-import { StudentMessage } from "~/parser/messages";
+import { MessagesOverview } from "~/parser/messages";
 import { PronoteApiOnglets } from "~/constants/onglets";
 import { callApiUserAttendance } from "~/api/user/attendance";
 import { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";
@@ -52,8 +52,10 @@ import { callApiUserNewsStatus } from "~/api/user/newsStatus";
 import Authorizations from "~/parser/authorizations";
 import type { PronoteApiUserResourceType } from "~/constants/users";
 import { callApiUserCreateDiscussionRecipients } from "~/api/user/createDiscussionRecipients";
-import { PronoteApiResourceType } from "..";
+import { PronoteApiResourceType } from "~/constants/resources";
 import { callApiUserCreateDiscussion } from "~/api/user/createDiscussion";
+import { callApiUserCreateDiscussionMessage } from "~/api/user/createDiscussionMessage";
+import { getPronoteMessageButtonType } from "~/pronote/messages";
 
 export default class Pronote {
   /**
@@ -493,16 +495,18 @@ export default class Pronote {
   public async getDiscussionsOverview (): Promise<StudentDiscussionsOverview> {
     return this.queue.push(async () => {
       const { data } = await callApiUserDiscussions(this.fetcher, { session: this.session });
-      return new StudentDiscussionsOverview(this, data.donnees);
+      return new StudentDiscussionsOverview(this, this.queue, this.session, data.donnees);
     });
   }
 
-  public async getMessagesFromDiscussion (possessions: PronoteApiMessagesPossessionsList, markAsRead = false): Promise<StudentMessage[]> {
+  public async getMessagesOverviewFromDiscussion (discussion: StudentDiscussion, markAsRead = false, limit = 0): Promise<MessagesOverview> {
     return this.queue.push(async () => {
-      const { data } = await callApiUserMessages(this.fetcher, { possessions, session: this.session, markAsRead });
-      return data.donnees.listeMessages.V
-        .map((message) => new StudentMessage(this, message))
-        .sort((a, b) => b.created.getTime() - a.created.getTime());
+      const { data } = await callApiUserMessages(this.fetcher, { possessions: discussion.possessions, session: this.session, markAsRead, limit });
+      return new MessagesOverview(
+        this, this.queue, this.session,
+        discussion,
+        data
+      );
     });
   }
 
@@ -510,8 +514,8 @@ export default class Pronote {
    * Mark a discussion as read.
    * @remark Shortcut for `getMessagesFromDiscussion` but here we don't return anything.
    */
-  public async markDiscussionAsRead (possessions: PronoteApiMessagesPossessionsList): Promise<void> {
-    await this.getMessagesFromDiscussion(possessions, true);
+  public async markDiscussionAsRead (discussion: StudentDiscussion): Promise<void> {
+    await this.getMessagesOverviewFromDiscussion(discussion, true, 0);
   }
 
   public async getRecipientsForMessage (messageID: string): Promise<FetchedMessageRecipient[]> {
@@ -674,9 +678,19 @@ export default class Pronote {
     });
   }
 
-  // public async createDiscussionMessage(replyTo: string, content: string): Promise<void> {
-  //   return this.queue.push(async () => {
+  public async replyToDiscussionMessage (replyMessageID: string, content: string, button: PronoteApiMessagesButtonType, includeParentsAndStudents = false): Promise<void> {
+    const buttonType = getPronoteMessageButtonType(button, includeParentsAndStudents);
 
-  //   });
-  // }
+    return this.queue.push(async () => {
+      await callApiUserCreateDiscussionMessage(this.fetcher, {
+        session: this.session,
+        replyMessageID,
+        button: buttonType,
+        content: {
+          isHTML: this.authorizations.hasAdvancedDiscussionEditor,
+          value: content
+        }
+      });
+    });
+  }
 }

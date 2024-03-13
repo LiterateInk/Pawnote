@@ -55,6 +55,6 @@ export { StudentNews, StudentNewsCategory, StudentNewsSurvey, StudentNewsInforma
 export { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";
 export { StudentDiscussionsOverview, StudentDiscussion, StudentDiscussionFolder } from "~/parser/discussion";
 export { StudentMessage } from "~/parser/messages";
-export * from "~/parser/recipient";
+export { DiscussionCreationRecipient, FetchedMessageRecipient, MessageRecipient } from "~/parser/recipient";
 export { PronoteApiSessionAccessType } from "~/pronote/session";
 export { cleanPronoteUrl } from "~/pronote/url";

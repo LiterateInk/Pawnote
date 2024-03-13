@@ -1,10 +1,10 @@
 import type { PronoteApiMessagesPossessionsList } from "~/constants/messages";
 import type { PronoteApiUserDiscussions } from "~/api/user/discussions/types";
 import type { FetchedMessageRecipient } from "~/parser/recipient";
-import type { MessagesOverview, StudentMessage } from "~/parser/messages";
+import type { MessagesOverview } from "~/parser/messages";
 import type Pronote from "~/client/Pronote";
-import Queue from "~/utils/queue";
-import { Session } from "~/session";
+import type Queue from "~/utils/queue";
+import type { Session } from "~/session";
 import { callApiUserDiscussions } from "~/api/user/discussions";
 
 type UserDiscussionsOverview = PronoteApiUserDiscussions["response"]["donnees"];

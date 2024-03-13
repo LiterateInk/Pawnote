@@ -54,7 +54,7 @@ export { Period, OngletPeriod } from "~/parser/period";
 export { StudentNews, StudentNewsCategory, StudentNewsSurvey, StudentNewsInformation, StudentNewsItemQuestion } from "~/parser/news";
 export { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";
 export { StudentDiscussionsOverview, StudentDiscussion, StudentDiscussionFolder } from "~/parser/discussion";
-export { StudentMessage } from "~/parser/messages";
+export { SentMessage, MessagesOverview, TransferredMessage, Message } from "~/parser/messages";
 export { DiscussionCreationRecipient, FetchedMessageRecipient, MessageRecipient } from "~/parser/recipient";
 export { PronoteApiSessionAccessType } from "~/pronote/session";
 export { cleanPronoteUrl } from "~/pronote/url";

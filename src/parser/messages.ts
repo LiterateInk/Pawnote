@@ -9,10 +9,9 @@ import type { Session } from "~/session";
 import { readPronoteApiDate } from "~/pronote/dates";
 import { StudentAttachment } from "~/parser/attachment";
 import { PronoteApiResourceType } from "~/constants/resources";
-import { PRONOTE_MESSAGE_MYSELF_NAME, PronoteApiMessagesButtonType } from "~/constants/messages";
+import { PRONOTE_MESSAGE_MYSELF_NAME, PronoteApiMessagesButtonType, PronoteApiSentMessage, PronoteApiTransferredMessage } from "~/constants/messages";
 import { makeDummyRecipient, parseHintToType } from "~/pronote/recipients";
 import { callApiUserMessages } from "~/api/user/messages";
-
 export class MessagesOverview {
   readonly #client: Pronote;
   readonly #clientQueue: Queue;
@@ -20,7 +19,7 @@ export class MessagesOverview {
   readonly #discussion: StudentDiscussion;
 
   #defaultReplyMessageID: string;
-  #messages: StudentMessage[];
+  #messages: SentMessage[];
   // Needed to create a new message...
   #sendButtonGenre: PronoteApiMessagesButtonType;
   #fetchLimit: number;
@@ -47,11 +46,11 @@ export class MessagesOverview {
     return listeBoutons.find((button) => button.L.startsWith("Envoyer"))!.G;
   }
 
-  #parseMessages (listeMessages: PronoteApiUserMessages["response"]["donnees"]["listeMessages"]["V"]): StudentMessage[] {
-    const output: StudentMessage[] = [];
+  #parseMessages (listeMessages: PronoteApiUserMessages["response"]["donnees"]["listeMessages"]["V"]): SentMessage[] {
+    const output: SentMessage[] = [];
 
     for (const message of listeMessages) {
-      const instance = new StudentMessage(this.#client, this, message);
+      const instance = new SentMessage(this.#client, this, message);
       output.push(instance);
     }
 
@@ -82,7 +81,7 @@ export class MessagesOverview {
     return this.#defaultReplyMessageID;
   }
 
-  public get messages (): StudentMessage[] {
+  public get messages (): SentMessage[] {
     return this.#messages;
   }
 
@@ -108,11 +107,8 @@ export class MessagesOverview {
   }
 }
 
-export class StudentMessage {
+export abstract class Message {
   readonly #client: Pronote;
-  readonly #messagesOverview: MessagesOverview;
-  readonly #myself: MessageRecipient;
-
   readonly #id: string;
   readonly #content: string;
   readonly #created: Date;
@@ -124,38 +120,27 @@ export class StudentMessage {
   readonly #amountOfRecipients: number;
 
   readonly #files: StudentAttachment[];
-  readonly #replyMessageID: string;
 
-  constructor (client: Pronote, messagesOverview: MessagesOverview, data: PronoteApiUserMessages["response"]["donnees"]["listeMessages"]["V"][number]) {
+  protected constructor (client: Pronote, data: PronoteApiSentMessage | PronoteApiTransferredMessage) {
     this.#client = client;
-    this.#messagesOverview = messagesOverview;
-    this.#myself = makeDummyRecipient(`${client.studentName} (${client.studentClass})`, PronoteApiResourceType.Student);
+    const myself = makeDummyRecipient(`${client.studentName} (${client.studentClass})`, PronoteApiResourceType.Student);
 
     this.#id = data.N;
     this.#content = data.estHTML ? data.contenu.V : data.contenu;
     this.#created = readPronoteApiDate(data.date.V);
 
-    this.#author = data.public_gauche === PRONOTE_MESSAGE_MYSELF_NAME ? this.#myself : makeDummyRecipient(data.public_gauche, parseHintToType(data.hint_gauche));
-    if (data.public_droite === PRONOTE_MESSAGE_MYSELF_NAME) this.#receiver = this.#myself;
+    this.#author = data.public_gauche === PRONOTE_MESSAGE_MYSELF_NAME ? myself : makeDummyRecipient(data.public_gauche, parseHintToType(data.hint_gauche));
+    if (data.public_droite === PRONOTE_MESSAGE_MYSELF_NAME) this.#receiver = myself;
     else if (typeof data.public_droite === "string") this.#receiver = makeDummyRecipient(data.public_droite, parseHintToType(data.hint_droite!));
 
     this.#partialVisibility = data.estUnAparte;
     this.#amountOfRecipients = (data.nbPublic ?? 1) + 1; // `+1` because the author is also a recipient.
 
     this.#files = data.listeDocumentsJoints?.V.map((file) => new StudentAttachment(client, file)) ?? [];
-    this.#replyMessageID = data.messageSource.V.N;
   }
 
   public async getRecipients (): Promise<FetchedMessageRecipient[]> {
     return this.#client.getRecipientsForMessage(this.#id);
-  }
-
-  public reply (content: string, includeParentsAndStudents = false): Promise<void> {
-    return this.#messagesOverview.sendMessage(content, includeParentsAndStudents, this.#id);
-  }
-
-  public get replyingToMessage (): StudentMessage | undefined {
-    return this.#messagesOverview.messages.find((message) => message.id === this.#replyMessageID);
   }
 
   public get id (): string {
@@ -200,5 +185,43 @@ export class StudentMessage {
 
   public get files (): StudentAttachment[] {
     return this.#files;
+  }
+}
+
+export class TransferredMessage extends Message {
+  public constructor (client: Pronote, data: PronoteApiTransferredMessage) {
+    super(client, data);
+  }
+}
+
+export class SentMessage extends Message {
+  readonly #messagesOverview: MessagesOverview;
+  readonly #replyMessageID: string;
+  readonly #transferredMessages: TransferredMessage[] = [];
+
+  public constructor (client: Pronote, messagesOverview: MessagesOverview, data: PronoteApiSentMessage) {
+    super(client, data);
+
+    this.#messagesOverview = messagesOverview;
+    this.#replyMessageID = data.messageSource.V.N;
+
+    if (data.listeMessagesPourContexte) {
+      for (const message of data.listeMessagesPourContexte.V) {
+        const instance = new TransferredMessage(client, message);
+        this.#transferredMessages.push(instance);
+      }
+    }
+  }
+
+  public reply (content: string, includeParentsAndStudents = false): Promise<void> {
+    return this.#messagesOverview.sendMessage(content, includeParentsAndStudents, this.id);
+  }
+
+  public get replyingToMessage (): SentMessage | undefined {
+    return this.#messagesOverview.messages.find((message) => message.id === this.#replyMessageID);
+  }
+
+  public get transferredMessages (): TransferredMessage[] {
+    return this.#transferredMessages;
   }
 }

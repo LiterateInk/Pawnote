@@ -2,8 +2,7 @@ import type { PronoteValue } from "~/api/type";
 import type { PronoteApiFunctions } from "~/constants/functions";
 import type { PronoteApiOnglets } from "~/constants/onglets";
 import type { Session } from "~/session";
-import type { PronoteApiMessagesPossessionsList, PronoteApiMessagesButtonType } from "~/constants/messages";
-import type { PronoteApiAttachment } from "~/constants/attachments";
+import type { PronoteApiMessagesPossessionsList, PronoteApiMessagesButtonType, PronoteApiSentMessage, PronoteApiTransferredMessage } from "~/constants/messages";
 
 export interface PronoteApiUserMessages {
   request: {
@@ -20,77 +19,7 @@ export interface PronoteApiUserMessages {
 
   response: {
     donnees: {
-      listeMessages: PronoteValue<24, Array<{
-        N: string
-
-        /**
-         * When the message is a reply to another one,
-         * this is the ID of the message it's replying to.
-         */
-        messageSource: PronoteValue<24, {
-          N: string
-        }>
-
-        possessionMessage: PronoteValue<24, {
-          N: string
-        }>
-
-        /** NOTE: No idea what this is. */
-        estNonPossede: boolean
-
-        /**
-         * Another format of date, why ?
-         * @example "ven. 16/02/24 13h35"
-         */
-        libelleDate: string
-
-        /** @example "16/02/2024 13:35:11" */
-        date: PronoteValue<7, string>
-
-        listeDocumentsJoints?: PronoteValue<24, Array<PronoteApiAttachment>>
-
-        /**
-         * You're the one who sent the message.
-         */
-        emetteur: boolean
-
-        /**
-         * The one sending the message.
-         * @example "Moi" // in this case, `message.emetteur === true`
-         */
-        public_gauche: string
-
-        /**
-         * The one receiving the message.
-         * Can be undefined when sending to a lot of people at the same time.
-         * When this happens, you can see how much people received the message in `nbPublic`.
-         * @example "John D."
-         */
-        public_droite?: string
-
-        /**
-         * @example "Professeur"
-         */
-        hint_droite?: string
-
-        /**
-         * @example "Professeur"
-         */
-        hint_gauche: string
-
-        estUnAparte: boolean
-        /** Shows all the recipients the message was sent to. */
-        nbPublic?: number
-      } & (
-        | {
-          contenu: string
-          estHTML: false
-        }
-        | {
-          contenu: PronoteValue<number, string>;
-          estHTML: true
-        }
-      )>>
+      listeMessages: PronoteValue<24, Array<PronoteApiSentMessage | PronoteApiTransferredMessage>>
 
       messagePourReponse: PronoteValue<24, {
         N: string

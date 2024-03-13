@@ -2,7 +2,7 @@ import type { PronoteValue } from "~/api/type";
 import type { PronoteApiFunctions } from "~/constants/functions";
 import type { PronoteApiOnglets } from "~/constants/onglets";
 import type { Session } from "~/session";
-import type { PronoteApiMessagesPossessionsList } from "~/constants/messages";
+import type { PronoteApiMessagesPossessionsList, PronoteApiMessagesButtonType } from "~/constants/messages";
 import type { PronoteApiAttachment } from "~/constants/attachments";
 
 export interface PronoteApiUserMessages {
@@ -14,6 +14,7 @@ export interface PronoteApiUserMessages {
     donnees: {
       listePossessionsMessages: PronoteApiMessagesPossessionsList
       marquerCommeLu: boolean
+      nbMessagesVus: number
     }
   }
 
@@ -22,6 +23,10 @@ export interface PronoteApiUserMessages {
       listeMessages: PronoteValue<24, Array<{
         N: string
 
+        /**
+         * When the message is a reply to another one,
+         * this is the ID of the message it's replying to.
+         */
         messageSource: PronoteValue<24, {
           N: string
         }>
@@ -94,7 +99,7 @@ export interface PronoteApiUserMessages {
       }>
 
       listeBoutons: PronoteValue<24, Array<{
-        G: number
+        G: PronoteApiMessagesButtonType
         L: string
       }>>
 
@@ -111,6 +116,7 @@ export interface ApiUserMessages {
   input: {
     session: Session
     markAsRead: boolean
+    limit: number
     possessions: PronoteApiMessagesPossessionsList
   }
 

@@ -13,7 +13,8 @@ export const callApiUserMessages = makeApiHandler<ApiUserMessages>(async (fetche
 
     donnees: {
       listePossessionsMessages: input.possessions,
-      marquerCommeLu: input.markAsRead
+      marquerCommeLu: input.markAsRead,
+      nbMessagesVus: input.limit
     }
   });
 

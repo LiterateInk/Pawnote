@@ -221,4 +221,16 @@ export class Session {
       throw error;
     }
   }
+
+  public writePronoteFileUploadPayload (file: ArrayBuffer) {
+    this.instance.order++;
+
+    const { aes_iv, aes_key } = this.getAESEncryptionKeys();
+    const order_encrypted = aes.encrypt(this.instance.order.toString(), aes_key, aes_iv);
+
+    return {
+      order: order_encrypted.toUpperCase(),
+      data: file
+    };
+  }
 }

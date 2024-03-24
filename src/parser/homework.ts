@@ -74,6 +74,10 @@ export class StudentHomework {
     }
   }
 
+  public async uploadFile (file: ArrayBuffer): Promise<void> {
+
+  }
+
   public async setDone (done: boolean): Promise<void> {
     await this.client.patchHomeworkStatus(this.id, done);
     this.done = done;

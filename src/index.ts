@@ -40,6 +40,7 @@ export { PronoteApiAttachmentType } from "~/constants/attachments";
 export { PronoteApiNewsQuestionType } from "~/constants/news";
 export { PronoteApiAccountId } from "~/constants/accounts";
 export { PronoteApiResourceType } from "~/constants/resources";
+export { PronoteApiAttendanceObservationType } from "~/constants/attendance";
 
 // Exporting main classes.
 export { default as Pronote } from "~/client/Pronote";
@@ -52,7 +53,7 @@ export { StudentTheme } from "~/parser/theme";
 export { StudentGrade } from "~/parser/grade";
 export { Period, OngletPeriod } from "~/parser/period";
 export { StudentNews, StudentNewsCategory, StudentNewsSurvey, StudentNewsInformation, StudentNewsItemQuestion } from "~/parser/news";
-export { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";
+export { StudentAbsence, StudentDelay, StudentPunishment, StudentObservation } from "~/parser/attendance";
 export { StudentDiscussionsOverview, StudentDiscussion, StudentDiscussionFolder } from "~/parser/discussion";
 export { SentMessage, MessagesOverview, TransferredMessage, Message } from "~/parser/messages";
 export { DiscussionCreationRecipient, FetchedMessageRecipient, MessageRecipient } from "~/parser/recipient";

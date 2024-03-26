@@ -43,7 +43,7 @@ import { callApiUserMessages } from "~/api/user/messages";
 import { MessagesOverview } from "~/parser/messages";
 import { PronoteApiOnglets } from "~/constants/onglets";
 import { callApiUserAttendance } from "~/api/user/attendance";
-import { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";
+import { StudentAbsence, StudentDelay, StudentObservation, StudentPunishment } from "~/parser/attendance";
 import { callApiUserMessageRecipients } from "~/api/user/messageRecipients";
 import { DiscussionCreationRecipient, FetchedMessageRecipient } from "~/parser/recipient";
 import Holiday from "~/parser/holiday";
@@ -561,7 +561,7 @@ export default class Pronote {
       });
 
       return data.donnees.listeAbsences.V.map((item) => {
-        let instance: StudentAbsence | StudentDelay | StudentPunishment;
+        let instance: StudentAbsence | StudentDelay | StudentPunishment | StudentObservation;
 
         switch (item.G) {
           case PronoteApiResourceType.Absence:
@@ -573,10 +573,13 @@ export default class Pronote {
           case PronoteApiResourceType.Punishment:
             instance = new StudentPunishment(this, item);
             break;
+          case PronoteApiResourceType.ObservationProfesseurEleve:
+            instance = new StudentObservation(item);
+            break;
         }
 
         return instance;
-      }).filter(Boolean) as Array<StudentAbsence | StudentDelay | StudentPunishment>;
+      }).filter(Boolean) as Array<StudentAbsence | StudentDelay | StudentPunishment | StudentObservation>;
     });
   }
 

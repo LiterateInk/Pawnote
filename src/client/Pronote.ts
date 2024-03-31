@@ -56,6 +56,9 @@ import { PronoteApiResourceType } from "~/constants/resources";
 import { callApiUserCreateDiscussion } from "~/api/user/createDiscussion";
 import { callApiUserCreateDiscussionMessage } from "~/api/user/createDiscussionMessage";
 import { getPronoteMessageButtonType } from "~/pronote/messages";
+import { callApiUserHomepage } from "~/api/user/homepage";
+import { Partner } from "~/parser/partner";
+import { callApiUserPartnerURL } from "~/api/user/partnerURL";
 
 export default class Pronote {
   /**
@@ -94,6 +97,8 @@ export default class Pronote {
    * in the authentication options.
    */
   public nextTimeToken: string;
+
+  public nextOpenDate: Date;
 
   /**
    * Root URL of the Pronote instance.
@@ -158,6 +163,7 @@ export default class Pronote {
 
     this.username = credentials.username;
     this.nextTimeToken = credentials.token;
+    this.nextOpenDate = readPronoteApiDate(loginInformations.donnees.General.JourOuvre.V);
     this.pronoteRootURL = session.instance.pronote_url;
     this.accountTypeID = session.instance.account_type_id;
     this.sessionID = session.instance.session_id;
@@ -694,6 +700,37 @@ export default class Pronote {
           value: content
         }
       });
+    });
+  }
+
+  public async getHomePage (nextOpenDate = this.nextOpenDate) {
+    return this.queue.push(async () => {
+      const response = await callApiUserHomepage(this.fetcher, {
+        session: this.session,
+        nextDateOpened: nextOpenDate,
+        weekNumber: translateToPronoteWeekNumber(nextOpenDate, this.firstMonday)
+      });
+
+      const ardSSO = response.data.donnees.partenaireARD?.SSO;
+
+      return {
+        ard: ardSSO ? new Partner(this, ardSSO) : null
+      };
+    });
+  }
+
+  public async getPartnerURL (partner: Partner): Promise<string> {
+    return this.queue.push(async () => {
+      const response = await callApiUserPartnerURL(this.fetcher, {
+        session: this.session,
+        sso: {
+          code: partner.code,
+          linkLabel: partner.linkLabel,
+          description: partner.description
+        }
+      });
+
+      return response.url;
     });
   }
 }

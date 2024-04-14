@@ -54,17 +54,17 @@ export interface PronoteApiUserGrades {
 
           estServiceEnGroupe: boolean
 
-          moyEleve: {
+          moyEleve?: {
             _T: 10
             V: string
           }
 
-          baremeMoyEleve: {
+          baremeMoyEleve?: {
             _T: 10
             V: string
           }
 
-          baremeMoyEleveParDefaut: {
+          baremeMoyEleveParDefaut?: {
             _T: 10
             V: string
           }

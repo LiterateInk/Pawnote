@@ -38,7 +38,7 @@ export const readPronoteApiGrade = (grade: string): PronoteApiGradeType | number
   }
 
   // Leave it as is.
-  grade = grade.replace(/,/g, ".");
+  grade = grade.replace(",", ".");
   const value = parseFloat(grade);
 
   if (isNaN(value)) return PronoteApiGradeType.Error;

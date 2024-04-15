@@ -29,7 +29,7 @@ export type PawnoteFetcher = (url: string, options: {
   /** Headers that should be appended to the request. */
   headers?: Record<string, string> | Headers
   /** Body of the request of type given in the "Content-Type" header. */
-  body?: string
+  body?: string | FormData
   /** Whether we should automatically handle the redirections or do it by hand. */
   redirect?: "follow" | "manual"
 }) => Promise<{

@@ -1,5 +1,5 @@
 import type { PronoteValue } from "~/api/type";
-import type { PronoteApiAttendanceAbsence, PronoteApiAttendanceDelay, PronoteApiAttendancePunishment } from "~/constants/attendance";
+import type { PronoteApiAttendanceAbsence, PronoteApiAttendanceDelay, PronoteApiAttendancePunishment, PronoteApiAttendanceObservation } from "~/constants/attendance";
 import type { PronoteApiFunctions } from "~/constants/functions";
 import type { PronoteApiOnglets } from "~/constants/onglets";
 import type { Period } from "~/parser/period";
@@ -45,9 +45,11 @@ export interface PronoteApiUserAttendance {
         | PronoteApiAttendanceDelay
         | PronoteApiAttendanceAbsence
         | PronoteApiAttendancePunishment
+        | PronoteApiAttendanceObservation
       )>>
+
       Matieres: {
-        _T: number
+        _T: 24
         V: Array<{
           L: string
           N: string
@@ -68,8 +70,9 @@ export interface PronoteApiUserAttendance {
           }
         }>
       }
+
       listeRecapitulatifs: {
-        _T: number
+        _T: 24
         V: Array<{
           G: number
           NombreTotal: number
@@ -77,9 +80,10 @@ export interface PronoteApiUserAttendance {
           NombreNonJustifie: number
         }>
       }
+
       listeSanctionUtilisateur: {
-        _T: number
-        V: Array<any>
+        _T: 24
+        V: Array<unknown>
       }
     }
     nom: PronoteApiFunctions.Attendance

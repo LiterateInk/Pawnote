@@ -1,7 +1,16 @@
-import type { PronoteApiAttendanceAbsence, PronoteApiAttendanceDelay, PronoteApiAttendancePunishment } from "~/constants/attendance";
 import type Pronote from "~/client/Pronote";
 
+import type {
+  PronoteApiAttendanceAbsence,
+  PronoteApiAttendanceDelay,
+  PronoteApiAttendancePunishment,
+  PronoteApiAttendanceObservation,
+  PronoteApiAttendanceObservationType
+} from "~/constants/attendance";
+
 import { StudentAttachment } from "~/parser/attachment";
+import { StudentSubject } from "~/parser/subject";
+
 import { readPronoteApiDate } from "~/pronote/dates";
 
 export class StudentDelay {
@@ -85,7 +94,7 @@ export class StudentAbsence {
   public administrativelyFixed: boolean;
 
   public isReasonUnknown: boolean;
-  public reason: string | null;
+  public reason?: string;
 
   constructor (item: PronoteApiAttendanceAbsence) {
     this.id = item.N;
@@ -99,6 +108,51 @@ export class StudentAbsence {
     this.shouldParentsJustify = item.aJustifierParParents;
     this.administrativelyFixed = item.reglee;
     this.isReasonUnknown = item.estMotifNonEncoreConnu;
-    this.reason = !this.isReasonUnknown ? item.listeMotifs.V[0].L : null;
+    this.reason = !this.isReasonUnknown ? item.listeMotifs.V[0].L : void 0;
+  }
+}
+
+export class StudentObservation {
+  public id: string;
+  public opened: boolean;
+  public date: Date;
+  public shouldParentsJustify: boolean;
+
+  public section: {
+    /**
+     * ID of the observation section.
+     *
+     * Might be useful when you're looking for the same
+     * observation section when going through an `StudentObservation` array.
+     */
+    id: string
+    name: string
+    type: PronoteApiAttendanceObservationType
+  };
+
+  public subject?: StudentSubject;
+  public reason?: string;
+
+  constructor (item: PronoteApiAttendanceObservation) {
+    this.id = item.N;
+    this.opened = item.estLue;
+    this.date = readPronoteApiDate(item.date.V);
+    this.shouldParentsJustify = item.avecARObservation;
+
+    this.section = {
+      name: item.L,
+      type: item.genreObservation,
+      id: item.rubrique.V.N
+    };
+
+    // Check if subject is correctly given, before assigning one.
+    if ("L" in item.matiere.V && item.matiere.V.N !== "0") {
+      this.subject = new StudentSubject(item.matiere.V);
+    }
+
+    // Only assign reason if it is not empty.
+    if (item.commentaire) {
+      this.reason = item.commentaire;
+    }
   }
 }

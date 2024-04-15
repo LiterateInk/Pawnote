@@ -43,7 +43,7 @@ import { callApiUserMessages } from "~/api/user/messages";
 import { MessagesOverview } from "~/parser/messages";
 import { PronoteApiOnglets } from "~/constants/onglets";
 import { callApiUserAttendance } from "~/api/user/attendance";
-import { StudentAbsence, StudentDelay, StudentPunishment } from "~/parser/attendance";
+import { StudentAbsence, StudentDelay, StudentObservation, StudentPunishment } from "~/parser/attendance";
 import { callApiUserMessageRecipients } from "~/api/user/messageRecipients";
 import { DiscussionCreationRecipient, FetchedMessageRecipient } from "~/parser/recipient";
 import Holiday from "~/parser/holiday";
@@ -60,6 +60,9 @@ import { createPronoteUploadCall } from "~/pronote/requestUpload";
 import { PronoteApiFunctions } from "~/constants/functions";
 import { callApiUserHomeworkUpload } from "~/api/user/homeworkUpload";
 import { callApiUserHomeworkRemoveUpload } from "~/api/user/homeworkRemoveUpload";
+import { callApiUserHomepage } from "~/api/user/homepage";
+import { Partner } from "~/parser/partner";
+import { callApiUserPartnerURL } from "~/api/user/partnerURL";
 
 export default class Pronote {
   /**
@@ -98,6 +101,8 @@ export default class Pronote {
    * in the authentication options.
    */
   public nextTimeToken: string;
+
+  public nextOpenDate: Date;
 
   /**
    * Root URL of the Pronote instance.
@@ -162,6 +167,7 @@ export default class Pronote {
 
     this.username = credentials.username;
     this.nextTimeToken = credentials.token;
+    this.nextOpenDate = readPronoteApiDate(loginInformations.donnees.General.JourOuvre.V);
     this.pronoteRootURL = session.instance.pronote_url;
     this.accountTypeID = session.instance.account_type_id;
     this.sessionID = session.instance.session_id;
@@ -565,7 +571,7 @@ export default class Pronote {
       });
 
       return data.donnees.listeAbsences.V.map((item) => {
-        let instance: StudentAbsence | StudentDelay | StudentPunishment;
+        let instance: StudentAbsence | StudentDelay | StudentPunishment | StudentObservation;
 
         switch (item.G) {
           case PronoteApiResourceType.Absence:
@@ -577,10 +583,13 @@ export default class Pronote {
           case PronoteApiResourceType.Punishment:
             instance = new StudentPunishment(this, item);
             break;
+          case PronoteApiResourceType.ObservationProfesseurEleve:
+            instance = new StudentObservation(item);
+            break;
         }
 
         return instance;
-      }).filter(Boolean) as Array<StudentAbsence | StudentDelay | StudentPunishment>;
+      }).filter(Boolean) as Array<StudentAbsence | StudentDelay | StudentPunishment | StudentObservation>;
     });
   }
 
@@ -730,6 +739,37 @@ export default class Pronote {
         session: this.session,
         homeworkID
       });
+    });
+  }
+
+  public async getHomePage (nextOpenDate = this.nextOpenDate) {
+    return this.queue.push(async () => {
+      const response = await callApiUserHomepage(this.fetcher, {
+        session: this.session,
+        nextDateOpened: nextOpenDate,
+        weekNumber: translateToPronoteWeekNumber(nextOpenDate, this.firstMonday)
+      });
+
+      const ardSSO = response.data.donnees.partenaireARD?.SSO;
+
+      return {
+        ard: ardSSO ? new Partner(this, ardSSO) : null
+      };
+    });
+  }
+
+  public async getPartnerURL (partner: Partner): Promise<string> {
+    return this.queue.push(async () => {
+      const response = await callApiUserPartnerURL(this.fetcher, {
+        session: this.session,
+        sso: {
+          code: partner.code,
+          linkLabel: partner.linkLabel,
+          description: partner.description
+        }
+      });
+
+      return response.url;
     });
   }
 }

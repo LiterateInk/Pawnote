@@ -20,5 +20,7 @@ export enum PronoteApiFunctions {
   MessageRecipients = "SaisiePublicMessage",
   PatchNews = "SaisieActualites",
   CreateDiscussionRecipients = "ListeRessourcesPourCommunication",
-  CreateMessage = "SaisieMessage"
+  CreateMessage = "SaisieMessage",
+  HomePage = "PageAccueil",
+  PartnerURL = "SaisieURLPartenaire"
 }

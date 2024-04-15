@@ -84,6 +84,14 @@ export class StudentHomework {
     await this.client.uploadHomeworkFile(this.id, file, fileName);
   }
 
+  public async removeUploadedFile (): Promise<void> {
+    if (!this.return || this.return.type !== PronoteApiHomeworkReturnType.FILE_UPLOAD) {
+      throw new Error("This homework cannot be uploaded.");
+    }
+
+    await this.client.removeHomeworkFile(this.id);
+  }
+
   public async setDone (done: boolean): Promise<void> {
     await this.client.patchHomeworkStatus(this.id, done);
     this.done = done;

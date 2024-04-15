@@ -59,6 +59,7 @@ import { getPronoteMessageButtonType } from "~/pronote/messages";
 import { createPronoteUploadCall } from "~/pronote/requestUpload";
 import { PronoteApiFunctions } from "~/constants/functions";
 import { callApiUserHomeworkUpload } from "~/api/user/homeworkUpload";
+import { callApiUserHomeworkRemoveUpload } from "~/api/user/homeworkRemoveUpload";
 
 export default class Pronote {
   /**
@@ -719,6 +720,15 @@ export default class Pronote {
         fileName,
         homeworkID,
         session: this.session
+      });
+    });
+  }
+
+  public async removeHomeworkFile (homeworkID: string): Promise<void> {
+    return this.queue.push(async () => {
+      await callApiUserHomeworkRemoveUpload(this.fetcher, {
+        session: this.session,
+        homeworkID
       });
     });
   }

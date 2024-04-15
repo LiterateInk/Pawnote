@@ -56,6 +56,9 @@ import { PronoteApiResourceType } from "~/constants/resources";
 import { callApiUserCreateDiscussion } from "~/api/user/createDiscussion";
 import { callApiUserCreateDiscussionMessage } from "~/api/user/createDiscussionMessage";
 import { getPronoteMessageButtonType } from "~/pronote/messages";
+import { createPronoteUploadCall } from "~/pronote/requestUpload";
+import { PronoteApiFunctions } from "~/constants/functions";
+import { callApiUserHomeworkUpload } from "~/api/user/homeworkUpload";
 
 export default class Pronote {
   /**
@@ -690,6 +693,32 @@ export default class Pronote {
           isHTML: this.authorizations.hasAdvancedDiscussionEditor,
           value: content
         }
+      });
+    });
+  }
+
+  public async uploadHomeworkFile (homeworkID: string, file: Buffer | ArrayBuffer | Uint8Array, fileName: string): Promise<void> {
+    return this.queue.push(async () => {
+      // Check if the homework can be uploaded.
+      // Otherwise we'll get an error during the upload.
+      const fileSize = file.byteLength;
+      if (fileSize > this.#authorizations.maxHomeworkFileUploadSize) {
+        throw new Error(`File size is too big, maximum allowed is ${this.#authorizations.maxHomeworkFileUploadSize} bytes.`);
+      }
+
+      // Ask to the server to store the file for us.
+      const payload = this.session.writePronoteFileUploadPayload(file);
+      await createPronoteUploadCall(this.fetcher, PronoteApiFunctions.HomeworkUpload, {
+        session_instance: this.session.instance,
+        fileName: fileName,
+        payload
+      });
+
+      await callApiUserHomeworkUpload(this.fetcher, {
+        fileID: payload.fileID,
+        fileName,
+        homeworkID,
+        session: this.session
       });
     });
   }

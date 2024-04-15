@@ -30,6 +30,7 @@ export class StudentHomework {
   } | {
     type: PronoteApiHomeworkReturnType.FILE_UPLOAD
     uploaded: boolean
+    canUpload: boolean
   };
 
   /**
@@ -64,7 +65,8 @@ export class StudentHomework {
       else if (homework.genreRendu === PronoteApiHomeworkReturnType.FILE_UPLOAD) {
         this.return = {
           type: PronoteApiHomeworkReturnType.FILE_UPLOAD,
-          uploaded: !homework.peuRendre
+          uploaded: typeof homework.documentRendu !== "undefined",
+          canUpload: homework.peuRendre ?? false
         };
       }
     }
@@ -74,8 +76,12 @@ export class StudentHomework {
     }
   }
 
-  public async uploadFile (file: ArrayBuffer): Promise<void> {
+  public async uploadFile (file: Buffer | ArrayBuffer, fileName: string): Promise<void> {
+    if (!this.return || this.return.type !== PronoteApiHomeworkReturnType.FILE_UPLOAD) {
+      throw new Error("This homework cannot be uploaded.");
+    }
 
+    await this.client.uploadHomeworkFile(this.id, file, fileName);
   }
 
   public async setDone (done: boolean): Promise<void> {

@@ -222,15 +222,22 @@ export class Session {
     }
   }
 
-  public writePronoteFileUploadPayload (file: ArrayBuffer) {
+  public writePronoteFileUploadPayload (buffer: ArrayBuffer | Buffer | Uint8Array) {
     this.instance.order++;
 
     const { aes_iv, aes_key } = this.getAESEncryptionKeys();
     const order_encrypted = aes.encrypt(this.instance.order.toString(), aes_key, aes_iv);
 
     return {
-      order: order_encrypted.toUpperCase(),
-      data: file
+      order: order_encrypted,
+      fileID: `selecfile_1_${Date.now()}`, // `1` is a constant because we'll always upload only one file.
+      file: new Blob([buffer]),
+
+      // We can either provide an MD5 or just give an empty string.
+      //
+      // TODO: Implement MD5
+      // NOTE: Pronote implementation looks like this : `forge.md.md5.create().update(lParamsReader.tabResult.join('')).digest().toHex();`
+      md5: ""
     };
   }
 }

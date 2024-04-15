@@ -8,6 +8,7 @@ export enum PronoteApiFunctions {
   Resources = "PageCahierDeTexte",
   Grades = "DernieresNotes",
   HomeworkDone = "SaisieTAFFaitEleve",
+  HomeworkUpload = "SaisieTAFARendreEleve",
   Evaluations = "DernieresEvaluations",
   PersonalInformation = "PageInfosPerso",
   Presence = "Presence",

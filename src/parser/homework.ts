@@ -29,7 +29,7 @@ export class StudentHomework {
     type: PronoteApiHomeworkReturnType.PAPER
   } | {
     type: PronoteApiHomeworkReturnType.FILE_UPLOAD
-    uploaded: boolean
+    uploaded: StudentAttachment | null
     canUpload: boolean
   };
 
@@ -65,7 +65,7 @@ export class StudentHomework {
       else if (homework.genreRendu === PronoteApiHomeworkReturnType.FILE_UPLOAD) {
         this.return = {
           type: PronoteApiHomeworkReturnType.FILE_UPLOAD,
-          uploaded: typeof homework.documentRendu !== "undefined",
+          uploaded: homework.documentRendu ? new StudentAttachment(client, homework.documentRendu.V) : null,
           canUpload: homework.peuRendre ?? false
         };
       }

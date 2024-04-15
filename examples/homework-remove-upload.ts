@@ -24,7 +24,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiHomework
         console.log("(return) => on paper ; should be returned to teacher manually");
       }
       else if (item.return.type === PronoteApiHomeworkReturnType.FILE_UPLOAD) {
-        console.log("(return) => file upload", item.return.uploaded ? "(uploaded)" : "(not uploaded)");
+        console.log("(return) => file upload", item.return.uploaded ? `(uploaded: ${item.return.uploaded.url})` : "(not uploaded)");
 
         if (item.return.uploaded) {
           await item.removeUploadedFile();

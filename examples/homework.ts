@@ -1,26 +1,28 @@
 import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiHomeworkReturnType } from "../src";
 
 (async () => {
-  const pronote = await authenticatePronoteCredentials("https://demo.index-education.net/pronote", {
+  const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev/pronote", {
     accountTypeID: PronoteApiAccountId.Student,
-    username: "demonstration",
-    password: "pronotevs",
+    username: "lisa.boulanger",
+    password: "12345678",
 
     // Because this is just an example, don't forget to change this.
     deviceUUID: "my-device-uuid"
   });
 
-  const from = new Date("2023-10-16");
-  const to = new Date("2023-10-18");
+  // const from = new Date("2023-10-16");
+  // const to = new Date("2023-10-18");
+  // const homework = await pronote.getHomeworkForInterval(from, to);
 
-  const homework = await pronote.getHomeworkForInterval(from, to);
+  // From today until the end of the year.
+  const homework = await pronote.getHomeworkForInterval(new Date());
 
   // Little separator.
   console.log("---");
 
   homework
-    // We filter by homeworks not done.
-    .filter((homework) => !homework.done)
+    // We can filter by homeworks not done.
+    // .filter((homework) => !homework.done)
     // We display them in console.
     .forEach((homework) => {
       // Output something...
@@ -39,7 +41,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiHomework
           console.log("(return) => on paper ; should be returned to teacher manually");
         }
         else if (homework.return.type === PronoteApiHomeworkReturnType.FILE_UPLOAD) {
-          console.log("(return) => file upload", homework.return.uploaded ? "(uploaded)" : "(not uploaded)");
+          console.log("(return) => file upload", homework.return.uploaded ? `(uploaded: ${homework.return.uploaded.url})` : "(not uploaded)");
         }
       }
 

@@ -10,6 +10,8 @@ class Authorizations {
 
   readonly #hasAdvancedDiscussionEditor: boolean;
 
+  readonly #maxHomeworkFileUploadSize: number;
+
   constructor (data: ApiUserData["output"]["data"]["donnees"]["autorisations"]) {
     this.#canDiscuss = (data.AvecDiscussion ?? false) && !(data.discussionInterdit ?? false);
 
@@ -19,6 +21,8 @@ class Authorizations {
     this.#canDiscussWithTeachers = this.#canDiscuss && (data.AvecDiscussionProfesseurs ?? false);
 
     this.#hasAdvancedDiscussionEditor = data.AvecDiscussionAvancee ?? false;
+
+    this.#maxHomeworkFileUploadSize = data.tailleMaxRenduTafEleve;
   }
 
   /**
@@ -62,6 +66,14 @@ class Authorizations {
   */
   public get hasAdvancedDiscussionEditor (): boolean {
     return this.#hasAdvancedDiscussionEditor;
+  }
+
+  /**
+   * The maximum file size allowed for homework uploads.
+   * @example 4194304 // for 4MB.
+   */
+  public get maxHomeworkFileUploadSize (): number {
+    return this.#maxHomeworkFileUploadSize;
   }
 }
 

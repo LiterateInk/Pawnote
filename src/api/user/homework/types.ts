@@ -63,12 +63,15 @@ export interface PronoteApiUserHomework {
         /** Whether the homework should be returned or not. */
         avecRendu?: boolean
 
-        /**
-         * Only available when you have to upload a file.
-         * - `true` is when the file hasn't been uploaded yet.
-         * - `false` is when the file has been uploaded.
-         */
+        /** Whether you can upload or reupload a file. */
         peuRendre?: boolean
+
+        documentRendu?: PronoteValue<24, {
+          L: string // File name
+          N: string // ID
+          G: number
+        }>
+
         /** Type of return the teacher asks. */
         genreRendu?: PronoteApiHomeworkReturnType
 

@@ -62,9 +62,22 @@ export interface ApiUserNewsStatus {
 
     publicSelfData: PronoteApiNewsPublicSelf
 
+    /**
+     * `delete` should be `false` when this is `true`.
+     */
     markAsRead: boolean
-    /** When this is provided, `answers` should be an empty array. */
-    markAsReadOnly: boolean
+
+    /**
+     * When this is provided, `answers` should be an empty array
+     * and `delete` should be `false`.
+     */
+    onlyMarkAsRead: boolean
+
+    /**
+     * When this is provided, `answers` should be an empty array
+     * and `onlyMarkAsRead` should be `false`.
+     */
+    delete: boolean
 
     answers: Array<StudentNewsItemQuestion>
     session: Session

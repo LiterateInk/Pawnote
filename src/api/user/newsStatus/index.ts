@@ -53,9 +53,9 @@ export const callApiUserNewsStatus = makeApiHandler<ApiUserNewsStatus>(async (fe
           }
         })),
 
-        marqueLueSeulement: input.markAsReadOnly,
+        marqueLueSeulement: input.onlyMarkAsRead,
         lue: input.markAsRead,
-        supprimee: false, // TODO
+        supprimee: input.delete,
         saisieActualite: false
       }],
 

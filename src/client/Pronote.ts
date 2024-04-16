@@ -605,8 +605,9 @@ export default class Pronote {
     title: string
     public: PronoteApiNewsPublicSelf
   }, answers: StudentNewsItemQuestion[], extra = {
+    delete: false,
     markAsRead: true,
-    markAsReadOnly: false
+    onlyMarkAsRead: false
   }) {
     return this.queue.push(async () => {
       await callApiUserNewsStatus(this.fetcher, {
@@ -614,9 +615,10 @@ export default class Pronote {
         id: information.id,
         name: information.title,
         publicSelfData: information.public,
-        markAsRead: extra.markAsRead,
-        markAsReadOnly: extra.markAsReadOnly,
-        answers: extra.markAsReadOnly ? [] : answers
+        markAsRead: !extra.delete && extra.markAsRead,
+        onlyMarkAsRead: !extra.delete && extra.onlyMarkAsRead,
+        delete: !extra.onlyMarkAsRead && extra.delete,
+        answers: (extra.onlyMarkAsRead || extra.delete) ? [] : answers
       });
 
       return void 0;

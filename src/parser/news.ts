@@ -86,6 +86,15 @@ class StudentNewsItem {
     this.#read = data.lue;
   }
 
+  /** Internal helper to get the current news state information. */
+  get #stateInformation () {
+    return {
+      id: this.#id,
+      title: this.#title ?? "",
+      public: this.#public
+    };
+  }
+
   /**
    * Patches the `read` state of the news to the given value.
    * @remark Will do nothing if `this.read === status`.
@@ -93,17 +102,26 @@ class StudentNewsItem {
   public async markAsRead (status = true): Promise<void> {
     if (this.#read === status) return;
 
-    await this.#client.patchNewsState({
-      id: this.id,
-      title: this.title ?? "",
-      public: this.public
-    }, [], {
+    await this.#client.patchNewsState(this.#stateInformation, [], {
+      onlyMarkAsRead: true,
       markAsRead: status,
-      markAsReadOnly: true
+      delete: false
     });
 
     // Update local state.
     this.#read = status;
+  }
+
+  /**
+   * Will delete the news from the user's news feed.
+   * @remark You can never get the news back after this.
+   */
+  public async delete (): Promise<void> {
+    await this.#client.patchNewsState(this.#stateInformation, [], {
+      onlyMarkAsRead: false,
+      markAsRead: false,
+      delete: true
+    });
   }
 
   /**
@@ -112,13 +130,10 @@ class StudentNewsItem {
    * Most of the time, you won't need this.
    */
   public async patchQuestions (questions: StudentNewsItemQuestion[], alsoMarkAsRead = true): Promise<void> {
-    await this.#client.patchNewsState({
-      id: this.id,
-      title: this.title ?? "",
-      public: this.public
-    }, questions, {
+    await this.#client.patchNewsState(this.#stateInformation, questions, {
       markAsRead: alsoMarkAsRead,
-      markAsReadOnly: false
+      onlyMarkAsRead: false,
+      delete: false
     });
 
     // Update local state.

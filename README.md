@@ -5,6 +5,8 @@ A simple wrapper around [Index-Education's Pronote](https://www.index-education.
 > [!NOTE]  
 > This project is not affiliated with Index-Education or Pronote in any way.
 
+> Join [LiterateInk's Discord server](https://discord.gg/f5KNCnMWzB) to talk about Pawnote, get help and be notified about the latest updates !
+
 ## Supported
 
 ### Versions

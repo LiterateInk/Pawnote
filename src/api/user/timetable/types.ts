@@ -107,6 +107,9 @@ export interface PronoteApiUserTimetable {
             | {
               G: PronoteApiResourceType.Teacher
             }
+            | {
+              G: PronoteApiResourceType.Personal
+            }
           )>
         }
 

@@ -1,5 +1,5 @@
 import type { PronoteApiUserTimetable } from "~/api/user/timetable/types";
-import type Pronote from "~/client/Pronote";
+import Pronote from "~/client/Pronote";
 
 import type { StudentLessonResource } from "./lessonResource";
 
@@ -12,7 +12,13 @@ import { StudentSubject } from "~/parser/subject";
  */
 export class StudentTimetableLesson {
   public id: string;
+  /**
+   * Whether this lesson has been canceled or not.
+   */
   public canceled: boolean;
+  /**
+   * @example "Classe absente"
+   */
   public status?: string;
   public memo?: string;
   public backgroundColor?: string;
@@ -29,6 +35,7 @@ export class StudentTimetableLesson {
   /** If there will be a test in the lesson. */
   public test: boolean;
   public end: Date;
+  public personalNames: string[] = [];
   public teacherNames: string[] = [];
   public classrooms: string[] = [];
   public groupNames: string[] = [];
@@ -82,6 +89,9 @@ export class StudentTimetableLesson {
           break;
         case PronoteApiResourceType.Teacher:
           this.teacherNames.push(data.L);
+          break;
+        case PronoteApiResourceType.Personal:
+          this.personalNames.push(data.L);
           break;
         case PronoteApiResourceType.Room:
           this.classrooms.push(data.L);

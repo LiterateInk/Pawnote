@@ -96,7 +96,7 @@ export class StudentTimetableLesson {
         case PronoteApiResourceType.Room:
           this.classrooms.push(data.L);
           break;
-        case PronoteApiResourceType.Groupe:
+        case PronoteApiResourceType.Group:
           this.groupNames.push(data.L);
           break;
       }

@@ -1,7 +1,7 @@
 export enum PronoteApiResourceType {
   Aucune = 0,
   Classe = 1,
-  Groupe = 2,
+  Group = 2,
   Teacher = 3,
   Student = 4,
   Responsable = 5,

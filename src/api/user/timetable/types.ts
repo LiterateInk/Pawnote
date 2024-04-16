@@ -102,7 +102,7 @@ export interface PronoteApiUserTimetable {
               N: string
             }
             | {
-              G: PronoteApiResourceType.Groupe
+              G: PronoteApiResourceType.Group
             }
             | {
               G: PronoteApiResourceType.Teacher

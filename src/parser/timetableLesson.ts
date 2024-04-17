@@ -6,108 +6,262 @@ import type { StudentLessonResource } from "./lessonResource";
 import { translatePositionToTime, readPronoteApiDate } from "~/pronote/dates";
 import { PronoteApiResourceType } from "~/constants/resources";
 import { StudentSubject } from "~/parser/subject";
+import { PronoteApiLessonStatusType } from "~/constants/lessonCategory";
 
-/**
- * A single item in the student's timetable.
- */
-export class StudentTimetableLesson {
-  public id: string;
-  /**
-   * Whether this lesson has been canceled or not.
-   */
-  public canceled: boolean;
-  /**
-   * @example "Classe absente"
-   */
-  public status?: string;
-  public memo?: string;
-  public backgroundColor?: string;
-  /** If it is a pedagogical outing. */
-  public outing: boolean;
-  public start: Date;
-  /** Specifies if the student's presence is exempt. */
-  public exempted: boolean;
-  /** List of URLs for virtual classrooms. */
-  public virtualClassrooms: string[] = [];
-  /** For the same lesson time, the biggest `num` is the one shown on Pronote. */
-  public num: number;
-  public detention: boolean;
-  /** If there will be a test in the lesson. */
-  public test: boolean;
-  public end: Date;
-  public personalNames: string[] = [];
-  public teacherNames: string[] = [];
-  public classrooms: string[] = [];
-  public groupNames: string[] = [];
-  public subject?: StudentSubject;
-  /** Is the lesson considered normal : is not detention, or an outing. */
-  public normal: boolean;
+type TTimetableItem = PronoteApiUserTimetable["response"]["donnees"]["ListeCours"][number];
 
-  public haveLessonResource: boolean;
-  public lessonResourceID?: string;
+abstract class TimetableItem {
+  readonly #id: string;
+  public get id (): string {
+    return this.#id;
+  }
 
-  constructor (
-    private client: Pronote,
-    lesson: PronoteApiUserTimetable["response"]["donnees"]["ListeCours"][number]
-  ) {
-    this.id = lesson.N;
-    this.canceled = lesson.estAnnule ?? false;
-    this.status = lesson.Statut;
-    this.memo = lesson.memo;
-    this.backgroundColor = lesson.CouleurFond;
-    this.outing = lesson.estSortiePedagogique ?? false;
-    this.start = readPronoteApiDate(lesson.DateDuCours.V);
-    this.exempted = lesson.dispenseEleve ?? false;
+  readonly #backgroundColor?: string;
+  public get backgroundColor (): string | undefined {
+    return this.#backgroundColor;
+  }
 
-    for (const visio of lesson.listeVisios?.V ?? []) {
-      this.virtualClassrooms.push(visio.url);
-    }
+  readonly #startDate: Date;
+  public get startDate (): Date {
+    return this.#startDate;
+  }
 
-    this.num = lesson.P ?? 0;
-    this.detention = lesson.estRetenue ?? false;
-    this.test = lesson.cahierDeTextes?.V.estDevoir ?? false;
-    this.normal = !this.detention && !this.outing;
+  readonly #endDate: Date;
+  public get endDate (): Date {
+    return this.#endDate;
+  }
 
-    if (lesson.DateDuCoursFin) {
-      this.end = readPronoteApiDate(lesson.DateDuCoursFin.V);
+  readonly #blockLength: number;
+  public get blockLength (): number {
+    return this.#blockLength;
+  }
+
+  readonly #blockPosition: number;
+  public get blockPosition (): number {
+    return this.#blockPosition;
+  }
+
+  readonly #notes?: string;
+  public get notes (): string | undefined {
+    return this.#notes;
+  }
+
+  protected constructor (client: Pronote, item: TTimetableItem) {
+    this.#id = item.N;
+    this.#backgroundColor = item.CouleurFond;
+    this.#startDate = readPronoteApiDate(item.DateDuCours.V);
+    this.#blockLength = item.duree;
+    this.#blockPosition = item.place;
+    this.#notes = item.memo;
+
+    if ("DateDuCoursFin" in item && item.DateDuCoursFin) {
+      this.#endDate = readPronoteApiDate(item.DateDuCoursFin.V);
     }
     else {
       const endHours = client.loginInformations.donnees.General.ListeHeuresFin.V;
-      const endPosition = lesson.place % client.loginInformations.donnees.General.PlacesParJour + lesson.duree - 1;
-      const endPositionTiming = translatePositionToTime(endHours, endPosition);
+      const endPosition = this.blockPosition % client.loginInformations.donnees.General.PlacesParJour + this.blockLength - 1;
 
-      const end = new Date(this.start);
+      const end = new Date(this.#startDate);
+      const endPositionTiming = translatePositionToTime(endHours, endPosition);
       end.setHours(endPositionTiming.hours, endPositionTiming.minutes);
 
-      this.end = end;
+      this.#endDate = end;
+    }
+  }
+}
+
+export class TimetableActivity extends TimetableItem {
+  readonly #title: string;
+  readonly #attendants: string[] = [];
+  readonly #resourceTypeName: string;
+  readonly #resourceValue: string;
+
+  constructor (client: Pronote, activity: TTimetableItem) {
+    if (!("estSortiePedagogique" in activity && activity.estSortiePedagogique)) {
+      throw new TypeError("'TimetableActivity' is only designed for activities, not lessons. Consider using 'TimetableLesson' instead.");
     }
 
-    for (const data of lesson.ListeContenus?.V ?? []) {
-      switch (data.G) {
-        case PronoteApiResourceType.Subject:
-          this.subject = new StudentSubject(data);
-          break;
-        case PronoteApiResourceType.Teacher:
-          this.teacherNames.push(data.L);
-          break;
-        case PronoteApiResourceType.Personal:
-          this.personalNames.push(data.L);
-          break;
-        case PronoteApiResourceType.Room:
-          this.classrooms.push(data.L);
-          break;
-        case PronoteApiResourceType.Group:
-          this.groupNames.push(data.L);
-          break;
+    super(client, activity);
+
+    this.#title = activity.motif;
+    this.#attendants = activity.accompagnateurs;
+    this.#resourceTypeName = activity.strGenreRess;
+    this.#resourceValue = activity.strRess;
+  }
+
+  public get title (): string {
+    return this.#title;
+  }
+
+  public get attendants (): string[] {
+    return this.#attendants;
+  }
+
+  public get resourceTypeName (): string {
+    return this.#resourceTypeName;
+  }
+
+  public get resourceValue (): string {
+    return this.#resourceValue;
+  }
+}
+
+export class TimetableLesson extends TimetableItem {
+  readonly #client: Pronote;
+
+  readonly #genre: PronoteApiLessonStatusType;
+  readonly #status?: string;
+  readonly #canceled: boolean;
+  readonly #exempted: boolean;
+  readonly #detention: boolean;
+  readonly #test: boolean;
+  readonly #virtualClassrooms: string[] = [];
+
+  readonly #personalNames: string[] = [];
+  readonly #teacherNames: string[] = [];
+  readonly #classrooms: string[] = [];
+  readonly #groupNames: string[] = [];
+  readonly #subject?: StudentSubject;
+
+  readonly #lessonResourceID?: string;
+
+  constructor (client: Pronote, lesson: TTimetableItem) {
+    if ("estSortiePedagogique" in lesson && lesson.estSortiePedagogique) {
+      throw new TypeError("'TimetableLesson' is only designed for lessons, not activities. Consider using 'TimetableActivity' instead.");
+    }
+
+    super(client, lesson);
+    this.#client = client;
+
+    this.#genre = lesson.G;
+    this.#status = lesson.Statut;
+    this.#canceled = lesson.estAnnule ?? false;
+    this.#exempted = lesson.dispenseEleve ?? false;
+    this.#detention = lesson.estRetenue ?? false;
+    this.#test = lesson.cahierDeTextes?.V.estDevoir ?? false;
+
+    if (lesson.listeVisios) {
+      for (const virtualClassroom of lesson.listeVisios.V) {
+        this.#virtualClassrooms.push(virtualClassroom.url);
       }
     }
 
-    this.haveLessonResource = Boolean(lesson.AvecCdT && lesson.cahierDeTextes);
-    if (this.haveLessonResource) this.lessonResourceID = lesson.cahierDeTextes!.V.N;
+    if (lesson.ListeContenus) {
+      for (const data of lesson.ListeContenus.V) {
+        switch (data.G) {
+          case PronoteApiResourceType.Subject:
+            this.#subject = new StudentSubject(data);
+            break;
+          case PronoteApiResourceType.Teacher:
+            this.#teacherNames.push(data.L);
+            break;
+          case PronoteApiResourceType.Personal:
+            this.#personalNames.push(data.L);
+            break;
+          case PronoteApiResourceType.Room:
+            this.#classrooms.push(data.L);
+            break;
+          case PronoteApiResourceType.Group:
+            this.#groupNames.push(data.L);
+            break;
+        }
+      }
+    }
+
+    if (lesson.AvecCdT && lesson.cahierDeTextes) {
+      this.#lessonResourceID = lesson.cahierDeTextes.V.N;
+    }
   }
 
   public async getResource (): Promise<StudentLessonResource | undefined> {
-    if (!this.haveLessonResource) return;
-    return this.client.getLessonResource(this.lessonResourceID!);
+    if (!this.#lessonResourceID) return;
+    return this.#client.getLessonResource(this.#lessonResourceID);
+  }
+
+  public get genre (): PronoteApiLessonStatusType {
+    return this.#genre;
+  }
+
+  /**
+   * @example "Classe absente"
+   */
+  public get status (): string | undefined {
+    return this.#status;
+  }
+
+  /**
+   * Whether this lesson has been canceled or not.
+   */
+  public get canceled (): boolean {
+    return this.#canceled;
+  }
+
+  /**
+   * Whether the user is exempted from this lesson or not.
+   */
+  public get exempted (): boolean {
+    return this.#exempted;
+  }
+
+  public get detention (): boolean {
+    return this.#detention;
+  }
+
+  /** If there will be a test in the lesson. */
+  public get test (): boolean {
+    return this.#test;
+  }
+
+  /**
+   * List of URLs for virtual classrooms.
+   */
+  public get virtualClassrooms (): string[] {
+    return this.#virtualClassrooms;
+  }
+
+  /**
+   * List of personal names.
+   */
+  public get personalNames (): string[] {
+    return this.#personalNames;
+  }
+
+  /**
+   * List of teacher names.
+   */
+  public get teacherNames (): string[] {
+    return this.#teacherNames;
+  }
+
+  /**
+   * List of classrooms.
+   */
+  public get classrooms (): string[] {
+    return this.#classrooms;
+
+  }
+
+  /**
+   * List of group names.
+   */
+  public get groupNames (): string[] {
+    return this.#groupNames;
+  }
+
+  /**
+   * Subject of the lesson.
+   */
+  public get subject (): StudentSubject | undefined {
+    return this.#subject;
+  }
+
+  /**
+   * Returns `undefined` when there's no resource attached to this lesson.
+   * Otherwise, it'll return an ID that can be used in `Pronote#getLessonResource` method.
+   *
+   * A shortcut for this is to use the `getResource` method in this class.
+   */
+  public get lessonResourceID (): string | undefined {
+    return this.#lessonResourceID;
   }
 }

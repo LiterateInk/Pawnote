@@ -5,170 +5,165 @@ import { TimetableActivity, TimetableLesson } from "~/parser/timetableLesson";
 import { PronoteApiLessonStatusType } from "~/constants/lessonCategory";
 
 type TimetableOverviewParsingParameters = {
-  withSuperposedCanceledLessons: boolean;
-  withCanceledLessons: boolean;
-  withPlannedLessons: boolean;
+  withSuperposedCanceledClasses: boolean;
+  withCanceledClasses: boolean;
+  withPlannedClasses: boolean;
 };
 
-type TimetableItem = TimetableActivity | TimetableLesson;
-type TimetableItemWithVisible = (TimetableItem & { __visible__?: boolean });
+type TimetableClass = TimetableActivity | TimetableLesson;
+type TimetableClassWithVisible = (TimetableClass & { __visible__?: boolean });
 
 export class TimetableOverview {
   readonly #client: Pronote;
-  readonly #lessons: TimetableItem[];
+  readonly #classes: TimetableClass[];
   // TODO: Add a way to parse this !!!
   readonly #absences: PronoteApiUserTimetable["response"]["donnees"]["absences"];
-  readonly #withCanceledLessons: boolean;
+  readonly #withCanceledClasses: boolean;
 
   constructor (client: Pronote, data: PronoteApiUserTimetable["response"]["donnees"]) {
     this.#client = client;
-    this.#lessons = data.ListeCours
-      .map((lesson) => {
-        const isActivity = "estSortiePedagogique" in lesson && lesson.estSortiePedagogique;
-        const TimetableItem = isActivity ? TimetableActivity : TimetableLesson;
-        return new TimetableItem(client, lesson);
+    this.#classes = data.ListeCours
+      .map((currentClass) => {
+        const isActivity = "estSortiePedagogique" in currentClass && currentClass.estSortiePedagogique;
+        const TimetableClass = isActivity ? TimetableActivity : TimetableLesson;
+        return new TimetableClass(client, currentClass);
       })
-      .sort((a, b) => (
-        a.startDate.getTime() - b.startDate.getTime()
+      .sort((classA, classB) => (
+        classA.startDate.getTime() - classB.startDate.getTime()
       ));
 
     this.#absences = data.absences;
-    this.#withCanceledLessons = data.avecCoursAnnule ?? true; // Default on Pronote is `true` apparently.
+    this.#withCanceledClasses = data.avecCoursAnnule ?? true; // Default on Pronote is `true` apparently.
   }
 
-  public parseLessons (parameters: TimetableOverviewParsingParameters = {
-    withSuperposedCanceledLessons: false,
-    withCanceledLessons: this.#withCanceledLessons,
-    withPlannedLessons: true
-  }): Array<TimetableItem> {
-    const lessons = this.#lessons as TimetableItemWithVisible[];
+  public parse (parameters: TimetableOverviewParsingParameters = {
+    withSuperposedCanceledClasses: false,
+    withCanceledClasses: this.#withCanceledClasses,
+    withPlannedClasses: true
+  }): Array<TimetableClass> {
+    const classes = this.#classes as TimetableClassWithVisible[];
 
-    if (!parameters.withCanceledLessons) {
-      for (const lesson of lessons) {
-        if (lesson instanceof TimetableLesson && lesson.canceled) {
-          lesson.__visible__ = false;
+    if (!parameters.withCanceledClasses) {
+      for (const currentClass of classes) {
+        if (currentClass instanceof TimetableLesson && currentClass.canceled) {
+          currentClass.__visible__ = false;
         }
       }
     }
 
-    if (!parameters.withPlannedLessons) {
-      for (const lesson of lessons) {
+    if (!parameters.withPlannedClasses) {
+      for (const currentClass of classes) {
         if (
-          lesson instanceof TimetableLesson &&
-          lesson.__visible__ !== false &&
-          !lesson.canceled &&
+          currentClass instanceof TimetableLesson &&
+          currentClass.__visible__ !== false &&
+          !currentClass.canceled &&
           [
             PronoteApiLessonStatusType.EnseignementNormal,
             PronoteApiLessonStatusType.EnseignementHistorique,
             PronoteApiLessonStatusType.EnseignementSuppleant
-          ].indexOf(lesson.genre) >= 0
+          ].indexOf(currentClass.genre) >= 0
         ) {
-          lesson.__visible__ = false;
+          currentClass.__visible__ = false;
         }
       }
     }
 
-    if (parameters.withCanceledLessons && !parameters.withSuperposedCanceledLessons) {
-      let foundInvisibleCanceled = this.#makeSuperposedCanceledLessonsInvisible(lessons);
+    if (parameters.withCanceledClasses && !parameters.withSuperposedCanceledClasses) {
+      let foundInvisibleCanceled = this.#makeSuperimposedCanceledClassesInvisible(classes);
       while (foundInvisibleCanceled) {
-        foundInvisibleCanceled = this.#makeSuperposedCanceledLessonsInvisible(lessons);
+        foundInvisibleCanceled = this.#makeSuperimposedCanceledClassesInvisible(classes);
       }
     }
 
-    const parsed = lessons.filter((lesson) => lesson.__visible__ !== false);
+    const parsed = classes.filter((currentClass) => currentClass.__visible__ !== false);
 
-    // Cleanup the `__visible__` property from the lessons.
-    for (const lesson of lessons) {
-      delete lesson.__visible__;
+    // Cleanup the `__visible__` property.
+    for (const currentClass of classes) {
+      delete currentClass.__visible__;
     }
 
     return parsed;
   }
 
-  #getItemEndBlockPosition (item: TimetableActivity | TimetableLesson): number {
-    const Fin = item.blockPosition + item.blockLength - 1;
-    const PlacesParJour = this.#client.loginInformations.donnees.General.PlacesParJour;
+  #getClassEndBlockPosition (givenClass: TimetableClass): number {
+    const blocksPerDay = this.#client.loginInformations.donnees.General.PlacesParJour;
+    const startBlockPosition = Math.floor(givenClass.blockPosition / blocksPerDay);
+    let endBlockPosition = givenClass.blockPosition + givenClass.blockLength - 1;
 
-    let lPlace = Fin;
-
-    const lJourDebut = Math.floor(item.blockPosition / PlacesParJour);
-    if (Math.floor(Fin / PlacesParJour) !== lJourDebut) {
-      lPlace = lJourDebut * PlacesParJour + PlacesParJour - 1;
+    if (Math.floor(endBlockPosition / blocksPerDay) !== startBlockPosition) {
+      endBlockPosition = startBlockPosition * blocksPerDay + blocksPerDay - 1;
     }
 
-    return lPlace;
+    return endBlockPosition;
   }
 
-  #getTableauIndicesCoursSuperposesDeCours(
-    lessons: (TimetableActivity | TimetableLesson)[],
-    lessonIndex: number,
-    aPlaceOccupees: number[]
+  #getSuperimposedClassesIndexes(
+    classes: TimetableClass[],
+    classIndex: number,
+    busyPositions: number[]
   ) {
-    const lCours = lessons[lessonIndex];
-    const lCoursSuperposees = [lessonIndex];
+    const classFromIndex = classes[classIndex];
+    const classesSuperimposed = [classIndex];
 
-    const lPlaceDebut = lCours.blockPosition;
-    const lPlaceFin = this.#getItemEndBlockPosition(lCours);
+    const startBlockPosition = classFromIndex.blockPosition;
+    const endBlockPosition = this.#getClassEndBlockPosition(classFromIndex);
 
-    for (let lPlace = lPlaceDebut; lPlace <= lPlaceFin; lPlace++) {
-      const lIndiceCours = aPlaceOccupees[lPlace];
-      if (typeof lIndiceCours !== "undefined") {
+    for (let currentBlockPosition = startBlockPosition; currentBlockPosition <= endBlockPosition; currentBlockPosition++) {
+      const busyClassIndex = busyPositions[currentBlockPosition];
+
+      if (typeof busyClassIndex !== "undefined") {
         if (
-          lIndiceCours !== lessonIndex &&
-          !lCoursSuperposees.includes(lIndiceCours)
-        ) {
-          lCoursSuperposees.push(lIndiceCours);
-        }
+          busyClassIndex !== classIndex &&
+          !classesSuperimposed.includes(busyClassIndex)
+        ) classesSuperimposed.push(busyClassIndex);
       }
     }
 
-    return lCoursSuperposees;
+    return classesSuperimposed;
   }
 
-  #makeSuperposedCanceledLessonsInvisible (lessons: TimetableItemWithVisible[]): boolean {
-    let lCours: TimetableItemWithVisible;
-    let lCoursSuperpose: TimetableItemWithVisible;
-    let lPlaceOccupees: number[] = [];
+  #makeSuperimposedCanceledClassesInvisible (classes: TimetableClassWithVisible[]): boolean {
+    const busyPositions: number[] = [];
 
-    for (let lessonIndex = 0; lessonIndex < lessons.length; lessonIndex++) {
-      lCours = lessons[lessonIndex];
+    for (let classIndex = 0; classIndex < classes.length; classIndex++) {
+      const currentClass = classes[classIndex];
 
-      const lPlaceDebut = lCours.blockPosition;
-      const lPlaceFin = this.#getItemEndBlockPosition(lCours);
+      const startBlockPosition = currentClass.blockPosition;
+      const endBlockPosition = this.#getClassEndBlockPosition(currentClass);
 
-      if (lCours.__visible__ !== false) {
-        for (let lPlace = lPlaceDebut; lPlace <= lPlaceFin; lPlace++) {
-          if (typeof lPlaceOccupees[lPlace] === "undefined") {
-            lPlaceOccupees[lPlace] = lessonIndex;
+      if (currentClass.__visible__ !== false) {
+        for (let currentBlockPosition = startBlockPosition; currentBlockPosition <= endBlockPosition; currentBlockPosition++) {
+          if (typeof busyPositions[currentBlockPosition] === "undefined") {
+            busyPositions[currentBlockPosition] = classIndex;
           }
           else {
-            const lCoursSuperposees = this.#getTableauIndicesCoursSuperposesDeCours(
-              lessons,
-              lessonIndex,
-              lPlaceOccupees
+            const superimposedClassesIndexes = this.#getSuperimposedClassesIndexes(
+              classes,
+              classIndex,
+              busyPositions
             );
 
-            let lAvecCoursAnnule = false;
-            let lAvecCoursNormal = false;
+            let withCanceledClasses = false;
+            let withNormalClasses = false;
 
-            for (let j = 0; j < lCoursSuperposees.length; j++) {
-              lCoursSuperpose = lessons[lCoursSuperposees[j]];
+            for (let j = 0; j < superimposedClassesIndexes.length; j++) {
+              const superimposedClass = classes[superimposedClassesIndexes[j]];
 
-              if (!lAvecCoursNormal) {
-                lAvecCoursNormal = !(lCoursSuperpose instanceof TimetableLesson && lCoursSuperpose.canceled);
+              if (!withNormalClasses) {
+                withNormalClasses = !(superimposedClass instanceof TimetableLesson && superimposedClass.canceled);
               }
 
-              if (!lAvecCoursAnnule) {
-                lAvecCoursAnnule = lCoursSuperpose instanceof TimetableLesson && lCoursSuperpose.canceled;
+              if (!withCanceledClasses) {
+                withCanceledClasses = superimposedClass instanceof TimetableLesson && superimposedClass.canceled;
               }
             }
 
-            if (lAvecCoursNormal && lAvecCoursAnnule) {
-              for (let j = 0; j < lCoursSuperposees.length; j++) {
-                lCoursSuperpose = lessons[lCoursSuperposees[j]];
+            if (withNormalClasses && withCanceledClasses) {
+              for (let j = 0; j < superimposedClassesIndexes.length; j++) {
+                const superimposedClass = classes[superimposedClassesIndexes[j]];
 
-                if (lCoursSuperpose && lCoursSuperpose instanceof TimetableLesson && lCoursSuperpose.canceled) {
-                  lCoursSuperpose.__visible__ = false;
+                if (superimposedClass && superimposedClass instanceof TimetableLesson && superimposedClass.canceled) {
+                  superimposedClass.__visible__ = false;
                   return true;
                 }
               }

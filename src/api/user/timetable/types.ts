@@ -4,6 +4,8 @@ import type { PronoteApiOnglets } from "~/constants/onglets";
 import type { PronoteApiUserData } from "~/api";
 import type { Session } from "~/session";
 import type { PronoteValue } from "~/api/type";
+import { PronoteApiHTTPType } from "~/constants/http";
+import { PronoteApiLessonStatusType } from "~/constants/lessonCategory";
 
 export interface PronoteApiUserTimetable {
   request: {
@@ -11,8 +13,14 @@ export interface PronoteApiUserTimetable {
       // If someone from Index-Education sees this, just why ?
       ressource: PronoteApiUserData["response"]["donnees"]["ressource"]
       Ressource: PronoteApiUserData["response"]["donnees"]["ressource"]
-      numeroSemaine: number
-      NumeroSemaine: number
+
+      numeroSemaine?: number
+      NumeroSemaine?: number
+
+      DateDebut?: PronoteValue<PronoteApiHTTPType.DateTime, string>
+      dateDebut?: PronoteValue<PronoteApiHTTPType.DateTime, string>
+      DateFin?: PronoteValue<PronoteApiHTTPType.DateTime, string>
+      dateFin?: PronoteValue<PronoteApiHTTPType.DateTime, string>
 
       avecAbsencesEleve: boolean
       avecAbsencesRessource: boolean
@@ -20,8 +28,16 @@ export interface PronoteApiUserTimetable {
       avecCoursSortiePeda: boolean
       avecDisponibilites: boolean
       avecInfosPrefsGrille: boolean
+      avecRetenuesEleve: boolean
       avecRessourcesLibrePiedHoraire: boolean
+
+      estEDTAnnuel: boolean
       estEDTPermanence: boolean
+
+      edt: {
+        G: 16
+        L: "Emploi du temps"
+      }
     }
 
     _Signature_: {
@@ -32,10 +48,11 @@ export interface PronoteApiUserTimetable {
   response: {
     nom: PronoteApiFunctions.Timetable
     donnees: {
-      ParametreExportiCal: string
-      avecExportICal: boolean
-
+      ParametreExportiCal?: string
+      avecExportICal?: boolean
       avecCoursAnnule: boolean
+
+      premierePlaceHebdoDuJour: number
       debutDemiPensionHebdo: number
       finDemiPensionHebdo: number
 
@@ -44,31 +61,40 @@ export interface PronoteApiUserTimetable {
       }
 
       absences: {
-        joursCycle: {
-          _T: 24
-          V: Array<{
-            jourCycle: number
-            numeroSemaine: number
-          }>
-        }
+        listeAbsences: PronoteValue<PronoteApiHTTPType.Element, []>
+        listeRetards: PronoteValue<PronoteApiHTTPType.Element, []>
+        listePunitions: PronoteValue<PronoteApiHTTPType.Element, []>
+        listeInfirmeries: PronoteValue<PronoteApiHTTPType.Element, []>
+
+        joursCycle: PronoteValue<PronoteApiHTTPType.Element, Array<{
+          jourCycle: number
+          numeroSemaine: number
+
+          exclusionsEtab?: {
+            placeDebut: number
+            placeFin: number
+            /** Whether it is a "mesure conservatoire" or not. */
+            MC: boolean
+          }
+        }>>
       }
 
-      recreations: {
-        _T: 24
-        V: Array<{
-          L: string
-          place: number
-        }>
-      }
+      recreations: PronoteValue<PronoteApiHTTPType.Element, Array<{
+        L: string
+        place: number
+      }>>
 
       ListeCours: Array<{
+        N: string
+        estSortiePedagogique?: false
+
         place: number
         duree: number
 
         /** Whether the lesson is canceled or not. */
         estAnnule?: boolean
         estRetenue?: boolean
-        estSortiePedagogique?: boolean
+        estPermanence?: boolean
         dispenseEleve?: boolean
         Statut?: string
         memo?: string
@@ -77,15 +103,8 @@ export interface PronoteApiUserTimetable {
           V: Array<{ url: string }>
         }
 
-        DateDuCours: {
-          _T: 7
-          V: string
-        }
-
-        DateDuCoursFin?: {
-          _T: 7
-          V: string
-        }
+        DateDuCours: PronoteValue<PronoteApiHTTPType.DateTime, string>
+        DateDuCoursFin?: PronoteValue<PronoteApiHTTPType.DateTime, string>
 
         CouleurFond?: string
 
@@ -113,9 +132,8 @@ export interface PronoteApiUserTimetable {
           )>
         }
 
-        N: string
         P: number
-        G: number
+        G: PronoteApiLessonStatusType
 
         AvecTafPublie: boolean
 
@@ -140,6 +158,59 @@ export interface PronoteApiUserTimetable {
          * used in responses inside [`PronoteApiUserResources`](../resources/types.ts): `ListeCahierDeTextes`
          */
         AvecCdT?: boolean
+      } | {
+        N: string
+        estSortiePedagogique: true
+
+        /**
+         * Background color for the subject, in HEX format.
+         * @example "#ffffff"
+         */
+        CouleurFond: string
+        DateDuCours: PronoteValue<PronoteApiHTTPType.DateTime, string>
+
+        // NOTE: Those four properties are useless, right ?
+        // Let me explain :
+        // - `DateDuCours` is literally better than `strDateDebut` ;
+        // - `strDateFin` can be calculated using `place` and `duree` ;
+        // - `placeReelle`, `dureeReelle` and `numeroSemaine` are totally useless.
+        placeReelle: number
+        dureeReelle: number
+        strDateDebut: string
+        strDateFin?: string
+        numeroSemaine: number
+
+        /**
+         * Educational activity title, name or description.
+         * @example "Sortie pédagogique"
+         */
+        motif: string
+
+        /**
+         * Array of the names of the teachers who are going to the outing.
+         * @example ["LACAZE H.", "FAVIER É."]
+         */
+        accompagnateurs: string[]
+
+        // NOTE: No idea where this comes from.
+        // Even though a check for it is in the website source code, so it might be somewhere ?
+        pourAcc?: boolean
+
+        /**
+         * Type of the ressource given in `strRess`.
+         * @example "Classe"
+         */
+        strGenreRess: string // can be "Classe"
+
+        /**
+         * Resource.
+         * @example "5D" // where `5D` is a ressource from type "Classe".
+         */
+        strRess: string
+
+        place: number
+        duree: number
+        memo?: string
       }>
     }
   }
@@ -147,7 +218,11 @@ export interface PronoteApiUserTimetable {
 
 export interface ApiUserTimetable {
   input: {
-    weekNumber: number
+    /** Should be transformed using `transformDateToPronoteString` method. */
+    startPronoteDate: string
+    /** Should be transformed using `transformDateToPronoteString` method. */
+    endPronoteDate?: string
+
     session: Session
     resource: PronoteApiUserData["response"]["donnees"]["ressource"]
   }

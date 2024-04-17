@@ -24,7 +24,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
 
   // Get the timetable for the 4 first weeks.
   const timetables = await Promise.all(
-    [1, 2, 3, 4].map((weekNumber) => pronote.getTimetableForWeek(weekNumber))
+    [1, 2, 3, 4].map((weekNumber) => pronote.getHomeworkForWeek(weekNumber))
   );
 
   const amountOfLessons = timetables.map((timetable) => timetable.length);

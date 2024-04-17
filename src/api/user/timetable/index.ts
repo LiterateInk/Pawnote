@@ -6,13 +6,11 @@ import { createPronoteAPICall } from "~/pronote/requestAPI";
 import { makeApiHandler } from "~/utils/api";
 
 export const callApiUserTimetable = makeApiHandler<ApiUserTimetable>(async (fetcher, input) => {
-  if (input.weekNumber <= 0) {
-    throw new Error(`Invalid input on callApiUserTimetable, "weekNumber" should be a strictly positive number, got ${input.weekNumber}`);
-  }
-
   const request_payload = input.session.writePronoteFunctionPayload<PronoteApiUserTimetable["request"]>({
     donnees: {
+      estEDTAnnuel: false,
       estEDTPermanence: false,
+
       avecAbsencesEleve: false,
       avecRessourcesLibrePiedHoraire: false,
 
@@ -21,9 +19,29 @@ export const callApiUserTimetable = makeApiHandler<ApiUserTimetable>(async (fetc
       avecConseilDeClasse: true,
       avecCoursSortiePeda: true,
       avecDisponibilites: true,
+      avecRetenuesEleve: true,
 
-      NumeroSemaine: input.weekNumber,
-      numeroSemaine: input.weekNumber,
+      edt: { G: 16, L: "Emploi du temps" },
+
+      DateDebut: {
+        _T: 7,
+        V: input.startPronoteDate
+      },
+      dateDebut: {
+        _T: 7,
+        V: input.startPronoteDate
+      },
+
+      ...(input.endPronoteDate && {
+        DateFin: {
+          _T: 7,
+          V: input.endPronoteDate
+        },
+        dateFin: {
+          _T: 7,
+          V: input.endPronoteDate
+        }
+      }),
 
       Ressource: input.resource,
       ressource: input.resource

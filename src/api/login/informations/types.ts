@@ -1,6 +1,9 @@
 import type { PronoteApiFunctions } from "~/constants/functions";
 import type { PronoteApiAccountId } from "~/constants/accounts";
 import type { Session } from "~/session";
+import type { PronoteApiDomainFrequencyType } from "~/constants/domain";
+import type { PronoteValue } from "~/api/type";
+import type { PronoteApiHTTPType } from "~/constants/http";
 
 export interface PronoteApiLoginInformations {
   request: {
@@ -193,12 +196,14 @@ export interface PronoteApiLoginInformations {
           V: string
         }>
 
-        DomainesFrequences: Array<{
-          _T: 8
-          V: string
-        }>
-
-        LibellesFrequences: string[]
+        /**
+         * @example
+         * // A value can look like this :
+         * "[1..7,10..16,19..25,28..33,36..44]"
+         * // Can be read in Pawnote using the internal `parseSelection()` function.
+         */
+        DomainesFrequences: Record<PronoteApiDomainFrequencyType, PronoteValue<PronoteApiHTTPType.Element, string>>
+        LibellesFrequences: Record<PronoteApiDomainFrequencyType, string>
 
         BaremeNotation: {
           _T: 10

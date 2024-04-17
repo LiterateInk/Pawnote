@@ -16,8 +16,8 @@ import { Period, readOngletPeriods, OngletPeriods } from "~/parser/period";
 import { Session } from "~/session";
 import Queue from "~/utils/queue";
 
-import { readPronoteApiDate, translateToPronoteWeekNumber } from "~/pronote/dates";
-import { getUTCDate, setDayToEnd, setDayToStart } from "~/utils/dates";
+import { readPronoteApiDate, transformDateToPronoteString, translateToPronoteWeekNumber } from "~/pronote/dates";
+import { getUTCDate } from "~/utils/dates";
 import { callApiUserGrades } from "~/api/user/grades";
 import { StudentGrade } from "~/parser/grade";
 import { StudentAverage } from "~/parser/average";
@@ -32,7 +32,6 @@ import { callApiUserPresence } from "~/api/user/presence";
 import { callApiUserResources } from "~/api/user/resources";
 import { callApiUserLessonResource } from "~/api/user/lessonResource";
 import { callApiUserLessonHomework } from "~/api/user/lessonHomework";
-import { StudentTimetableLesson } from "~/parser/timetableLesson";
 import { StudentLessonResource } from "~/parser/lessonResource";
 import { callApiUserNews } from "~/api/user/news";
 import { StudentNews, StudentNewsItemQuestion } from "~/parser/news";
@@ -65,6 +64,7 @@ import { Partner } from "~/parser/partner";
 import { callApiUserPartnerURL } from "~/api/user/partnerURL";
 import { PronoteApiDomainFrequencyType, PronoteApiMaxDomainCycle } from "~/constants/domain";
 import { parseSelection } from "~/pronote/select";
+import { TimetableOverview } from "~/parser/timetable";
 
 export default class Pronote {
   /**
@@ -238,65 +238,16 @@ export default class Pronote {
     return this.session.getAESEncryptionKeys();
   }
 
-  /**
-   * User lessons for the given time interval, it won't
-   * group or care about the week number of the lessons.
-   *
-   * @param from - Date for the start of the interval. Will be set to the beginning (00h00) of the given date.
-   * @param to   - Date for the end of the interval. When not given, it'll default of the end (23h59) of the given date inside `from` parameter.
-   *               Otherwise, will be set to the beginning (00h00) of the given date.
-   *
-   * @example
-   * const from = new Date("2023-09-18");
-   * const to   = new Date("2023-09-20");
-   *
-   * const lessons = await pronote.getLessonsForInterval(from, to);
-   * lessons.forEach(lesson => {
-   *   console.log("Do something with your", lesson);
-   * });
-   */
-  public async getLessonsForInterval (from: Date, to?: Date): Promise<StudentTimetableLesson[]> {
-    setDayToStart(from);
-
-    if (to instanceof Date) setDayToStart(to);
-    else {
-      to = new Date(from);
-      setDayToEnd(to);
-    }
-
-    let fromWeekNumber = translateToPronoteWeekNumber(from, this.firstMonday);
-    let toWeekNumber = translateToPronoteWeekNumber(to, this.firstMonday);
-
-    // Make sure to set the default to 1.
-    if (fromWeekNumber <= 0) fromWeekNumber = 1;
-    if (toWeekNumber <= 0) toWeekNumber = 1;
-
-    const lessons: StudentTimetableLesson[] = [];
-
-    for (let weekNumber = fromWeekNumber; weekNumber <= toWeekNumber; weekNumber++) {
-      const weekLessons = await this.getTimetableForWeek(weekNumber);
-      lessons.push(...weekLessons);
-    }
-
-    return lessons
-      .filter((lesson) => <Date>from <= lesson.start && lesson.start <= <Date>to);
-  }
-
-  /**
-   *
-   * @param weekNumber
-   * @returns
-   */
-  public async getTimetableForWeek (weekNumber: number): Promise<StudentTimetableLesson[]> {
+  public async getTimetableOverview (start: Date, end?: Date): Promise<TimetableOverview> {
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserTimetable(this.fetcher, {
         resource: this.user.ressource,
         session: this.session,
-        weekNumber
+        startPronoteDate: transformDateToPronoteString(start),
+        endPronoteDate: end && transformDateToPronoteString(end)
       });
 
-      return data.ListeCours
-        .map((lesson) => new StudentTimetableLesson(this, lesson));
+      return new TimetableOverview(this, data);
     });
   }
 

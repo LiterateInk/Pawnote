@@ -63,6 +63,8 @@ import { callApiUserHomeworkRemoveUpload } from "~/api/user/homeworkRemoveUpload
 import { callApiUserHomepage } from "~/api/user/homepage";
 import { Partner } from "~/parser/partner";
 import { callApiUserPartnerURL } from "~/api/user/partnerURL";
+import { PronoteApiDomainFrequencyType, PronoteApiMaxDomainCycle } from "~/constants/domain";
+import { parseSelection } from "~/pronote/select";
 
 export default class Pronote {
   /**
@@ -150,6 +152,11 @@ export default class Pronote {
 
   private queue: Queue;
 
+  #weekFrequencies: Array<{
+    type: PronoteApiDomainFrequencyType
+    name: string
+  } | null>;
+
   constructor (
     public fetcher: PawnoteFetcher,
     private session: Session,
@@ -202,6 +209,21 @@ export default class Pronote {
     // TODO: user.ressource.listeGroupes
 
     this.holidays = loginInformations.donnees.General.listeJoursFeries.V.map((holiday) => new Holiday(holiday));
+
+    this.#weekFrequencies = [];
+    for (let weekNumber = 1; weekNumber <= PronoteApiMaxDomainCycle; weekNumber++) {
+      this.#weekFrequencies[weekNumber] = null;
+
+      for (const genre of [PronoteApiDomainFrequencyType.Fortnight1, PronoteApiDomainFrequencyType.Fortnight2]) {
+        const frequency = parseSelection(loginInformations.donnees.General.DomainesFrequences[genre].V);
+        if (frequency.includes(weekNumber)) {
+          this.#weekFrequencies[weekNumber] = {
+            name: loginInformations.donnees.General.LibellesFrequences[genre],
+            type: genre
+          };
+        }
+      }
+    }
 
     // For further requests, we implement a queue.
     this.queue = new Queue();
@@ -773,5 +795,12 @@ export default class Pronote {
 
       return response.url;
     });
+  }
+
+  public getFrequencyForWeek (weekNumber: number): { type: PronoteApiDomainFrequencyType, name: string } | null {
+    if (weekNumber < 1) throw new Error("Week number must be at least 1.");
+    else if (weekNumber > PronoteApiMaxDomainCycle) throw new Error(`Week number can't be more than maximum value which is ${PronoteApiMaxDomainCycle}.`);
+
+    return this.#weekFrequencies[weekNumber];
   }
 }

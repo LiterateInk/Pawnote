@@ -16,6 +16,7 @@ A simple wrapper around [Index-Education's Pronote](https://www.index-education.
 
 > [!WARNING]  
 > This package wasn't tested for versions before 2022, so if anything is not working, please open an issue about it and mention that it's probably a breaking change between versions.
+> Also, the PRONOTE version for primary schools is not supported yet, not sure if it will be in the future.
 
 ### Sessions
 

@@ -1,4 +1,5 @@
 import type { PronoteValue } from "~/api/type";
+import { PronoteApiDiscussionFolderType } from "~/constants/discussion";
 import type { PronoteApiFunctions } from "~/constants/functions";
 import type { PronoteApiOnglets } from "~/constants/onglets";
 import type { Session } from "~/session";
@@ -24,7 +25,7 @@ export interface PronoteApiUserDiscussions {
          */
         L: string
         N: string
-        G: number
+        G: PronoteApiDiscussionFolderType
       }>>
 
       listeMessagerie: PronoteValue<24, Array<{

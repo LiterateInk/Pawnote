@@ -5,6 +5,7 @@ import type { MessagesOverview } from "~/parser/messages";
 import type Pronote from "~/client/Pronote";
 import type Queue from "~/utils/queue";
 import type { Session } from "~/session";
+import { PronoteApiDiscussionCommandType, PronoteApiDiscussionFolderType } from "~/constants/discussion";
 import { callApiUserDiscussions } from "~/api/user/discussions";
 
 type UserDiscussionsOverview = PronoteApiUserDiscussions["response"]["donnees"];
@@ -38,6 +39,7 @@ export class StudentDiscussionsOverview {
   #parseAndAssignDiscussions (data: UserDiscussionsOverview["listeMessagerie"]["V"]): void {
     const discussions = data.filter((discussion) => discussion.estUneDiscussion && (discussion.profondeur || 0) === 0);
 
+    const assignedIDs: string[] = [];
     for (const discussion of discussions) {
       // Get the root message of the discussion, this one is used as an identifier.
       const participantsMessageID = discussion.messagePourParticipants?.V.N;
@@ -45,6 +47,7 @@ export class StudentDiscussionsOverview {
 
       // Update the raw data of the discussion.
       this.#rawDiscussions[participantsMessageID] = discussion;
+      assignedIDs.push(participantsMessageID);
 
       if (!this.#discussions.find((currentDiscussion) => currentDiscussion.participantsMessageID === participantsMessageID)) {
         const instance = new StudentDiscussion(
@@ -56,6 +59,16 @@ export class StudentDiscussionsOverview {
         this.#discussions.push(instance);
       }
     }
+
+    // Remove deleted discussions.
+    for (const oldID of Object.keys(this.#rawDiscussions)) {
+      if (!assignedIDs.includes(oldID)) {
+        console.info("removing old ref", oldID);
+        delete this.#rawDiscussions[oldID];
+      }
+    }
+
+    this.#discussions = this.#discussions.filter((discussion) => discussion.participantsMessageID in this.#rawDiscussions);
   }
 
   public async refetch (): Promise<void> {
@@ -79,12 +92,12 @@ export class StudentDiscussionsOverview {
 export class StudentDiscussionFolder {
   readonly #id: string;
   readonly #name: string;
-  readonly #genre: number;
+  readonly #type: PronoteApiDiscussionFolderType;
 
   constructor (data: UserFolder) {
     this.#id = data.N;
     this.#name = data.L;
-    this.#genre = data.G;
+    this.#type = data.G;
   }
 
   get id (): string {
@@ -95,8 +108,8 @@ export class StudentDiscussionFolder {
     return this.#name;
   }
 
-  get genre (): number {
-    return this.#genre;
+  get type (): PronoteApiDiscussionFolderType {
+    return this.#type;
   }
 }
 
@@ -111,6 +124,13 @@ export class StudentDiscussion {
 
   readonly #participantsMessageID: string;
 
+  #permanentlyDeleted = false;
+  #assertNotDeleted () {
+    if (this.#permanentlyDeleted) {
+      throw new Error(`This discussion (participantsMessageID=${this.#participantsMessageID}) has been permanently deleted. You can't use this discussion instance anymore.`);
+    }
+  }
+
   public async refetch (): Promise<void> {
     // Will be automatically assigned inside overview data and accessible through `readData()`.
     await this.#discussionsOverview.refetch();
@@ -124,16 +144,20 @@ export class StudentDiscussion {
     this.#client = client;
     this.#discussionsOverview = discussionsOverview;
 
-    this.#readData = data;
-    const constantActualData = data();
+    this.#readData = () => {
+      this.#assertNotDeleted();
+      return data();
+    };
 
-    this.#dateAsFrenchText = constantActualData.libelleDate!;
-    this.#recipientName = constantActualData.public;
+    const actualData = data();
 
-    this.#creator = constantActualData.initiateur ?? this.#client.studentName;
+    this.#dateAsFrenchText = actualData.libelleDate!;
+    this.#recipientName = actualData.public;
+
+    this.#creator = actualData.initiateur ?? this.#client.studentName;
 
     // Always exist in `data`, safe to non-null.
-    this.#participantsMessageID = constantActualData.messagePourParticipants!.V.N;
+    this.#participantsMessageID = actualData.messagePourParticipants!.V.N;
   }
 
   /**
@@ -164,7 +188,33 @@ export class StudentDiscussion {
    * They don't have to send a message to be considered as a recipient.
    */
   public fetchRecipients (): Promise<FetchedMessageRecipient[]> {
+    this.#assertNotDeleted();
     return this.#client.getRecipientsForMessage(this.#participantsMessageID);
+  }
+
+  public async moveToTrash (): Promise<void> {
+    this.#assertNotDeleted();
+    await this.#client.postDiscussionCommand(this, PronoteApiDiscussionCommandType.corbeille);
+  }
+
+  public async restoreFromTrash (): Promise<void> {
+    this.#assertNotDeleted();
+    await this.#client.postDiscussionCommand(this, PronoteApiDiscussionCommandType.restauration);
+  }
+
+  public async deletePermanently (): Promise<void> {
+    this.#assertNotDeleted();
+
+    await this.#client.postDiscussionCommand(this, PronoteApiDiscussionCommandType.suppression);
+    this.#permanentlyDeleted = true;
+  }
+
+  /**
+   * When `true`, you won't be able to access
+   * any other property (except `participantsMessageID`) of this instance anymore.
+   */
+  public get deleted (): boolean {
+    return this.#permanentlyDeleted;
   }
 
   /**
@@ -187,6 +237,7 @@ export class StudentDiscussion {
    * "07h26"
    */
   public get dateAsFrenchText (): string {
+    this.#assertNotDeleted();
     return this.#dateAsFrenchText;
   }
 
@@ -198,6 +249,7 @@ export class StudentDiscussion {
   }
 
   public get recipientName (): string | undefined {
+    this.#assertNotDeleted();
     return this.#recipientName;
   }
 
@@ -210,6 +262,7 @@ export class StudentDiscussion {
   }
 
   public get creator (): string {
+    this.#assertNotDeleted();
     return this.#creator;
   }
 

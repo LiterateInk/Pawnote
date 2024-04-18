@@ -4,6 +4,8 @@ import { PronoteApiFunctions } from "~/constants/functions";
 import { PronoteApiOnglets } from "~/constants/onglets";
 import { createPronoteAPICall } from "~/pronote/requestAPI";
 import { makeApiHandler } from "~/utils/api";
+import { PronoteApiStateType } from "~/constants/states";
+import { generateCreationID } from "~/constants/id";
 
 export const callApiUserCreateDiscussionMessage = makeApiHandler<ApiUserCreateDiscussionMessage>(async (fetcher, input) => {
   const payload = input.session.writePronoteFunctionPayload<PronoteApiUserCreateDiscussionMessage["request"]>({
@@ -14,7 +16,10 @@ export const callApiUserCreateDiscussionMessage = makeApiHandler<ApiUserCreateDi
       } : input.content.value,
 
       bouton: { N: 0, G: input.button },
-      brouillon: { N: -1001, E: 1 },
+      brouillon: {
+        N: generateCreationID(),
+        E: PronoteApiStateType.CREATION
+      },
       genreDiscussion: 0,
       messagePourReponse: {
         G: 0,

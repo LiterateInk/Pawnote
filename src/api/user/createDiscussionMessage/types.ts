@@ -2,6 +2,7 @@ import type { PronoteValue } from "~/api/type";
 import type { PronoteApiFunctions } from "~/constants/functions";
 import type { PronoteApiMessagesButtonType } from "~/constants/messages";
 import type { PronoteApiOnglets } from "~/constants/onglets";
+import type { PronoteApiStateType } from "~/constants/states";
 import type { Session } from "~/session";
 
 export interface PronoteApiUserCreateDiscussionMessage {
@@ -19,8 +20,12 @@ export interface PronoteApiUserCreateDiscussionMessage {
       genreDiscussion: 0
 
       brouillon: {
-        N: -1001,
-        E: 1
+        /**
+         * A generated creation ID (starts from `-1000`).
+         * @example -1001
+         */
+        N: number
+        E: PronoteApiStateType.CREATION
       }
 
       /** Message we're replying to. */

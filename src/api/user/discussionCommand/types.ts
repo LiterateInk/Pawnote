@@ -1,3 +1,4 @@
+import { PronoteApiDiscussionCommandType } from "~/constants/discussion";
 import type { PronoteApiFunctions } from "~/constants/functions";
 import type { PronoteApiOnglets } from "~/constants/onglets";
 import type { Session } from "~/session";
@@ -9,7 +10,7 @@ export interface PronoteApiUserDiscussionCommand {
     }
 
     donnees: {
-      commande: "corbeille"
+      commande: PronoteApiDiscussionCommandType
       listePossessionsMessages: Array<{ N: string }>
     }
   }
@@ -24,7 +25,7 @@ export interface PronoteApiUserDiscussionCommand {
 export interface ApiUserDiscussionCommand {
   input: {
     session: Session
-    command: "corbeille"
+    command: PronoteApiDiscussionCommandType
     possessions: Array<{ N: string }>
   }
 

@@ -1,5 +1,5 @@
 import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiNewsQuestionType, StudentNewsSurvey } from "../../src";
-import { select, input, checkbox } from "@inquirer/prompts"; // Their kit is really nice, I'm just showcasing it here :D
+import { select, input, checkbox } from "@inquirer/prompts";
 
 (async () => {
   const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev/pronote", {

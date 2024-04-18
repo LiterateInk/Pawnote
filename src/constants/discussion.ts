@@ -19,7 +19,6 @@ export enum PronoteApiDiscussionFolderType {
 export enum PronoteApiDiscussionCommandType {
   lu = "lu",
   nonLu = "nonLu",
-  supprimer = "supprimer",
   archiver = "archiver",
   desarchiver = "desarchiver",
   transferer = "transferer",
@@ -29,7 +28,8 @@ export enum PronoteApiDiscussionCommandType {
   ouvrirDiscussion = "ouvrirDiscussion",
   signalerSuppression = "signalerSuppression",
   corbeille = "corbeille",
-  restaurer = "restaurer",
+  restauration = "restauration",
+  suppression = "suppression",
   plus = "plus",
   purger = "purger",
   discussionEnFenetre = "discussionEnFenetre",

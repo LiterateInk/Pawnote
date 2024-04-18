@@ -41,6 +41,7 @@ export { PronoteApiNewsQuestionType } from "~/constants/news";
 export { PronoteApiAccountId } from "~/constants/accounts";
 export { PronoteApiResourceType } from "~/constants/resources";
 export { PronoteApiAttendanceObservationType } from "~/constants/attendance";
+export { PronoteApiDiscussionFolderType } from "~/constants/discussion";
 
 // Exporting main classes.
 export { default as Pronote } from "~/client/Pronote";

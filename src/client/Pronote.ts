@@ -65,6 +65,8 @@ import { callApiUserPartnerURL } from "~/api/user/partnerURL";
 import { PronoteApiDomainFrequencyType, PronoteApiMaxDomainCycle } from "~/constants/domain";
 import { parseSelection } from "~/pronote/select";
 import { TimetableOverview } from "~/parser/timetable";
+import { callApiUserDiscussionCommand } from "~/api/user/discussionCommand";
+import { PronoteApiDiscussionCommandType } from "~/constants/discussion";
 
 export default class Pronote {
   /**
@@ -491,6 +493,18 @@ export default class Pronote {
         data
       );
     });
+  }
+
+  public async postDiscussionCommand (discussion: StudentDiscussion, command: PronoteApiDiscussionCommandType): Promise<void> {
+    await this.queue.push(async () => {
+      await callApiUserDiscussionCommand(this.fetcher, {
+        possessions: discussion.possessions,
+        session: this.session,
+        command: command
+      });
+    });
+
+    await discussion.refetch();
   }
 
   /**

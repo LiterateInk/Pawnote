@@ -54,7 +54,7 @@ export interface PronoteApiUserCreateDiscussionMessage {
       estCreationDiscussion: true
     }
 
-    nom: PronoteApiFunctions.Discussions
+    nom: PronoteApiFunctions.CreateMessage
   }
 }
 

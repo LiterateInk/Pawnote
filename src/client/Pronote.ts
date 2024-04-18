@@ -67,6 +67,7 @@ import { parseSelection } from "~/pronote/select";
 import { TimetableOverview } from "~/parser/timetable";
 import { callApiUserDiscussionCommand } from "~/api/user/discussionCommand";
 import { PronoteApiDiscussionCommandType } from "~/constants/discussion";
+import { ARDPartner } from "~/parser/partners/ard";
 
 export default class Pronote {
   /**
@@ -739,10 +740,11 @@ export default class Pronote {
         weekNumber: translateToPronoteWeekNumber(nextOpenDate, this.firstMonday)
       });
 
-      const ardSSO = response.data.donnees.partenaireARD?.SSO;
+      // TODO: Handle other cool properties given by the homepage request.
+      const ardPartner = response.data.donnees.partenaireARD;
 
       return {
-        ard: ardSSO ? new Partner(this, ardSSO) : null
+        ard: ardPartner ? new ARDPartner(this, ardPartner) : null
       };
     });
   }

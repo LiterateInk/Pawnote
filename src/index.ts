@@ -62,3 +62,4 @@ export { SentMessage, MessagesOverview, TransferredMessage, Message } from "~/pa
 export { DiscussionCreationRecipient, FetchedMessageRecipient, MessageRecipient } from "~/parser/recipient";
 export { PronoteApiSessionAccessType } from "~/pronote/session";
 export { cleanPronoteUrl } from "~/pronote/url";
+export { ARDPartner, ARDPartnerWallet } from "~/parser/partners/ard";

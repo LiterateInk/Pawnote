@@ -194,18 +194,35 @@ export class StudentDiscussion {
 
   public async moveToTrash (): Promise<void> {
     this.#assertNotDeleted();
-    await this.#client.postDiscussionCommand(this, PronoteApiDiscussionCommandType.corbeille);
+
+    await this.#client.postDiscussionCommand({
+      command: PronoteApiDiscussionCommandType.corbeille,
+      possessions: this.possessions
+    });
+
+    await this.refetch();
   }
 
   public async restoreFromTrash (): Promise<void> {
     this.#assertNotDeleted();
-    await this.#client.postDiscussionCommand(this, PronoteApiDiscussionCommandType.restauration);
+
+    await this.#client.postDiscussionCommand({
+      command: PronoteApiDiscussionCommandType.restauration,
+      possessions: this.possessions
+    });
+
+    await this.refetch();
   }
 
   public async deletePermanently (): Promise<void> {
     this.#assertNotDeleted();
 
-    await this.#client.postDiscussionCommand(this, PronoteApiDiscussionCommandType.suppression);
+    await this.#client.postDiscussionCommand({
+      command: PronoteApiDiscussionCommandType.suppression,
+      possessions: this.possessions
+    });
+
+    await this.refetch();
     this.#permanentlyDeleted = true;
   }
 
@@ -223,6 +240,10 @@ export class StudentDiscussion {
    */
   public get possessions (): PronoteApiMessagesPossessionsList {
     return this.#readData().listePossessionsMessages.V;
+  }
+
+  public get numberOfDrafts (): number {
+    return this.#readData().nbBrouillons ?? 0;
   }
 
   /**

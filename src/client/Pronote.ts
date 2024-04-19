@@ -66,8 +66,8 @@ import { PronoteApiDomainFrequencyType, PronoteApiMaxDomainCycle } from "~/const
 import { parseSelection } from "~/pronote/select";
 import { TimetableOverview } from "~/parser/timetable";
 import { callApiUserDiscussionCommand } from "~/api/user/discussionCommand";
-import { PronoteApiDiscussionCommandType } from "~/constants/discussion";
 import { ARDPartner } from "~/parser/partners/ard";
+import { ApiUserDiscussionAvailableCommands } from "~/api/user/discussionCommand/types";
 
 export default class Pronote {
   /**
@@ -496,16 +496,13 @@ export default class Pronote {
     });
   }
 
-  public async postDiscussionCommand (discussion: StudentDiscussion, command: PronoteApiDiscussionCommandType): Promise<void> {
+  public async postDiscussionCommand (payload: ApiUserDiscussionAvailableCommands): Promise<void> {
     await this.queue.push(async () => {
       await callApiUserDiscussionCommand(this.fetcher, {
-        possessions: discussion.possessions,
         session: this.session,
-        command: command
+        ...payload
       });
     });
-
-    await discussion.refetch();
   }
 
   /**

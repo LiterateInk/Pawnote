@@ -9,9 +9,12 @@ import type { Session } from "~/session";
 import { readPronoteApiDate } from "~/pronote/dates";
 import { StudentAttachment } from "~/parser/attachment";
 import { PronoteApiResourceType } from "~/constants/resources";
-import { PRONOTE_MESSAGE_MYSELF_NAME, PronoteApiMessagesButtonType, PronoteApiSentMessage, PronoteApiTransferredMessage } from "~/constants/messages";
+import { PRONOTE_MESSAGE_MYSELF_NAME, PronoteApiDraftMessage, PronoteApiMessagesButtonType, PronoteApiSentMessage, PronoteApiTransferredMessage } from "~/constants/messages";
 import { makeDummyRecipient, parseHintToType } from "~/pronote/recipients";
 import { callApiUserMessages } from "~/api/user/messages";
+import { PronoteApiDiscussionCommandType } from "~/constants/discussion";
+import { generateCreationID } from "~/constants/id";
+import { getPronoteMessageButtonType } from "~/pronote/messages";
 export class MessagesOverview {
   readonly #client: Pronote;
   readonly #clientQueue: Queue;
@@ -19,13 +22,18 @@ export class MessagesOverview {
   readonly #discussion: StudentDiscussion;
 
   #defaultReplyMessageID: string;
-  #messages: SentMessage[];
+  #messages: SentMessage[] = [];
+  #savedDrafts: DraftMessage[] = [];
   // Needed to create a new message...
   #sendButtonGenre: PronoteApiMessagesButtonType;
   #fetchLimit: number;
 
-  public async refetch (limit: number) {
-    const { messagePourReponse, listeMessages, listeBoutons } = await this.#clientQueue.push(async () => {
+  public async refetch (limit = this.#fetchLimit) {
+    // Update the discussions overview -> updates possessions.
+    await this.#discussion.refetch();
+
+    // Fetch the new messages.
+    const { messagePourReponse, listeMessages, listeBoutons, brouillon } = await this.#clientQueue.push(async () => {
       const { data } = await callApiUserMessages(this.#client.fetcher, {
         possessions: this.#discussion.possessions,
         session: this.#clientSession,
@@ -37,7 +45,10 @@ export class MessagesOverview {
     });
 
     this.#defaultReplyMessageID = messagePourReponse.V.N;
-    this.#messages = this.#parseMessages(listeMessages.V);
+
+    this.#parseMessages(listeMessages.V);
+    this.#parseCurrentDraft(brouillon);
+
     this.#sendButtonGenre = this.#readSendButton(listeBoutons.V);
     this.#fetchLimit = limit;
   }
@@ -46,15 +57,53 @@ export class MessagesOverview {
     return listeBoutons.find((button) => button.L.startsWith("Envoyer"))!.G;
   }
 
-  #parseMessages (listeMessages: PronoteApiUserMessages["response"]["donnees"]["listeMessages"]["V"]): SentMessage[] {
-    const output: SentMessage[] = [];
+  #parseMessages (listeMessages: PronoteApiUserMessages["response"]["donnees"]["listeMessages"]["V"]): void {
+    this.#savedDrafts = [];
+    this.#messages = [];
 
     for (const message of listeMessages) {
-      const instance = new SentMessage(this.#client, this, message);
-      output.push(instance);
+      if (message.brouillon) {
+        const instance = new DraftMessage(this, message);
+        this.#savedDrafts.push(instance);
+      }
+      else {
+        const instance = new SentMessage(this.#client, this, message);
+        this.#messages.push(instance);
+      }
     }
 
-    return output.sort((a, b) => b.created.getTime() - a.created.getTime());
+    this.#messages.sort((a, b) => b.created.getTime() - a.created.getTime());
+  }
+
+  #parseCurrentDraft (draft: PronoteApiUserMessages["response"]["donnees"]["brouillon"]) {
+    if (!draft) return;
+
+    const possessionMessage = {
+      _T: 24,
+      V: { N: draft.V.N }
+    } as const;
+
+    const messageSource = {
+      _T: 24,
+      V: { N: this.#defaultReplyMessageID }
+    } as const;
+
+    if (draft.V.estHTML) {
+      this.#savedDrafts.push(new DraftMessage(this, {
+        estHTML: true,
+        contenu: draft.V.contenu,
+        possessionMessage,
+        messageSource
+      }));
+    }
+    else {
+      this.#savedDrafts.push(new DraftMessage(this, {
+        estHTML: false,
+        contenu: draft.V.contenu.V,
+        possessionMessage,
+        messageSource
+      }));
+    }
   }
 
   public constructor (
@@ -72,7 +121,10 @@ export class MessagesOverview {
     this.#discussion = discussion;
 
     this.#defaultReplyMessageID = data.donnees.messagePourReponse.V.N;
-    this.#messages = this.#parseMessages(data.donnees.listeMessages.V);
+
+    this.#parseMessages(data.donnees.listeMessages.V);
+    this.#parseCurrentDraft(data.donnees.brouillon);
+
     this.#sendButtonGenre = this.#readSendButton(data.donnees.listeBoutons.V);
     this.#fetchLimit = fetchLimit;
   }
@@ -85,16 +137,62 @@ export class MessagesOverview {
     return this.#messages;
   }
 
+  public get savedDrafts (): DraftMessage[] {
+    return this.#savedDrafts;
+  }
+
   /**
    * Will send a message to the discussion and refetch the messages
    * internally so properties are automatically updated.
    */
   public async sendMessage (content: string, includeParentsAndStudents = false, replyTo = this.#defaultReplyMessageID): Promise<void> {
     await this.#client.replyToDiscussionMessage(replyTo, content, this.#sendButtonGenre, includeParentsAndStudents);
-    // Update the discussions overview -> updates possessions.
-    await this.#discussion.refetch();
-    // Fetch the new messages.
-    await this.refetch(this.#fetchLimit);
+    await this.refetch();
+  }
+
+  public async draftMessage (content: string, replyTo = this.#defaultReplyMessageID): Promise<void> {
+    await this.#client.postDiscussionCommand({
+      command: PronoteApiDiscussionCommandType.brouillon,
+      id: generateCreationID(),
+      content,
+      replyMessageID: replyTo
+    });
+
+    await this.refetch();
+  }
+
+  public async patchDraft (draft: DraftMessage): Promise<void> {
+    await this.#client.postDiscussionCommand({
+      command: PronoteApiDiscussionCommandType.brouillon,
+      id: draft.possessionID,
+      content: draft.content,
+      replyMessageID: draft.replyMessageID
+    });
+
+    await this.refetch();
+  }
+
+  public async deleteDraft (draft: DraftMessage): Promise<void> {
+    await this.#client.postDiscussionCommand({
+      command: PronoteApiDiscussionCommandType.suppression,
+      possessions: [{ N: draft.possessionID }]
+    });
+
+    await this.refetch();
+  }
+
+  public async sendDraft (draft: DraftMessage, includeParentsAndStudents = false): Promise<void> {
+    const buttonType = getPronoteMessageButtonType(this.#sendButtonGenre, includeParentsAndStudents);
+
+    await this.#client.postDiscussionCommand({
+      command: "",
+      button: buttonType,
+      content: draft.content,
+      id: draft.possessionID,
+      replyMessageID: draft.replyMessageID
+    });
+
+    await this.refetch();
   }
 
   /**
@@ -104,6 +202,54 @@ export class MessagesOverview {
   public get canIncludeStudentsAndParents (): boolean {
     return this.#sendButtonGenre === PronoteApiMessagesButtonType.ReplyEveryoneExceptParentsAndStudents
         || this.#sendButtonGenre === PronoteApiMessagesButtonType.SendEveryoneExceptParentsAndStudents;
+  }
+}
+
+export class DraftMessage {
+  readonly #overview: MessagesOverview;
+  readonly #possessionID: string;
+  readonly #replyMessageID: string;
+  #content: string;
+  readonly #isHTML: boolean;
+
+  constructor (overview: MessagesOverview, message: PronoteApiDraftMessage) {
+    this.#overview = overview;
+    this.#possessionID = message.possessionMessage.V.N;
+    this.#replyMessageID = message.messageSource.V.N;
+    this.#content = message.estHTML ? message.contenu.V : message.contenu;
+    this.#isHTML = message.estHTML;
+  }
+
+  public async delete (): Promise<void> {
+    await this.#overview.deleteDraft(this);
+  }
+
+  public async save (): Promise<void> {
+    await this.#overview.patchDraft(this);
+  }
+
+  public async send (includeParentsAndStudents = false): Promise<void> {
+    await this.#overview.sendDraft(this, includeParentsAndStudents);
+  }
+
+  public get possessionID (): string {
+    return this.#possessionID;
+  }
+
+  public get replyMessageID (): string {
+    return this.#replyMessageID;
+  }
+
+  public get content (): string {
+    return this.#content;
+  }
+
+  public set content (value: string) {
+    this.#content = value;
+  }
+
+  public get isHTML (): boolean {
+    return this.#isHTML;
   }
 }
 
@@ -215,6 +361,10 @@ export class SentMessage extends Message {
 
   public reply (content: string, includeParentsAndStudents = false): Promise<void> {
     return this.#messagesOverview.sendMessage(content, includeParentsAndStudents, this.id);
+  }
+
+  public draftReply (content: string): Promise<void> {
+    return this.#messagesOverview.draftMessage(content, this.id);
   }
 
   public get replyingToMessage (): SentMessage | undefined {

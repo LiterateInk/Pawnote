@@ -14,7 +14,7 @@ export interface PronoteApiUserCreateDiscussionMessage {
     donnees: {
       bouton: {
         N: 0
-        G: number
+        G: PronoteApiMessagesButtonType
       }
 
       genreDiscussion: 0

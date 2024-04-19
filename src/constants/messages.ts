@@ -20,13 +20,25 @@ export type PronoteApiMessageContent = (
     estHTML: false
   }
   | {
-    contenu: PronoteValue<number, string>;
+    contenu: PronoteValue<21, string>;
     estHTML: true
   }
 );
 
+export type PronoteApiDraftMessage = PronoteApiMessageContent & {
+  possessionMessage: PronoteValue<24, {
+    N: string
+  }>
+
+  messageSource: PronoteValue<24, {
+    N: string
+  }>
+};
+
 type PronoteApiMessage = PronoteApiMessageContent & {
   N: string
+
+  brouillon?: boolean
 
   /**
    * When the message is a reply to another one,

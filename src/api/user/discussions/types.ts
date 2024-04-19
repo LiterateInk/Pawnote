@@ -85,6 +85,8 @@ export interface PronoteApiUserDiscussions {
         indicePere?: number
         nbPublic?: number
         initiateur?: string
+
+        nbBrouillons?: number
       }>>
 
       strSuperAdministrateurs: string

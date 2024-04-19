@@ -32,6 +32,12 @@ export interface PronoteApiUserMessages {
         L: string
       }>>
 
+      brouillon?: PronoteValue<24, {
+        N: string
+        contenu: PronoteValue<21, string>
+        estHTML: boolean
+      }>
+
       /** Is defined only when `marquerCommeLu` is set to `true` in the payload. */
       nbMarquerLu?: number
       nbPossessionsMessage: number

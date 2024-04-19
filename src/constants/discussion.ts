@@ -30,6 +30,7 @@ export enum PronoteApiDiscussionCommandType {
   corbeille = "corbeille",
   restauration = "restauration",
   suppression = "suppression",
+  brouillon = "brouillon",
   plus = "plus",
   purger = "purger",
   discussionEnFenetre = "discussionEnFenetre",

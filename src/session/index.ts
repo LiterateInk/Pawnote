@@ -222,7 +222,7 @@ export class Session {
     }
   }
 
-  public writePronoteFileUploadPayload (buffer: ArrayBuffer | Buffer | Uint8Array) {
+  public writePronoteFileUploadPayload (buffer: ArrayBuffer | Buffer | Uint8Array | File | Blob) {
     this.instance.order++;
 
     const { aes_iv, aes_key } = this.getAESEncryptionKeys();
@@ -231,7 +231,7 @@ export class Session {
     return {
       order: order_encrypted,
       fileID: `selecfile_1_${Date.now()}`, // `1` is a constant because we'll always upload only one file.
-      file: new Blob([buffer]),
+      file: buffer instanceof Blob ? buffer : new Blob([buffer]),
 
       // We can either provide an MD5 or just give an empty string.
       //

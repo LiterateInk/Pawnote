@@ -31,7 +31,7 @@ export { PawnoteError, PawnoteErrorCodes } from "~/errors/constants";
 export { PawnoteNetworkFail } from "~/errors/NetworkFail";
 
 // Exporting custom values read by Pawnote.
-export { PronoteApiGradeType } from "./pronote/grades";
+export { PronoteApiGradeType } from "~/pronote/grades";
 
 // Exporting constants from Pronote API.
 export { PronoteApiHomeworkDifficulty, PronoteApiHomeworkReturnType } from "~/constants/homework";
@@ -58,7 +58,7 @@ export { TimetableActivity, TimetableLesson } from "~/parser/timetableLesson";
 export { StudentNews, StudentNewsCategory, StudentNewsSurvey, StudentNewsInformation, StudentNewsItemQuestion } from "~/parser/news";
 export { StudentAbsence, StudentDelay, StudentPunishment, StudentObservation } from "~/parser/attendance";
 export { StudentDiscussionsOverview, StudentDiscussion, StudentDiscussionFolder } from "~/parser/discussion";
-export { SentMessage, MessagesOverview, TransferredMessage, Message } from "~/parser/messages";
+export { SentMessage, MessagesOverview, TransferredMessage, Message, DraftMessage } from "~/parser/messages";
 export { DiscussionCreationRecipient, FetchedMessageRecipient, MessageRecipient } from "~/parser/recipient";
 export { PronoteApiSessionAccessType } from "~/pronote/session";
 export { cleanPronoteUrl } from "~/pronote/url";

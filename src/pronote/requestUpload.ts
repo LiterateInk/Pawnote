@@ -35,6 +35,7 @@ export const createPronoteUploadCall = async (
   form.append("nomRequete", apiFunctionName);
   form.append("idFichier", request.payload.fileID);
   form.append("md5", request.payload.md5);
+  // @ts-expect-error : trust me.
   form.append("files[]", request.payload.file, request.fileName);
 
   const pronote_url = request.session_instance.pronote_url;

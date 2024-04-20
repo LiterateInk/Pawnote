@@ -1,10 +1,11 @@
 import type { PronoteApiUserHomework } from "../api/user/homework/types";
 import type Pronote from "../client/Pronote";
+import type { PawnoteSupportedFormDataFile } from "~/utils/file";
+import type { StudentLessonResource } from "./lessonResource";
 
 import { readPronoteApiDate } from "~/pronote/dates";
 import { StudentSubject } from "~/parser/subject";
 import { StudentAttachment } from "~/parser/attachment";
-import type { StudentLessonResource } from "./lessonResource";
 import { PronoteApiHomeworkDifficulty, PronoteApiHomeworkReturnType } from "~/constants/homework";
 import { StudentTheme } from "./theme";
 
@@ -76,7 +77,7 @@ export class StudentHomework {
     }
   }
 
-  public async uploadFile (file: Buffer | ArrayBuffer, fileName: string): Promise<void> {
+  public async uploadFile (file: PawnoteSupportedFormDataFile, fileName: string): Promise<void> {
     if (!this.return || this.return.type !== PronoteApiHomeworkReturnType.FILE_UPLOAD) {
       throw new Error("This homework cannot be uploaded.");
     }

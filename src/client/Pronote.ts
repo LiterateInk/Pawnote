@@ -68,6 +68,7 @@ import { TimetableOverview } from "~/parser/timetable";
 import { callApiUserDiscussionCommand } from "~/api/user/discussionCommand";
 import { ARDPartner } from "~/parser/partners/ard";
 import { ApiUserDiscussionAvailableCommands } from "~/api/user/discussionCommand/types";
+import type { PawnoteSupportedFormDataFile } from "~/utils/file";
 
 export default class Pronote {
   /**
@@ -694,12 +695,13 @@ export default class Pronote {
     });
   }
 
-  public async uploadHomeworkFile (homeworkID: string, file: Buffer | ArrayBuffer | Uint8Array, fileName: string): Promise<void> {
+  public async uploadHomeworkFile (homeworkID: string, file: PawnoteSupportedFormDataFile, fileName: string): Promise<void> {
     return this.queue.push(async () => {
       // Check if the homework can be uploaded.
       // Otherwise we'll get an error during the upload.
-      const fileSize = file.byteLength;
-      if (fileSize > this.#authorizations.maxHomeworkFileUploadSize) {
+      // @ts-expect-error : trust the process.
+      const fileSize: number | undefined = file.size || file.byteLength;
+      if (typeof fileSize === "number" && fileSize > this.#authorizations.maxHomeworkFileUploadSize) {
         throw new Error(`File size is too big, maximum allowed is ${this.#authorizations.maxHomeworkFileUploadSize} bytes.`);
       }
 

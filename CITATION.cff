@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+title: Pawnote
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - given-names: Mikkel
+    family-names: RINGAUD
+    email: mikkel@milescode.dev
+repository-code: 'https://github.com/LiterateInk/Pawnote.git'
+url: 'https://pawnote.js.org/'
+repository: 'https://github.com/LiterateInk'
+abstract: 'A simple wrapper around Index-Education's Pronote internal API.'
+keywords:
+  - pronote
+  - wrapper
+  - api
+license: GPL-3.0
+date-released: '2023-12-22'

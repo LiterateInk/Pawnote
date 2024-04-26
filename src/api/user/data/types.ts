@@ -130,7 +130,7 @@ export interface PronoteApiUserData {
               }>
             }
 
-            periodeParDefaut: {
+            periodeParDefaut?: {
               _T: 24
               V: {
                 /** Name of the period. */

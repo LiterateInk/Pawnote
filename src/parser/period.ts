@@ -60,7 +60,7 @@ export interface OngletPeriods {
 
 export const readOngletPeriods = (knownPeriods: Period[], ongletData: PronoteApiUserData["response"]["donnees"]["ressource"]["listeOngletsPourPeriodes"]["V"][number]): OngletPeriods => {
   return {
-    default: knownPeriods.find((p) => p.id === ongletData.periodeParDefaut.V.N)!,
+    default: knownPeriods.find((p) => p.id === ongletData.periodeParDefaut?.V.N)!,
     values: ongletData.listePeriodes.V.map((p) => new OngletPeriod(knownPeriods, p))
   };
 };

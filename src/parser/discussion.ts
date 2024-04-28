@@ -63,7 +63,6 @@ export class StudentDiscussionsOverview {
     // Remove deleted discussions.
     for (const oldID of Object.keys(this.#rawDiscussions)) {
       if (!assignedIDs.includes(oldID)) {
-        console.info("removing old ref", oldID);
         delete this.#rawDiscussions[oldID];
       }
     }

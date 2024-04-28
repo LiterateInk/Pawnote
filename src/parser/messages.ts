@@ -25,7 +25,7 @@ export class MessagesOverview {
   #messages: SentMessage[] = [];
   #savedDrafts: DraftMessage[] = [];
   // Needed to create a new message...
-  #sendButtonGenre: PronoteApiMessagesButtonType;
+  #sendButtonGenre?: PronoteApiMessagesButtonType;
   #fetchLimit: number;
 
   public async refetch (limit = this.#fetchLimit) {
@@ -53,8 +53,9 @@ export class MessagesOverview {
     this.#fetchLimit = limit;
   }
 
-  #readSendButton (listeBoutons: PronoteApiUserMessages["response"]["donnees"]["listeBoutons"]["V"]): PronoteApiMessagesButtonType {
-    return listeBoutons.find((button) => button.L.startsWith("Envoyer"))!.G;
+  #readSendButton (listeBoutons: PronoteApiUserMessages["response"]["donnees"]["listeBoutons"]["V"]): PronoteApiMessagesButtonType | undefined {
+    const button = listeBoutons.find((button) => button.L.startsWith("Envoyer"));
+    return button?.G;
   }
 
   #parseMessages (listeMessages: PronoteApiUserMessages["response"]["donnees"]["listeMessages"]["V"]): void {
@@ -146,6 +147,8 @@ export class MessagesOverview {
    * internally so properties are automatically updated.
    */
   public async sendMessage (content: string, includeParentsAndStudents = false, replyTo = this.#defaultReplyMessageID): Promise<void> {
+    if (typeof this.#sendButtonGenre === "undefined") throw new Error("You can't create messages in this discussion.");
+
     await this.#client.replyToDiscussionMessage(replyTo, content, this.#sendButtonGenre, includeParentsAndStudents);
     await this.refetch();
   }
@@ -182,6 +185,7 @@ export class MessagesOverview {
   }
 
   public async sendDraft (draft: DraftMessage, includeParentsAndStudents = false): Promise<void> {
+    if (typeof this.#sendButtonGenre === "undefined") throw new Error("You can't create drafts in this discussion.");
     const buttonType = getPronoteMessageButtonType(this.#sendButtonGenre, includeParentsAndStudents);
 
     await this.#client.postDiscussionCommand({

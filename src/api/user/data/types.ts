@@ -212,10 +212,10 @@ export interface PronoteApiUserData {
 
       /** Authorization for the current student. */
       autorisations: {
-        /** Is allowed to create discussions ? */
+        /** Whether the user is allowed to read discussions or messages. */
         AvecDiscussion?: boolean
 
-        /** Whether the user is disallowed to read/create discussions. */
+        /** Whether the user is disallowed to create discussions or messages. */
         discussionInterdit?: boolean
 
         /**

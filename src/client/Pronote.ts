@@ -479,8 +479,18 @@ export default class Pronote {
     });
   }
 
+  #throwIfNotAllowedReadMessages (): void {
+    if (!this.authorizations.canReadDiscussions) throw new Error("You can't read messages in this instance.");
+  }
+
+  #throwIfNotAllowedCreateMessages (): void {
+    if (!this.authorizations.canDiscuss) throw new Error("You can't create messages in this instance.");
+  }
+
   public async getDiscussionsOverview (): Promise<StudentDiscussionsOverview> {
     return this.queue.push(async () => {
+      this.#throwIfNotAllowedReadMessages();
+
       const { data } = await callApiUserDiscussions(this.fetcher, { session: this.session });
       return new StudentDiscussionsOverview(this, this.queue, this.session, data.donnees);
     });
@@ -488,6 +498,8 @@ export default class Pronote {
 
   public async getMessagesOverviewFromDiscussion (discussion: StudentDiscussion, markAsRead = false, limit = 0): Promise<MessagesOverview> {
     return this.queue.push(async () => {
+      this.#throwIfNotAllowedReadMessages();
+
       const { data } = await callApiUserMessages(this.fetcher, { possessions: discussion.possessions, session: this.session, markAsRead, limit });
       return new MessagesOverview(
         this, this.queue, this.session,
@@ -499,6 +511,8 @@ export default class Pronote {
 
   public async postDiscussionCommand (payload: ApiUserDiscussionAvailableCommands): Promise<void> {
     await this.queue.push(async () => {
+      this.#throwIfNotAllowedCreateMessages();
+
       await callApiUserDiscussionCommand(this.fetcher, {
         session: this.session,
         ...payload
@@ -516,6 +530,8 @@ export default class Pronote {
 
   public async getRecipientsForMessage (messageID: string): Promise<FetchedMessageRecipient[]> {
     return this.queue.push(async () => {
+      this.#throwIfNotAllowedReadMessages();
+
       const { data } = await callApiUserMessageRecipients(this.fetcher, {
         session: this.session,
         messageID
@@ -612,8 +628,6 @@ export default class Pronote {
   }
 
   #throwIfNotAllowedRecipientType (type: PronoteApiUserResourceType): void {
-    if (!this.authorizations.canDiscuss) throw new Error("You don't have access to discussion.");
-
     switch (type) {
       case PronoteApiResourceType.Teacher:
         if (!this.authorizations.canDiscussWithTeachers)
@@ -637,9 +651,9 @@ export default class Pronote {
    * It allows to know who can be the recipient of the discussion.
    */
   public async getRecipientsForDiscussionCreation (type: PronoteApiUserResourceType): Promise<DiscussionCreationRecipient[]> {
-    this.#throwIfNotAllowedRecipientType(type);
-
     return this.queue.push(async () => {
+      this.#throwIfNotAllowedRecipientType(type);
+
       const response = await callApiUserCreateDiscussionRecipients(this.fetcher, {
         recipientType: type,
         session: this.session,
@@ -664,9 +678,10 @@ export default class Pronote {
    * discussions list once again using `getDiscussionsOverview()`.
   */
   public async createDiscussion (subject: string, content: string, recipients: DiscussionCreationRecipient[]): Promise<void> {
-    if (recipients.length <= 0) throw new Error("You need to select at least one recipient to create a discussion.");
-
     return this.queue.push(async () => {
+      this.#throwIfNotAllowedCreateMessages();
+      if (recipients.length <= 0) throw new Error("You need to select at least one recipient to create a discussion.");
+
       await callApiUserCreateDiscussion(this.fetcher, {
         session: this.session,
         recipients,
@@ -680,9 +695,10 @@ export default class Pronote {
   }
 
   public async replyToDiscussionMessage (replyMessageID: string, content: string, button: PronoteApiMessagesButtonType, includeParentsAndStudents = false): Promise<void> {
-    const buttonType = getPronoteMessageButtonType(button, includeParentsAndStudents);
-
     return this.queue.push(async () => {
+      this.#throwIfNotAllowedCreateMessages();
+      const buttonType = getPronoteMessageButtonType(button, includeParentsAndStudents);
+
       await callApiUserCreateDiscussionMessage(this.fetcher, {
         session: this.session,
         replyMessageID,

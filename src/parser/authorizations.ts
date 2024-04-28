@@ -1,6 +1,7 @@
 import type { ApiUserData } from "~/api";
 
 class Authorizations {
+  readonly #canReadDiscussions: boolean;
   readonly #canDiscuss: boolean;
 
   readonly #canDiscussWithStaff: boolean;
@@ -13,7 +14,8 @@ class Authorizations {
   readonly #maxHomeworkFileUploadSize: number;
 
   constructor (data: ApiUserData["output"]["data"]["donnees"]["autorisations"]) {
-    this.#canDiscuss = (data.AvecDiscussion ?? false) && !(data.discussionInterdit ?? false);
+    this.#canReadDiscussions = data.AvecDiscussion ?? false;
+    this.#canDiscuss = this.#canReadDiscussions && !(data.discussionInterdit ?? false);
 
     this.#canDiscussWithStaff = this.#canDiscuss && (data.AvecDiscussionPersonnels ?? false);
     this.#canDiscussWithParents = this.#canDiscuss && (data.AvecDiscussionParents ?? false);
@@ -26,7 +28,14 @@ class Authorizations {
   }
 
   /**
-   * Whether the user is allowed to discuss.
+   * Whether the user is allowed to read discussions.
+   */
+  public get canReadDiscussions (): boolean {
+    return this.#canReadDiscussions;
+  }
+
+  /**
+   * Whether the user is allowed to create messages in discussions.
    */
   public get canDiscuss (): boolean {
     return this.#canDiscuss;

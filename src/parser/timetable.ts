@@ -1,7 +1,7 @@
 import type { PronoteApiUserTimetable } from "~/api/user/timetable/types";
 import type Pronote from "~/client/Pronote";
 
-import { TimetableActivity, TimetableLesson } from "~/parser/timetableLesson";
+import { TimetableActivity, TimetableDetention, TimetableLesson } from "~/parser/timetableLesson";
 import { PronoteApiLessonStatusType } from "~/constants/lessonCategory";
 
 type TimetableOverviewParsingParameters = {
@@ -10,7 +10,7 @@ type TimetableOverviewParsingParameters = {
   withPlannedClasses: boolean;
 };
 
-type TimetableClass = TimetableActivity | TimetableLesson;
+export type TimetableClass = TimetableActivity | TimetableLesson | TimetableDetention;
 type TimetableClassWithVisible = (TimetableClass & { __visible__?: boolean });
 
 export class TimetableOverview {
@@ -24,8 +24,17 @@ export class TimetableOverview {
     this.#client = client;
     this.#classes = data.ListeCours
       .map((currentClass) => {
+        let TimetableClass: typeof TimetableLesson | typeof TimetableActivity | typeof TimetableDetention;
         const isActivity = "estSortiePedagogique" in currentClass && currentClass.estSortiePedagogique;
-        const TimetableClass = isActivity ? TimetableActivity : TimetableLesson;
+
+        if (isActivity) TimetableClass = TimetableActivity;
+        else {
+          const isDetention = "estRetenue" in currentClass && currentClass.estRetenue;
+
+          if (isDetention) TimetableClass = TimetableDetention;
+          else TimetableClass = TimetableLesson;
+        }
+
         return new TimetableClass(client, currentClass);
       })
       .sort((classA, classB) => (

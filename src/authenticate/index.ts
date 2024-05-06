@@ -137,6 +137,7 @@ export const authenticateToken = async (pronoteStringURL: string, options: Authe
 
   // Add important property.
   pronoteURL.searchParams.set("fd", "1");
+  pronoteURL.searchParams.set("login", "true");
 
   const pronoteCookies = ["ielang=fr", "appliMobile=1"];
 

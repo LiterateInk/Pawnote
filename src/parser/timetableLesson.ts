@@ -11,6 +11,8 @@ import { PronoteApiLessonStatusType } from "~/constants/lessonCategory";
 type TTimetableItem = PronoteApiUserTimetable["response"]["donnees"]["ListeCours"][number];
 
 abstract class TimetableItem {
+  readonly #item: TTimetableItem;
+
   readonly #id: string;
   public get id (): string {
     return this.#id;
@@ -47,15 +49,22 @@ abstract class TimetableItem {
   }
 
   protected constructor (client: Pronote, item: TTimetableItem) {
-    this.#id = item.N;
-    this.#backgroundColor = item.CouleurFond;
-    this.#startDate = readPronoteApiDate(item.DateDuCours.V);
-    this.#blockLength = item.duree;
-    this.#blockPosition = item.place;
-    this.#notes = item.memo;
+    this.#item = item;
+    this.#id = this.#item.N;
+    this.#startDate = readPronoteApiDate(this.#item.DateDuCours.V);
+    this.#blockLength = this.#item.duree;
+    this.#blockPosition = this.#item.place;
 
-    if ("DateDuCoursFin" in item && item.DateDuCoursFin) {
-      this.#endDate = readPronoteApiDate(item.DateDuCoursFin.V);
+    if ("CouleurFond" in this.#item && typeof this.#item.CouleurFond === "string") {
+      this.#backgroundColor = this.#item.CouleurFond;
+    }
+
+    if ("memo" in this.#item && typeof this.#item.memo === "string") {
+      this.#notes = this.#item.memo;
+    }
+
+    if ("DateDuCoursFin" in this.#item && typeof this.#item.DateDuCoursFin?.V === "string") {
+      this.#endDate = readPronoteApiDate(this.#item.DateDuCoursFin.V);
     }
     else {
       const endHours = client.loginInformations.donnees.General.ListeHeuresFin.V;
@@ -68,8 +77,80 @@ abstract class TimetableItem {
       this.#endDate = end;
     }
   }
+
+  public isActivity (): this is TimetableActivity {
+    return "estSortiePedagogique" in this.#item && this.#item.estSortiePedagogique === true;
+  }
+
+  public isDetention (): this is TimetableDetention {
+    return "estRetenue" in this.#item && typeof this.#item.estRetenue !== "undefined";
+  }
+
+  public isLesson (): this is TimetableLesson {
+    return !this.isActivity() && !this.isDetention();
+  }
 }
 
+export class TimetableDetention extends TimetableItem {
+  readonly #title?: string;
+  readonly #personalNames: string[] = [];
+  readonly #teacherNames: string[] = [];
+  readonly #classrooms: string[] = [];
+
+  constructor (client: Pronote, detention: TTimetableItem) {
+    if (!("estRetenue" in detention && typeof detention.estRetenue !== "undefined")) {
+      throw new TypeError("'TimetableDetention' is only designed for detentions. Consider using 'TimetableLesson' or 'TimetableActivity' instead.");
+    }
+
+    super(client, detention);
+
+    if (detention.ListeContenus) {
+      for (const data of detention.ListeContenus.V) {
+        if ("estHoraire" in data && data.estHoraire) {
+          this.#title = data.L;
+        }
+        else if ("G" in data) {
+          switch (data.G) {
+            case PronoteApiResourceType.Teacher:
+              this.#teacherNames.push(data.L);
+              break;
+            case PronoteApiResourceType.Personal:
+              this.#personalNames.push(data.L);
+              break;
+            case PronoteApiResourceType.Room:
+              this.#classrooms.push(data.L);
+              break;
+          }
+        }
+      }
+    }
+  }
+
+  public get title (): string | undefined {
+    return this.#title;
+  }
+
+  /**
+   * List of personal names.
+   */
+  public get personalNames (): string[] {
+    return this.#personalNames;
+  }
+
+  /**
+   * List of teacher names.
+   */
+  public get teacherNames (): string[] {
+    return this.#teacherNames;
+  }
+
+  /**
+   * List of classrooms.
+   */
+  public get classrooms (): string[] {
+    return this.#classrooms;
+  }
+}
 export class TimetableActivity extends TimetableItem {
   readonly #title: string;
   readonly #attendants: string[] = [];
@@ -78,7 +159,7 @@ export class TimetableActivity extends TimetableItem {
 
   constructor (client: Pronote, activity: TTimetableItem) {
     if (!("estSortiePedagogique" in activity && activity.estSortiePedagogique)) {
-      throw new TypeError("'TimetableActivity' is only designed for activities, not lessons. Consider using 'TimetableLesson' instead.");
+      throw new TypeError("'TimetableActivity' is only designed for activities. Consider using 'TimetableLesson' or 'TimetableDetention' instead.");
     }
 
     super(client, activity);
@@ -113,7 +194,6 @@ export class TimetableLesson extends TimetableItem {
   readonly #status?: string;
   readonly #canceled: boolean;
   readonly #exempted: boolean;
-  readonly #detention: boolean;
   readonly #test: boolean;
   readonly #virtualClassrooms: string[] = [];
 
@@ -130,6 +210,10 @@ export class TimetableLesson extends TimetableItem {
       throw new TypeError("'TimetableLesson' is only designed for lessons, not activities. Consider using 'TimetableActivity' instead.");
     }
 
+    if ("estRetenue" in lesson && typeof lesson.estRetenue !== "undefined") {
+      throw new TypeError("'TimetableLesson' is only designed for lessons, not detentions. Consider using 'TimetableDetention' instead.");
+    }
+
     super(client, lesson);
     this.#client = client;
 
@@ -137,7 +221,6 @@ export class TimetableLesson extends TimetableItem {
     this.#status = lesson.Statut;
     this.#canceled = lesson.estAnnule ?? false;
     this.#exempted = lesson.dispenseEleve ?? false;
-    this.#detention = lesson.estRetenue ?? false;
     this.#test = lesson.cahierDeTextes?.V.estDevoir ?? false;
 
     if (lesson.listeVisios) {
@@ -203,10 +286,6 @@ export class TimetableLesson extends TimetableItem {
     return this.#exempted;
   }
 
-  public get detention (): boolean {
-    return this.#detention;
-  }
-
   /** If there will be a test in the lesson. */
   public get test (): boolean {
     return this.#test;
@@ -238,7 +317,6 @@ export class TimetableLesson extends TimetableItem {
    */
   public get classrooms (): string[] {
     return this.#classrooms;
-
   }
 
   /**

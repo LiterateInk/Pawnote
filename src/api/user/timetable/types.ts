@@ -86,6 +86,7 @@ export interface PronoteApiUserTimetable {
 
       ListeCours: Array<{
         N: string
+        estRetenue?: undefined
         estSortiePedagogique?: false
 
         place: number
@@ -93,7 +94,6 @@ export interface PronoteApiUserTimetable {
 
         /** Whether the lesson is canceled or not. */
         estAnnule?: boolean
-        estRetenue?: boolean
         estPermanence?: boolean
         dispenseEleve?: boolean
         Statut?: string
@@ -160,6 +160,7 @@ export interface PronoteApiUserTimetable {
         AvecCdT?: boolean
       } | {
         N: string
+        estRetenue?: undefined
         estSortiePedagogique: true
 
         /**
@@ -211,6 +212,33 @@ export interface PronoteApiUserTimetable {
         place: number
         duree: number
         memo?: string
+      } | {
+        N: string
+        estRetenue: "eleve"
+        estSortiePedagogique?: false
+
+        DateDuCours: PronoteValue<PronoteApiHTTPType.DateTime, string>
+        ListeContenus: PronoteValue<PronoteApiHTTPType.Element, Array<{ L: string } & (
+          | {
+            estHoraire: boolean
+          }
+          | {
+            G: PronoteApiResourceType.Room
+          }
+          | {
+            G: PronoteApiResourceType.Teacher
+          }
+          | {
+            G: PronoteApiResourceType.Personal
+          }
+        )>>
+
+        hintRealise: "Programmée"
+        imgRealise: "RealiseProgramme"
+
+        numeroSemaine: number
+        place: number
+        duree: number
       }>
     }
   }

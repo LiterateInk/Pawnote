@@ -2,7 +2,6 @@ import type { PronoteApiUserPartnerURL, ApiUserPartnerURL } from "./types";
 
 import { PronoteApiFunctions } from "~/constants/functions";
 import { PronoteApiOnglets } from "~/constants/onglets";
-import { transformDateToPronoteString } from "~/pronote/dates";
 import { createPronoteAPICall } from "~/pronote/requestAPI";
 import { makeApiHandler } from "~/utils/api";
 
@@ -13,11 +12,7 @@ export const callApiUserPartnerURL = makeApiHandler<ApiUserPartnerURL>(async (fe
     },
 
     donnees: {
-      SSO: {
-        codePartenaire: input.sso.code,
-        intituleLien: input.sso.linkLabel,
-        description: input.sso.description
-      }
+      SSO: input.sso
     }
   });
 

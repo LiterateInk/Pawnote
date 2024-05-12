@@ -373,7 +373,13 @@ export interface PronoteApiUserHomepage {
       lienUtile: {
         listeLiens: {
           _T: number
-          V: Array<any>
+          V: Array<{
+            L: string
+            commentaire: string
+          } & (
+            | { SSO: PronoteSSO }
+            | { url: string }
+          )>
         }
       }
       partenaireCDI: {}

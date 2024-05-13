@@ -1066,15 +1066,17 @@ export default class Pronote {
   }
 
   /**
-   * 
+   * Send a message in a discussion
    * @param {string} replyMessageID 
    * What message should respond to?
+   * You have to reply to a message to send a message.
    * @param {string} content 
    * What is the content of the response?
    * @param {PronoteApiMessagesButtonType} button 
-   * 
+   * What action are you doing ?
    * @param {boolean} [includeParentsAndStudents=false] 
-   * 
+   * Have we to include Parents and Students ?
+   * Default: no (`false`).
    * @returns {Promise<void>}
    * @group Discussions
    */
@@ -1149,10 +1151,12 @@ export default class Pronote {
   }
 
   /**
-   * 
-   * @param nextOpenDate 
+   * Obtain information from the `PageAcceuil` request.
+   * @param {Date} nextOpenDate
+   * For what day to get the data
+   * By default it is `nextOpenDate`, i.e. the next working day.
    * @returns {Promise<{ard: ARDPartner | null;}>}
-   * @remark For the moment, it is just to get ARD widget
+   * @remark For the moment, it is just to get ARD widget and TurboSelf link.
    * @group Utils
    */
   public async getHomePage (nextOpenDate = this.nextOpenDate) {
@@ -1198,9 +1202,10 @@ export default class Pronote {
 
 
   /**
-   * 
-   * @param partner 
-   * @returns 
+   * Get partner URL for different services like ARD or TurboSelf.
+   * @param {Partner} partner
+   * For which Partner should I obtain the URL?
+   * @returns {Promise<string>} URL obtained.
    */
   public async getPartnerURL (partner: Partner): Promise<string> {
     return this.queue.push(async () => {
@@ -1214,9 +1219,9 @@ export default class Pronote {
   }
 
   /**
-   * 
-   * @param weekNumber 
-   * @returns 
+   * If a week repeats, we can obtain its frequency.
+   * @param {number} weekNumber 
+   * @returns {{ type: PronoteApiDomainFrequencyType, name: string } | null}
    */
   public getFrequencyForWeek (weekNumber: number): { type: PronoteApiDomainFrequencyType, name: string } | null {
     if (weekNumber < 1) throw new Error("Week number must be at least 1.");

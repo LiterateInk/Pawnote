@@ -17,7 +17,8 @@
     "build": "tsup src/index.ts --dts --minify terser --clean --format cjs,esm --sourcemap",
     "release": "release-it",
     "lint": "tsc && eslint .",
-    "tsx": "tsx"
+    "tsx": "tsx",
+    "doc": " npx typedoc --out ./docs/type_doc_out/ ./src/ --basePath ./src/"
   },
   "files": [
     "dist"

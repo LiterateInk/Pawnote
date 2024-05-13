@@ -1,0 +1,11 @@
+{
+    "categorizeByGroup": true,
+    "groupOrder": [
+        "Constructor",
+        "Instance Informations",
+        "User Informations",
+        "Key Dates",
+        "*",
+        "Not for normal uses"
+    ]
+}

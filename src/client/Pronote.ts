@@ -70,32 +70,102 @@ import { ARDPartner } from "~/parser/partners/ard";
 import { ApiUserDiscussionAvailableCommands } from "~/api/user/discussionCommand/types";
 import type { PawnoteSupportedFormDataFile } from "~/utils/file";
 
+//TODO: Check descriptions and language !
+/** A reprensentation of the Pronote client.
+ * ## Table of contents
+ * - [Constructor](#constructor)
+ * - [Instance Informations](#instance-informations)
+ * - [User Informations](#user-informations)
+ * - [Key Dates](#key-dates)
+ * - [Grades and Evaluations](grades-and-evaluations)
+ * - [Timetable](#timetable)
+ * - [Homework](#homework)
+ * - [Ressources](#ressources)
+ * - [Discussions](#discussions)
+ * - [Attendances](#Attendance)
+ * - [Periods](#periods)
+ * - [News](#news)
+ * - [Utils](#utils)
+ * - [Not for normal uses](#not-for-normal-uses)
+ * @groupDescription Constructor
+ * How `Pronote` Class instance is created.
+ * @groupDescription Instance Informations
+ * Category about the instance informations.
+ * @groupDescription User Informations
+ * Here you can get information about the student like name or current class.
+ * @groupDescription Key Dates
+ * Category about the key dates of the school year.
+ * @groupDescription Grades and Evaluations
+ * Category about the grades and evaluations.
+ * @groupDescription Timetable
+ * This category links everything related to timetable
+ * @groupDescription Homework
+ * Category about homeworks.
+ * @groupDescription Ressources
+ * This category allows you to get resources in different ways
+ * @groupDescription Discussions
+ * With this category you can view and interact with discussions.
+ * @groupDescription Periods
+ * This category is for everythings linked with periods.
+ * @groupDescription News
+ * In this category, you can find methods about newq.
+ * @groupDescription Utils
+ * This category lists all non-essential tools
+ * @groupDescription Not for normal uses
+ * This is a category for properties and methods exposed but normaly not used.
+*/
 export default class Pronote {
   /**
-   * First day of the entire timetable.
-   * Used to get week numbers relative to this date.
+   * Custom fetcher to call the API with another API than fetch.
+   * @group Utils
    */
-  public firstMonday: Date;
+ public fetcher: PawnoteFetcher;
+ 
+  /**
+   * A lot of informations from the first login request.
+   * @group Utils
+   */
+  public loginInformations: ApiLoginInformations["output"]["data"];
 
   #authorizations: Authorizations;
+  /**
+   * View authorizations of the user in the instance.
+   * @group Instance Informations
+   */
   public get authorizations (): Authorizations {
     return this.#authorizations;
   }
+  /**
+   * First day of the entire timetable.
+   * Used to get week numbers relative to this date.
+   * @group Key Dates
+   */
+  public firstMonday: Date;
+
 
   /**
-   * First day of the entire year.
+   * First day of the entire school year.
+   * @group Key Dates
    */
   public firstDate: Date;
 
   /**
    * Last day of the entire year.
    * Used to get week numbers relative to this date.
+   * @group Key Dates
    */
   public lastDate: Date;
 
   /**
-   * Username that SHOULD be used for any further authentication.
+   * The next school opening day.
+   * @group Key Dates
    */
+  public nextOpenDate: Date;
+
+  /**
+   * Username that SHOULD be used for any further authentication.
+   * @group User Informations
+  */
   public username: string;
 
   /**
@@ -105,23 +175,25 @@ export default class Pronote {
    *
    * Note that this token is only valid for the `deviceUUID` you provided
    * in the authentication options.
+   * @group User Informations
    */
   public nextTimeToken: string;
 
-  public nextOpenDate: Date;
-
   /**
    * Root URL of the Pronote instance.
+   * @group Instance Informations
    */
   public pronoteRootURL: string;
 
   /**
    * ID of this account type in the Pronote API.
+   * @group Instance Informations
    */
   public accountTypeID: PronoteApiAccountId;
 
   /**
    * ID of the currently running session on Pronote.
+   * @group Instance Informations
    */
   public sessionID: number;
 
@@ -132,26 +204,60 @@ export default class Pronote {
    * `authenticateToken` won't work against them since
    * next-time tokens aren't saved, even though
    * it's able to generate them.
+   * @group Instance Informations
    */
   public isDemo: boolean;
 
-  /** First name and family name of the logged in student. */
+  /**
+   * First name and family name of the logged in student.
+   * @group User Informations
+   */
   public studentName: string;
 
-  /** School name of the Pronote instance. */
+  /**
+   * School name of the Pronote instance.
+   * @group Instance Informations
+   */
   public schoolName: string;
 
-  /** @example "3A" */
+  /**
+   * The current class of the student.
+   * @example
+   * // get the current class of the student, like "3A"
+   * currentClass = pronoteInstance.studentClass
+   * @group User Informations
+  */
   public studentClass: string;
 
-  /** An absolute URL giving the profile picture of the logged in student, if exists. */
+  /**
+   * An absolute URL giving the profile picture of the logged in student,
+   * if exists.
+   * @group User Informations
+   */
   public studentProfilePictureURL?: string;
+
+  /**
+   * A list of year periods.
+   * @group Periods
+   */
   public periods: Period[];
   private periodsByOnglet: Map<PronoteApiOnglets, OngletPeriods>;
 
+  /**
+   * Indicates if the student is a class delegate
+   * @group User Informations
+   */
   public isDelegate: boolean;
+  /**
+   * Indicates if the student is part of the board of directors
+   * @group User Informations
+   */
   public isMemberCA: boolean;
 
+  /**
+   * A list of vacation periods
+   * @group Key Dates
+   */
   public holidays: Holiday[];
 
   private queue: Queue;
@@ -161,15 +267,32 @@ export default class Pronote {
     name: string
   } | null>;
 
+  /** 
+   * @constructor
+   * @param {PawnoteFetcher} fetcher
+   * Custom fetcher to call the API with another API than fetch.
+   * @param {Session} session
+   * Represent the user session.
+   * @param {NextAuthenticationCredentials } credentials
+   * A Object containing the username and the nextAuth token.
+   * @param {ApiUserData["output"]["data"]["donnees"]} user
+   * The user data.
+   * @param {ApiLoginInformations["output"]["data"]} loginInformations
+   * A lot of informations from the first login request
+   * @group Constructor
+   */
   constructor (
-    public fetcher: PawnoteFetcher,
+    fetcher: PawnoteFetcher,
+
     private session: Session,
     credentials: NextAuthenticationCredentials,
-
+    
     // Accessor for raw data returned from Pronote's API.
     private user: ApiUserData["output"]["data"]["donnees"],
-    public loginInformations: ApiLoginInformations["output"]["data"]
+    loginInformations: ApiLoginInformations["output"]["data"]
   ) {
+    this.fetcher = fetcher;
+    this.loginInformations = loginInformations;
     this.firstMonday = readPronoteApiDate(loginInformations.donnees.General.PremierLundi.V);
     this.firstDate = readPronoteApiDate(loginInformations.donnees.General.PremiereDate.V);
     this.lastDate = readPronoteApiDate(loginInformations.donnees.General.DerniereDate.V);
@@ -237,11 +360,44 @@ export default class Pronote {
    * You shouldn't have to use this usually,
    * but it's exported here in case of need
    * to do some operations required.
+   * @group Not for normal uses
    */
   public getAESEncryptionKeys () {
     return this.session.getAESEncryptionKeys();
   }
 
+  /**
+   * Obtain a overview of the Timetable between the `start` and `end` arguments.
+   * @param {Date} start - From when date to recover Timetable.
+   * @param {Date=} end - Until when to recover Timetable.
+   * @returns {Promise<TimetableOverview>}
+   * @see [timetable.ts](https://github.com/LiterateInk/Pawnote/blob/main/examples/timetable.ts)
+   * @example
+   * // Returns the Timetable of today.
+   * const overview = await pronoteInstance.getTimetableOverview(new Date());
+   * const timetable = overview.parse({
+   *   withSuperposedCanceledClasses: false,
+   *   withCanceledClasses: true,
+   *   withPlannedClasses: true
+   * });
+   * 
+   * // Returns the Timetable of January 2, 2024.
+   * const overview = await PronoteInstance.getTimetableOverview(new Date(2024, 1, 2));
+   * const timetable = overview.parse({
+   *   withSuperposedCanceledClasses: false,
+   *   withCanceledClasses: true,
+   *   withPlannedClasses: true
+   * });
+   * 
+   * // Returns the Timetable between January 1, 2024 and January 15, 2024.
+   * const overview = await PronoteInstance.getTimetableOverview(new Date(2024, 1, 1), new Date(2024, 1, 15));
+   * const timetable = overview.parse({
+   *   withSuperposedCanceledClasses: false,
+   *   withCanceledClasses: true,
+   *   withPlannedClasses: true
+   * });
+   * @group Timetable
+   */
   public async getTimetableOverview (start: Date, end?: Date): Promise<TimetableOverview> {
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserTimetable(this.fetcher, {
@@ -256,7 +412,18 @@ export default class Pronote {
   }
 
   /**
-   * When `to` is not given, it'll default to the end of the year.
+   * Return Homeworks between `from` and `to` params.
+   * @param {Date} from - From when date to recover Homework.
+   * @param {Date=} to - Until when to recover Homework.
+   * Default it is the end of the scholar year using `lastDate` class property.
+   * @example
+   * // Returns today's Homework until the end of the school year.
+   * await pronoteInstance.getHomeworkForInterval(new Date());
+   * // Returns today's Homework.
+   * await pronoteInstance.getHomeworkForInterval(new Date(), new Date());
+   * // Returns the Homework between January 1, 2024 and January 15, 2024.
+   * await pronoteInstance.getHomeworkForInterval(new Date(2024, 1, 1), new Date(2024, 1, 15));
+   * @group Homework
    */
   public async getHomeworkForInterval (from: Date, to = this.lastDate): Promise<StudentHomework[]> {
     from = getUTCDate(from);
@@ -282,6 +449,12 @@ export default class Pronote {
     });
   }
 
+  /**
+   * Returns the homework for the `weekNumber` week since the start of the school year.
+   * @param {number} weekNumber - The number of the week we want to collect homework.
+   * @returns {Promise<StudentHomework[]>}
+   * @group Homework
+   */
   public async getHomeworkForWeek (weekNumber: number): Promise<StudentHomework[]> {
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserHomework(this.fetcher, {
@@ -294,6 +467,12 @@ export default class Pronote {
     });
   }
 
+  /**
+   * Returns the ressources for the `weekNumber` week since the start of the school year.
+   * @param weekNumber - The number of the week we want to collect ressources.
+   * @returns {Promise<{lessons: StudentLessonResource[]}>}
+   * @group Ressources
+   */
   public async getResourcesForWeek (weekNumber: number) {
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserResources(this.fetcher, {
@@ -308,6 +487,20 @@ export default class Pronote {
     });
   }
 
+  /**
+   * Return ressources between `from` and `to` params.
+   * @param {Date} from - From when date to recover Ressources.
+   * @param {Date=} to - Until when to recover Ressources.
+   * Default it is the end of the scholar year using `lastDate` class property.
+   * @example
+   * // Returns today's Ressources until the end of the school year.
+   * await pronoteInstance.getResourcesForInterval(new Date());
+   * // Returns today's Ressources.
+   * await pronoteInstance.getResourcesForInterval(new Date(), new Date());
+   * // Returns the Ressources between January 1, 2024 and January 15, 2024.
+   * await pronoteInstance.getResourcesForInterval(new Date(2024, 1, 1), new Date(2024, 1, 15));
+   * @group Ressources
+   */
   public async getResourcesForInterval (from: Date, to?: Date) {
     if (!(to instanceof Date)) {
       to = this.lastDate;
@@ -338,6 +531,13 @@ export default class Pronote {
     });
   }
 
+  /**
+   * Set an homework as done or not.
+   * @param {string} homeworkID - The id of the homework to update status.
+   * @param {boolean} done - Is the homework is done ?
+   * @returns {Promise<void>}
+   * @group Homework
+   */
   public async patchHomeworkStatus (homeworkID: string, done: boolean): Promise<void> {
     return this.queue.push(async () => {
       await callApiUserHomeworkStatus(this.fetcher, {
@@ -350,11 +550,21 @@ export default class Pronote {
     });
   }
 
+  /**
+   * Get the grades periods.
+   * @returns {Period[]}
+   * @group Periods
+   */
   public readPeriodsForGradesOverview (): Period[] {
     return this.periodsByOnglet.get(PronoteApiOnglets.Grades)!.values.map((period) => period.linkedPeriod)
       .filter(Boolean) as Period[];
   }
 
+  /**
+   * Get the current grades period.
+   * @returns {Period}
+   * @group Periods
+   */
   public readDefaultPeriodForGradesOverview (): Period {
     return this.periodsByOnglet.get(PronoteApiOnglets.Grades)!.default;
   }
@@ -364,9 +574,19 @@ export default class Pronote {
    * Including student's grades with averages and the global averages.
    *
    * @remark Internally used in the `Period` class.
-   * @param period - Period the grades overview will be from.
+   * @param {Period=} period - Period the grades overview will be from.
+   * Default is current period.
+   * @returns {Promise<{
+   * grades: StudentGrade[];
+   * averages: StudentAverage[];
+   * overallAverage: undefined | number | PronoteApiGradeType;
+   * classAverage: undefined | number | PronoteApiGradeType;}>}
+   * @group Grades and Evaluations
    */
-  public async getGradesOverview (period = this.readDefaultPeriodForGradesOverview()) {
+  public async getGradesOverview (period?: Period) {
+    if (!(period instanceof Period)) {
+      period = this.readDefaultPeriodForGradesOverview()
+    }
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserGrades(this.fetcher, {
         session: this.session,
@@ -386,16 +606,36 @@ export default class Pronote {
     });
   }
 
+  /**
+   * Get the evaluations periods.
+   * @returns {Period[]}
+   * @group Periods
+   */
   public readPeriodsForEvaluations (): Period[] {
     return this.periodsByOnglet.get(PronoteApiOnglets.Evaluations)!.values.map((period) => period.linkedPeriod)
       .filter(Boolean) as Period[];
   }
 
+  /**
+   * Get the current evaluations period.
+   * @returns {Period}
+   * @group Periods
+   */
   public readDefaultPeriodForEvaluations (): Period {
     return this.periodsByOnglet.get(PronoteApiOnglets.Evaluations)!.default;
   }
 
-  public async getEvaluations (period = this.readDefaultPeriodForEvaluations()): Promise<StudentEvaluation[]> {
+  /**
+   * Get evaluations for a specific period.
+   * @param {Period=} period Period the grades overview will be from.
+   * Default is current period.
+   * @returns {Promise<StudentEvaluation[]>}
+   * @group Grades and Evaluations
+   */
+  public async getEvaluations (period? :Period): Promise<StudentEvaluation[]> {
+    if (!(period instanceof Period)) {
+      period = this.readDefaultPeriodForGradesOverview()
+    }
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserEvaluations(this.fetcher, {
         session: this.session,
@@ -407,12 +647,18 @@ export default class Pronote {
     });
   }
 
-  /** Since content inside of it can't change that often, we use a cache to prevent calling the API every time. */
+  /**
+   * Since content inside of it can't change that often,
+   * we use a cache to prevent calling the API every time.
+   */
   private personalInformationCache?: StudentPersonalInformation;
 
   /**
-   * Allows to get more information such as student's INE, email, phone and address.
-   * @param forceUpdate - Forces the API request, even if a cache for this request was made.
+   * Allows to get more information such as student's INE, email,
+   * phone and address.
+   * @param {boolean=} forceUpdate
+   * Forces the API request, even if a cache for this request was made.
+   * @group User Informations
    */
   public async getPersonalInformation (forceUpdate = false): Promise<StudentPersonalInformation> {
     return this.queue.push(async () => {
@@ -433,21 +679,44 @@ export default class Pronote {
   private presenceRequestsInterval?: ReturnType<typeof setInterval>;
 
   /**
-   * @param interval Custom interval (in ms) for `Presence` requests.
+   * Start sending periodic presence request.
+   * @param {number=} interval
+   * Custom interval (in ms) for `Presence` requests.
    * Defaults to 2 minutes: same value as from Pronote.
+   * @returns {void}
+   * @group Utils
    */
-  public startPresenceRequests (interval = 2 * 60 * 1000): void {
+  public startPresenceRequests (interval?: number): void {
+    if (typeof interval !== 'undefined') {
+      interval = 2 * 60 * 1000; // Equivalent to 2 min is ms.
+    }
     if (this.presenceRequestsInterval) this.stopPresenceRequests();
     this.presenceRequestsInterval = setInterval(() => (
       this.queue.push(() => callApiUserPresence(this.fetcher, { session: this.session }))
     ), interval);
   }
 
+  /**
+   * Stop sending periodic presence request.
+   * @returns {void}
+   * @group Utils
+   */
   public stopPresenceRequests (): void {
     if (!this.presenceRequestsInterval) return;
     clearInterval(this.presenceRequestsInterval);
   }
 
+  /**
+   * Get the ressources associated with the given `lessonId`.
+   * @param {string} lessonId - The 
+   * @returns {Promise<StudentLessonResource>}
+   * @example
+   * // Get the timetable of tomorrow
+   * tomorrowDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+   * overview = await pronoteInstance.getTimetableOverview(tomorrowDate);
+   * // 
+   * @group Ressources
+   */
   public async getLessonResource (lessonId: string): Promise<StudentLessonResource> {
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserLessonResource(this.fetcher, {
@@ -460,6 +729,12 @@ export default class Pronote {
     });
   }
 
+  /**
+   * Get the homework associated with the given `lessonId`.
+   * @param {string} lessonId - The 
+   * @returns {Promise<StudentLessonResource>}
+   * @group Homework
+   */
   public async getLessonHomework (lessonId: string): Promise<StudentHomework[]> {
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserLessonHomework(this.fetcher, {
@@ -472,6 +747,11 @@ export default class Pronote {
     });
   }
 
+  /**
+   * Get news such like unread Communication or Discussions.
+   * @returns {Promise<StudentNews>}
+   * @group News
+   */
   public async getNews (): Promise<StudentNews> {
     return this.queue.push(async () => {
       const { data: { donnees: data }} = await callApiUserNews(this.fetcher, { session: this.session });
@@ -487,6 +767,28 @@ export default class Pronote {
     if (!this.authorizations.canDiscuss) throw new Error("You can't create messages in this instance.");
   }
 
+  /**
+   * Obtain a overview of the discussions.
+   * @see [manage.ts](https://github.com/LiterateInk/Pawnote/blob/main/examples/discussions/manage.ts)
+   * @see {@link StudentDiscussionsOverview} for more details.
+   * @returns {Promise<StudentDiscussionsOverview>}
+   * @example
+   * // First get the discussions.
+   * const discussionsOverview = await pronoteInstance.getDiscussionsOverview();
+   * // Then interact with them.
+   * for (discussion of discussionsOverview.discussions) {
+   *   console.log(discussion.subject);
+   *   condole.log("In " + discussion.folder.name + "Folder");
+   *   if (discussion.deleted){
+   *     console.log("The discussion is deleted !");
+   *   } else {
+   *     discussion.markAsRead();
+   *     await discussion.moveToTrash()
+   *     await discussion.restoreFromTrash();
+   *   }  
+   * }
+   * @group Discussions
+   */
   public async getDiscussionsOverview (): Promise<StudentDiscussionsOverview> {
     return this.queue.push(async () => {
       this.#throwIfNotAllowedReadMessages();
@@ -496,6 +798,17 @@ export default class Pronote {
     });
   }
 
+  /**
+   * Obtain a overview of a discussion.
+   * @param {StudentDiscussion} discussion 
+   * From which discussion to obtain the data ?
+   * @param {boolean=} markAsRead 
+   * The discussion have to be mark as read after fetching ?
+   * @param {number=} [limit = 0]
+   * The limit of messages to obtain overview. `0` is no limit.
+   * @returns {Promise<MessagesOverview>}
+   * @group Discussions
+   */
   public async getMessagesOverviewFromDiscussion (discussion: StudentDiscussion, markAsRead = false, limit = 0): Promise<MessagesOverview> {
     return this.queue.push(async () => {
       this.#throwIfNotAllowedReadMessages();
@@ -509,6 +822,11 @@ export default class Pronote {
     });
   }
 
+  /**
+   * Send a command in a discussion like send to trash or restore from trash.
+   * @param {ApiUserDiscussionAvailableCommands} payload 
+   * @group Discussions
+   */
   public async postDiscussionCommand (payload: ApiUserDiscussionAvailableCommands): Promise<void> {
     await this.queue.push(async () => {
       this.#throwIfNotAllowedCreateMessages();
@@ -522,12 +840,22 @@ export default class Pronote {
 
   /**
    * Mark a discussion as read.
-   * @remark Shortcut for `getMessagesFromDiscussion` but here we don't return anything.
+   * @param {StudentDiscussion} discussion
+   * Which discussion to mark as read?
+   * @remark Shortcut for `{@link getMessagesFromDiscussion}` but here we don't return anything.
+   * @group Discussions
    */
   public async markDiscussionAsRead (discussion: StudentDiscussion): Promise<void> {
     await this.getMessagesOverviewFromDiscussion(discussion, true, 0);
   }
 
+  /**
+   * Get message recipients.
+   * @param messageID
+   * From which message to get the recipients ?
+   * @returns {Promise<FetchedMessageRecipient[]>}
+   * @group Discussions
+   */
   public async getRecipientsForMessage (messageID: string): Promise<FetchedMessageRecipient[]> {
     return this.queue.push(async () => {
       this.#throwIfNotAllowedReadMessages();
@@ -541,10 +869,20 @@ export default class Pronote {
     });
   }
 
+  /**
+   * Get the current attendance period.
+   * @returns {Period}
+   * @group Periods
+   */
   public readDefaultPeriodForAttendance (): Period {
     return this.periodsByOnglet.get(PronoteApiOnglets.Attendance)!.default;
   }
 
+  /**
+   * Get attendace periods.
+   * @returns {Period[]}
+   * @group Periods
+   */
   public readPeriodsForAttendance (): Period[] {
     return this.periodsByOnglet.get(PronoteApiOnglets.Attendance)!.values.map((period) => {
       if (period.linkedPeriod) return period.linkedPeriod;
@@ -565,7 +903,18 @@ export default class Pronote {
     });
   }
 
-  public async getAttendance (period = this.readDefaultPeriodForAttendance()) {
+
+  /**
+   * Get attendances for a sprecific period.
+   * @param {Period=} period 
+   * Period the attendances will be from. Default is current period.
+   * @returns {Promise<(StudentAbsence | StudentDelay | StudentPunishment | StudentObservation)[]>}
+   * @group Attendances
+   */
+  public async getAttendance (period? : Period) {
+    if (!(period instanceof Period)) {
+      period = this.readDefaultPeriodForAttendance()
+    }
     return this.queue.push(async () => {
       const { data } = await callApiUserAttendance(this.fetcher, {
         session: this.session,
@@ -601,12 +950,19 @@ export default class Pronote {
    *
    * Should only be used internally, but if you know
    * what you're doing, you can use it.
+   * @param {{id: string; title: string, public: PronoteApiNewsPublicSelf}} information
+   * @param {StudentNewsItemQuestion[]} answers
+   * @param {{delete: boolean; markAsRead: boolean; onlyMarkAsRead: boolean;}=} extra
+   * @returns {Promise<undefined>};
+   * @group Not for normal uses
    */
   public async patchNewsState (information: {
     id: string
     title: string
     public: PronoteApiNewsPublicSelf
-  }, answers: StudentNewsItemQuestion[], extra = {
+  },
+  answers: StudentNewsItemQuestion[],
+  extra = {
     delete: false,
     markAsRead: true,
     onlyMarkAsRead: false
@@ -649,6 +1005,13 @@ export default class Pronote {
    *
    * This step is required before creating a discussion.
    * It allows to know who can be the recipient of the discussion.
+   * @param {PronoteApiUserResourceType} type
+   * The desired type of user to search:
+   *  - Teacher: PronoteApiResourceType.Teacher
+   *  - Student: PronoteApiResourceType.Student
+   *  - Personal: PronoteApiResourceType.Personal
+   * @returns {Promise<DiscussionCreationRecipient[]>}
+   * @group Discussions
    */
   public async getRecipientsForDiscussionCreation (type: PronoteApiUserResourceType): Promise<DiscussionCreationRecipient[]> {
     return this.queue.push(async () => {
@@ -676,6 +1039,14 @@ export default class Pronote {
    * Sadly, we can't get the ID of the created discussion
    * or anything else related to it, you need to request the
    * discussions list once again using `getDiscussionsOverview()`.
+   * @param {string} subject
+   * The subject for the new Discussion.
+   * @param {string} content
+   * What is the content of the first message of the new discussion.
+   * @param {DiscussionCreationRecipient[]} recipients
+   * Who will be in the discussion?
+   * @returns  {Promise<void>}
+   * @group Discussions
   */
   public async createDiscussion (subject: string, content: string, recipients: DiscussionCreationRecipient[]): Promise<void> {
     return this.queue.push(async () => {
@@ -694,6 +1065,19 @@ export default class Pronote {
     });
   }
 
+  /**
+   * 
+   * @param {string} replyMessageID 
+   * What message should respond to?
+   * @param {string} content 
+   * What is the content of the response?
+   * @param {PronoteApiMessagesButtonType} button 
+   * 
+   * @param {boolean} [includeParentsAndStudents=false] 
+   * 
+   * @returns {Promise<void>}
+   * @group Discussions
+   */
   public async replyToDiscussionMessage (replyMessageID: string, content: string, button: PronoteApiMessagesButtonType, includeParentsAndStudents = false): Promise<void> {
     return this.queue.push(async () => {
       this.#throwIfNotAllowedCreateMessages();
@@ -711,6 +1095,17 @@ export default class Pronote {
     });
   }
 
+  /**
+   * Upload a file for a homework.
+   * @param {string} homeworkID 
+   * The ID of the Homework to send file.
+   * @param {PawnoteSupportedFormDataFile} file 
+   * The file type.
+   * @param {string} fileName 
+   * The name of the file to uppload.
+   * @returns {Promise<void>}
+   * @group Homework
+   */
   public async uploadHomeworkFile (homeworkID: string, file: PawnoteSupportedFormDataFile, fileName: string): Promise<void> {
     return this.queue.push(async () => {
       // Check if the homework can be uploaded.
@@ -738,6 +1133,12 @@ export default class Pronote {
     });
   }
 
+  /**
+   * Cancel a homework file upload.
+   * @param {string} homeworkID
+   * The Id of the homework to cancel file upload.
+   * @returns {Promise<void>}
+   */
   public async removeHomeworkFile (homeworkID: string): Promise<void> {
     return this.queue.push(async () => {
       await callApiUserHomeworkRemoveUpload(this.fetcher, {
@@ -747,6 +1148,13 @@ export default class Pronote {
     });
   }
 
+  /**
+   * 
+   * @param nextOpenDate 
+   * @returns {Promise<{ard: ARDPartner | null;}>}
+   * @remark For the moment, it is just to get ARD widget
+   * @group Utils
+   */
   public async getHomePage (nextOpenDate = this.nextOpenDate) {
     return this.queue.push(async () => {
       const response = await callApiUserHomepage(this.fetcher, {
@@ -764,6 +1172,12 @@ export default class Pronote {
     });
   }
 
+
+  /**
+   * 
+   * @param partner 
+   * @returns 
+   */
   public async getPartnerURL (partner: Partner): Promise<string> {
     return this.queue.push(async () => {
       const response = await callApiUserPartnerURL(this.fetcher, {
@@ -779,6 +1193,11 @@ export default class Pronote {
     });
   }
 
+  /**
+   * 
+   * @param weekNumber 
+   * @returns 
+   */
   public getFrequencyForWeek (weekNumber: number): { type: PronoteApiDomainFrequencyType, name: string } | null {
     if (weekNumber < 1) throw new Error("Week number must be at least 1.");
     else if (weekNumber > PronoteApiMaxDomainCycle) throw new Error(`Week number can't be more than maximum value which is ${PronoteApiMaxDomainCycle}.`);

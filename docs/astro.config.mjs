@@ -1,6 +1,7 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 import tailwind from "@astrojs/tailwind";
+import starlightTypeDoc, { typeDocSidebarGroup } from 'starlight-typedoc'
 
 export default defineConfig({
   site: "https://pawnote.js.org",
@@ -16,6 +17,14 @@ export default defineConfig({
       editLink: {
         baseUrl: "https://github.com/LiterateInk/Pawnote/edit/main/docs/"
       },
+
+      plugins: [
+        // Generate the documentation.
+        starlightTypeDoc({
+          entryPoints: ['../src/index.ts'],
+          tsconfig: '../tsconfig.json'
+        }),
+      ],
 
       sidebar: [
         {
@@ -35,7 +44,8 @@ export default defineConfig({
           autogenerate: {
             directory: "pronote-internals"
           }
-        }
+        },
+        typeDocSidebarGroup
       ],
 
       defaultLocale: "root",

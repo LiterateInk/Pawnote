@@ -41,7 +41,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, TimetableActivity,
         console.log("(status) =>", currentClass.status);
       }
 
-      console.log("(detention) =>", currentClass.detention);
+      console.log("(detention) =>", currentClass.isDetention);
       console.log("(exempted) =>", currentClass.exempted);
     }
 

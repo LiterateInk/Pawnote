@@ -1163,11 +1163,35 @@ export default class Pronote {
         weekNumber: translateToPronoteWeekNumber(nextOpenDate, this.firstMonday)
       });
 
-      // TODO: Handle other cool properties given by the homepage request.
-      const ardPartner = response.data.donnees.partenaireARD;
+      let ardPartner: Partner | null = null;
+      // Is contained in the "lienUtile.listeLiens" array, we need to iterate over it.
+      let turboselfPartner: Partner | null = null;
+
+      if (response.data.donnees.partenaireARD) {
+        ardPartner = new Partner(this, response.data.donnees.partenaireARD.SSO);
+      }
+
+      const usefulLinks: Array<{ name: string, description: string, url: string }> = [];
+
+      for (const link of response.data.donnees.lienUtile.listeLiens.V) {
+        if ("SSO" in link) {
+          if (link.SSO.codePartenaire === "TURBOSELF") {
+            turboselfPartner = new Partner(this, link.SSO);
+          }
+        }
+        else {
+          usefulLinks.push({
+            name: link.L,
+            description: link.commentaire,
+            url: link.url
+          });
+        }
+      }
 
       return {
-        ard: ardPartner ? new ARDPartner(this, ardPartner) : null
+        usefulLinks,
+        ard: ardPartner,
+        turboself: turboselfPartner
       };
     });
   }
@@ -1182,11 +1206,7 @@ export default class Pronote {
     return this.queue.push(async () => {
       const response = await callApiUserPartnerURL(this.fetcher, {
         session: this.session,
-        sso: {
-          code: partner.code,
-          linkLabel: partner.linkLabel,
-          description: partner.description
-        }
+        sso: partner.sso
       });
 
       return response.url;

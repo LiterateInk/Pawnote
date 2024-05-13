@@ -1,6 +1,7 @@
-import { PronoteApiFunctions } from "~/constants/functions";
-import { PronoteApiOnglets } from "~/constants/onglets";
-import { Session } from "~/session";
+import type { PronoteApiFunctions } from "~/constants/functions";
+import type { PronoteApiOnglets } from "~/constants/onglets";
+import type { PronoteSSO } from "~/constants/partner";
+import type { Session } from "~/session";
 
 export interface PronoteApiUserPartnerURL {
   request: {
@@ -9,11 +10,7 @@ export interface PronoteApiUserPartnerURL {
     }
 
     donnees: {
-      SSO: {
-        codePartenaire: string
-        intituleLien: string
-        description: string
-      }
+      SSO: PronoteSSO
     }
   }
 
@@ -23,7 +20,7 @@ export interface PronoteApiUserPartnerURL {
     RapportSaisie: {
       urlSSO: {
         _T: 23
-        V: string
+        V: string // URL for SSO login.
       }
     }
   }
@@ -32,12 +29,7 @@ export interface PronoteApiUserPartnerURL {
 export interface ApiUserPartnerURL {
   input: {
     session: Session
-
-    sso: {
-      code: string
-      description: string
-      linkLabel: string
-    }
+    sso: PronoteSSO
   }
 
   output: {

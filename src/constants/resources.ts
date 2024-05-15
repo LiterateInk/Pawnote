@@ -71,7 +71,7 @@ export enum PronoteApiResourceType {
   PossessionMessage = 69,
   RelationMessageDocJointEtablissement = 70,
   Engagement = 71,
-  MesureConservatoire = 72,
+  PrecautionaryMeasure = 72,
   SousCategorieObjetDossier = 73,
   Incident = 74,
   ProtagonisteIncident = 75,

@@ -56,7 +56,7 @@ export { Period, OngletPeriod } from "~/parser/period";
 export { TimetableOverview, type TimetableClass } from "~/parser/timetable";
 export { TimetableActivity, TimetableLesson, TimetableDetention } from "~/parser/timetableLesson";
 export { StudentNews, StudentNewsCategory, StudentNewsSurvey, StudentNewsInformation, StudentNewsItemQuestion } from "~/parser/news";
-export { StudentAbsence, StudentDelay, StudentPunishment, StudentObservation } from "~/parser/attendance";
+export { StudentAbsence, StudentDelay, StudentPunishment, StudentObservation, StudentPrecautionaryMeasure } from "~/parser/attendance";
 export { StudentDiscussionsOverview, StudentDiscussion, StudentDiscussionFolder } from "~/parser/discussion";
 export { SentMessage, MessagesOverview, TransferredMessage, Message, DraftMessage } from "~/parser/messages";
 export { DiscussionCreationRecipient, FetchedMessageRecipient, MessageRecipient } from "~/parser/recipient";

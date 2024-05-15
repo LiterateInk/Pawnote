@@ -5,7 +5,8 @@ import type {
   PronoteApiAttendanceDelay,
   PronoteApiAttendancePunishment,
   PronoteApiAttendanceObservation,
-  PronoteApiAttendanceObservationType
+  PronoteApiAttendanceObservationType,
+  PronoteApiAttendancePrecautionaryMeasure
 } from "~/constants/attendance";
 
 import { StudentAttachment } from "~/parser/attachment";
@@ -76,6 +77,15 @@ export class StudentPunishment {
     this.dateGiven = readPronoteApiDate(item.dateDemande.V);
 
     this.durationMinutes = item.duree;
+  }
+}
+
+export class StudentPrecautionaryMeasure {
+  public id: string;
+
+  constructor (client: Pronote, item: PronoteApiAttendancePrecautionaryMeasure) {
+    this.id = item.N;
+
   }
 }
 

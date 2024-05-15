@@ -1,5 +1,5 @@
 import type { PronoteValue } from "~/api/type";
-import type { PronoteApiAttendanceAbsence, PronoteApiAttendanceDelay, PronoteApiAttendancePunishment, PronoteApiAttendanceObservation } from "~/constants/attendance";
+import type { PronoteApiAttendanceAbsence, PronoteApiAttendanceDelay, PronoteApiAttendancePunishment, PronoteApiAttendanceObservation, PronoteApiAttendancePrecautionaryMeasure } from "~/constants/attendance";
 import type { PronoteApiFunctions } from "~/constants/functions";
 import type { PronoteApiOnglets } from "~/constants/onglets";
 import type { Period } from "~/parser/period";
@@ -46,6 +46,7 @@ export interface PronoteApiUserAttendance {
         | PronoteApiAttendanceAbsence
         | PronoteApiAttendancePunishment
         | PronoteApiAttendanceObservation
+        | PronoteApiAttendancePrecautionaryMeasure
       )>>
 
       Matieres: {

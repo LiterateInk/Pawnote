@@ -78,6 +78,11 @@ export interface PronoteApiAttendanceObservation {
   message: string
 }
 
+export interface PronoteApiAttendancePrecautionaryMeasure {
+  N: string
+  G: PronoteApiResourceType.PrecautionaryMeasure
+}
+
 export interface PronoteApiAttendanceAbsence {
   N: string
   G: PronoteApiResourceType.Absence

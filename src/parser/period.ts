@@ -1,5 +1,6 @@
 import type Pronote from "~/client/Pronote";
 import type { PronoteApiLoginInformations, PronoteApiUserData } from "~/api";
+import type { PronoteApiID } from "~/constants/id";
 
 import { readPronoteApiDate } from "~/pronote/dates";
 
@@ -25,7 +26,7 @@ export class OngletPeriod {
 }
 
 export class Period {
-  public id: string;
+  public id: PronoteApiID<112> | "0";
   public name: string;
   public genre: number;
 

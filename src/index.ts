@@ -40,7 +40,7 @@ export { PronoteApiAttachmentType } from "~/constants/attachments";
 export { PronoteApiNewsQuestionType } from "~/constants/news";
 export { PronoteApiAccountId } from "~/constants/accounts";
 export { PronoteApiResourceType } from "~/constants/resources";
-export { PronoteApiAttendanceObservationType } from "~/constants/attendance";
+export { PronoteApiAttendanceObservationType, PronoteApiAttendancePrecautionaryMeasureDisallowedType } from "~/constants/attendance";
 export { PronoteApiDiscussionFolderType } from "~/constants/discussion";
 
 // Exporting main classes.

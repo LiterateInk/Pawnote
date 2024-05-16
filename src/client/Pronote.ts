@@ -66,9 +66,9 @@ import { PronoteApiDomainFrequencyType, PronoteApiMaxDomainCycle } from "~/const
 import { parseSelection } from "~/pronote/select";
 import { TimetableOverview } from "~/parser/timetable";
 import { callApiUserDiscussionCommand } from "~/api/user/discussionCommand";
-import { ARDPartner } from "~/parser/partners/ard";
 import { ApiUserDiscussionAvailableCommands } from "~/api/user/discussionCommand/types";
 import type { PawnoteSupportedFormDataFile } from "~/utils/file";
+import { callApiUserGeneratePDF } from "~/api/user/generatePDF";
 
 export default class Pronote {
   /**
@@ -383,6 +383,30 @@ export default class Pronote {
         overallAverage: data.moyGenerale && readPronoteApiGrade(data.moyGenerale.V),
         classAverage: data.moyGeneraleClasse && readPronoteApiGrade(data.moyGeneraleClasse.V)
       };
+    });
+  }
+
+  public readPeriodsForGradesReport (): Period[] {
+    return this.periodsByOnglet.get(PronoteApiOnglets.GradesReport)!.values.map((period) => period.linkedPeriod)
+      .filter(Boolean) as Period[];
+  }
+
+  public readDefaultPeriodForGradesReport (): Period {
+    return this.periodsByOnglet.get(PronoteApiOnglets.GradesReport)!.default;
+  }
+
+  /**
+   * @param period - Period the grades report will be from.
+   * @returns an URL to download the PDF file.
+   */
+  public async generateGradesReportPDF (period = this.readDefaultPeriodForGradesReport()) {
+    return this.queue.push(async () => {
+      const data = await callApiUserGeneratePDF(this.fetcher, {
+        session: this.session,
+        period
+      });
+
+      return this.pronoteRootURL + "/" + data.url;
     });
   }
 

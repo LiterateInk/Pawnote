@@ -4,6 +4,7 @@ import type { Session } from "~/session";
 import type { PronoteApiDomainFrequencyType } from "~/constants/domain";
 import type { PronoteValue } from "~/api/type";
 import type { PronoteApiHTTPType } from "~/constants/http";
+import type { PronoteApiID } from "~/constants/id";
 
 export interface PronoteApiLoginInformations {
   request: {
@@ -337,7 +338,7 @@ export interface PronoteApiLoginInformations {
           /** Name of the period. */
           L: string
           /** ID of the period. */
-          N: string
+          N: PronoteApiID<112> | "0"
           G: number
 
           periodeNotation: number

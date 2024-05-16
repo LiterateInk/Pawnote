@@ -42,7 +42,7 @@ import { callApiUserMessages } from "~/api/user/messages";
 import { MessagesOverview } from "~/parser/messages";
 import { PronoteApiOnglets } from "~/constants/onglets";
 import { callApiUserAttendance } from "~/api/user/attendance";
-import { StudentAbsence, StudentDelay, StudentObservation, StudentPunishment } from "~/parser/attendance";
+import { StudentAbsence, StudentDelay, StudentObservation, StudentPrecautionaryMeasure, StudentPunishment } from "~/parser/attendance";
 import { callApiUserMessageRecipients } from "~/api/user/messageRecipients";
 import { DiscussionCreationRecipient, FetchedMessageRecipient } from "~/parser/recipient";
 import Holiday from "~/parser/holiday";
@@ -573,7 +573,7 @@ export default class Pronote {
       });
 
       return data.donnees.listeAbsences.V.map((item) => {
-        let instance: StudentAbsence | StudentDelay | StudentPunishment | StudentObservation;
+        let instance: StudentAbsence | StudentDelay | StudentPunishment | StudentObservation | StudentPrecautionaryMeasure;
 
         switch (item.G) {
           case PronoteApiResourceType.Absence:
@@ -588,10 +588,13 @@ export default class Pronote {
           case PronoteApiResourceType.ObservationProfesseurEleve:
             instance = new StudentObservation(item);
             break;
+          case PronoteApiResourceType.PrecautionaryMeasure:
+            instance = new StudentPrecautionaryMeasure(this, item);
+            break;
         }
 
         return instance;
-      }).filter(Boolean) as Array<StudentAbsence | StudentDelay | StudentPunishment | StudentObservation>;
+      }).filter(Boolean) as Array<StudentAbsence | StudentDelay | StudentPunishment | StudentObservation | StudentPrecautionaryMeasure>;
     });
   }
 

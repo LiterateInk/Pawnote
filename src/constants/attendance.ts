@@ -2,6 +2,9 @@ import type { PronoteValue } from "~/api/type";
 import type { PronoteApiResourceType } from "~/constants/resources";
 import type { PronoteApiUserResourceType } from "~/constants/users";
 import type { PronoteApiOnglets } from "~/constants/onglets";
+import type { PronoteApiAttachment } from "./attachments";
+import type { PronoteApiHTTPType } from "./http";
+import type { PronoteApiID } from "./id";
 
 /**
  * Possible types for an observation in the attendance section.
@@ -19,6 +22,15 @@ export enum PronoteApiAttendanceObservationType {
 
   /** @original `OVS_Autres` */
   Other = 3
+}
+
+export enum PronoteApiAttendancePrecautionaryMeasureDisallowedType {
+  /** "à l'internat" */
+  Internat = 0,
+  /** "à l'établissement" */
+  Etablissement = 1,
+  /** "à la demi-pension" */
+  DP = 2
 }
 
 /**
@@ -78,6 +90,80 @@ export interface PronoteApiAttendanceObservation {
   message: string
 }
 
+export interface PronoteApiAttendancePrecautionaryMeasure {
+  N: PronoteApiID<139>
+  G: PronoteApiResourceType.PrecautionaryMeasure
+
+  estLieAUnIncident: boolean
+
+  /** @example "13/05/2024 22:37:33" */
+  dateDemande: PronoteValue<PronoteApiHTTPType.DateTime, string>
+
+  nature: PronoteValue<PronoteApiHTTPType.Element, {
+    /** @example "Mesure conservatoire" */
+    L: string
+    N: PronoteApiID<106>
+    G: 10 // NOTE: Is this a constant ?
+  }>
+
+  estUneExclusion: boolean
+
+  listeMotifs: {
+    _T: number
+    V: Array<{
+      L: string
+      N: string
+    }>
+  }
+  commentaire: string
+  circonstances: string
+  documentsCirconstances: {
+    _T: number
+    V: Array<PronoteApiAttachment>
+  }
+  decideur: {
+    _T: number
+    V: {
+      /** @example "" */
+      L: string
+      N: PronoteApiID<113>
+      G: number
+      fonction: PronoteValue<PronoteApiHTTPType.Element, {
+        /** @example "Proviseur" */
+        L: string
+        N: PronoteApiID<62>
+      }>
+    }
+  }
+  dateDebut: {
+    _T: number
+    V: string
+  }
+  dateFin: {
+    _T: number
+    V: string
+  }
+  demandeur: {
+    _T: number
+    V: {
+      L: string
+      N: string
+      G: number
+      fonction: {
+        _T: number
+        V: {
+          N: string
+        }
+      }
+    }
+  }
+  duree: number
+  interditAcces: {
+    _T: number
+    V: string
+  }
+}
+
 export interface PronoteApiAttendanceAbsence {
   N: string
   G: PronoteApiResourceType.Absence
@@ -134,22 +220,12 @@ export interface PronoteApiAttendanceDelay {
 export interface PronoteApiAttendancePunishment {
   N: string
   G: PronoteApiResourceType.Punishment
-  dateDemande: PronoteValue<7, string>
-  /** Position in the timetable for the day related to `dateDemande` */
-  placeDemande: number
-  estUneExclusion: boolean
-  horsCours: boolean
-  travailAFaire: string
-  documentsTAF: {
-    _T: number
-    V: Array<any>
-  }
+
   estLieAUnIncident: boolean
-  publierTafApresDebutRetenue: boolean
-  documentsCirconstances: {
-    _T: number
-    V: Array<any>
-  }
+
+  /** @example "13/05/2024 22:37:33" */
+  dateDemande: PronoteValue<PronoteApiHTTPType.DateTime, string>
+
   nature: {
     _T: number
     V: {
@@ -158,6 +234,23 @@ export interface PronoteApiAttendancePunishment {
       G: number
       estProgrammable: boolean
     }
+  }
+
+  /** Position in the timetable for the day related to `dateDemande` */
+  placeDemande: number
+
+  estUneExclusion: boolean
+
+  horsCours: boolean
+  travailAFaire: string
+  documentsTAF: {
+    _T: number
+    V: Array<any>
+  }
+  publierTafApresDebutRetenue: boolean
+  documentsCirconstances: {
+    _T: number
+    V: Array<any>
   }
   matiere: {
     _T: number

@@ -1,4 +1,4 @@
-import { authenticatePronoteCredentials, PronoteApiAccountId, StudentPunishment } from "../src";
+import { authenticatePronoteCredentials, PronoteApiAccountId, StudentPrecautionaryMeasure } from "../src";
 
 (async () => {
   const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev/pronote", {
@@ -15,8 +15,10 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, StudentPunishment 
   const attendanceOverview = await pronote.getAttendance(period);
 
   for (const attendance of attendanceOverview) {
-    console.log(attendance);
-    // TODO: Extract values
+    if (attendance instanceof StudentPrecautionaryMeasure) {
+      console.log("Mesure Conservatoire:", attendance.circumstances);
+      console.log(attendance.comments);
+    }
   }
 })();
 

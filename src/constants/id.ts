@@ -7,3 +7,8 @@ export const generateCreationID = (): number => {
   creationID -= 1;
   return creationID;
 };
+
+/**
+ * An ID starting with a given number, followed by a `#` and a string.
+ */
+export type PronoteApiID<Type extends number> = `${Type}#${string}`;

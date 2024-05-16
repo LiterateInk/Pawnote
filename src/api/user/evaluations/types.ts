@@ -1,4 +1,3 @@
-import type { PronoteValue } from "~/api/type";
 import type { PronoteApiFunctions } from "~/constants/functions";
 import type { PronoteApiOnglets } from "~/constants/onglets";
 import type { Period } from "~/parser/period";

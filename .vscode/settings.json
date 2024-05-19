@@ -1,0 +1,6 @@
+{
+  "cSpell.language": "en,fr",
+  "markdownlint.config": {
+    "MD041": false
+  }
+}

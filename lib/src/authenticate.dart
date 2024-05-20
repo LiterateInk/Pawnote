@@ -1,6 +1,8 @@
+import 'pronote/login_portal_dowloader.dart';
+import 'pronote/login_portal_session_extractor.dart';
+
 import 'constants/accounts.dart';
 import 'utils/url.dart';
-import 'pronote/login/informations.dart';
 
 void authenticateWithCredentials({
   required final String loginPortalUrl,
@@ -22,5 +24,7 @@ void authenticateWithCredentials({
   );
 
   const pronoteCookies = <String>{'ielang=fr'};
-  callApiLoginInformations(instanceRootUri, accountType, pronoteCookies);
+
+  final body = await loginPortalDownloader(instanceRootUri, pronoteCookies);
+  final session = loginPortalSessionExtractor(body);
 }

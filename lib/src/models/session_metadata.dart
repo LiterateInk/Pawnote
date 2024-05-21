@@ -6,10 +6,9 @@ enum PronoteVersion {
 }
 
 /// A low-level representation of a Pronote session.
-/// Contains the extracted data from the login portal.
-/// 
-/// Should be used to upgrade to the [Session] class.
+/// Contains partially extracted data from the login portal.
 class SessionMetadata {
+  final Uri instanceRootUri;
   final String sessionID;
   final ApiAccountType accountType;
   final bool skipCompression;
@@ -19,6 +18,7 @@ class SessionMetadata {
   final PronoteVersion version;
 
   SessionMetadata({
+    required this.instanceRootUri,
     required this.sessionID,
     required this.accountType,
     required this.skipCompression,

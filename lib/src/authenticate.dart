@@ -1,9 +1,14 @@
 import 'dart:convert';
+import 'package:convert/convert.dart';
 
+import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:pointycastle/export.dart';
 
+import 'api/login/authenticate.dart';
+import 'api/login/identify.dart';
 import 'api/login/informations.dart';
+import 'api/user/data.dart';
 import 'constants/accounts.dart';
 import 'models/session_metadata.dart';
 import 'pronote/login_portal_dowloader.dart';
@@ -58,8 +63,76 @@ void authenticateWithCredentials({
       break;
   }
 
-  callApiLoginInformations(session,
+  final loginInformations = await callApiLoginInformations(session,
     uuid: rsaUuid,
     ivAfterInitialization: aesIV
   );
+
+  final loginIdentify = await callApiLoginIdentify(session,
+    username: username,
+    deviceUuid: deviceUuid,
+    isEnt: false,
+    requestFirstMobileAuthentication: true,
+    reuseMobileAuthentication: false,
+    requestFromQRCode: false
+  );
+
+  var compatibilityUsername = username;
+  if (loginIdentify["donnees"]["modeCompLog"] == 1) {
+    compatibilityUsername = username.toLowerCase();
+  }
+
+  var compatibilityPassword = password;
+  if (loginIdentify["donnees"]["modeCompMdp"] == 1) {
+    compatibilityPassword = password.toLowerCase();
+  }
+
+  var challengeAesKeyDecoded = "";
+  if (loginIdentify["donnees"]["alea"] is String) {
+    challengeAesKeyDecoded += loginIdentify["donnees"]["alea"];
+  }
+  
+  challengeAesKeyDecoded += compatibilityPassword;
+  var challengeAesKeyHash = hex.encode(sha256.convert(utf8.encode(challengeAesKeyDecoded)).bytes);
+  challengeAesKeyHash = compatibilityUsername + challengeAesKeyHash.toString().toUpperCase();
+
+  final challengeAesKey = hex.encode(utf8.encode(challengeAesKeyHash));
+
+  // Decrypt the challenge using the AES key generated.
+  final challengeDecrypted = session.encryption.aes.decrypt(loginIdentify["donnees"]["challenge"],
+    key: challengeAesKey
+  );
+
+  final challengeDecryptedUnscrambledParts = List<int>.empty(growable: true);
+  for (var i = 0; i < challengeDecrypted.length; i += 1) {
+    if (i % 2 == 0) {
+      challengeDecryptedUnscrambledParts.add(challengeDecrypted.codeUnitAt(i));
+    }
+  }
+  
+  final challengeDecryptedUnscrambled = String.fromCharCodes(challengeDecryptedUnscrambledParts);
+
+  final resolvedChallenge = session.encryption.aes.encrypt(challengeDecryptedUnscrambled,
+    key: challengeAesKey
+  );
+
+  final loginAuthenticate = await callApiLoginAuthenticate(session,
+    solvedChallenge: resolvedChallenge
+  );
+
+  if (loginAuthenticate["donnees"]["jetonConnexionAppliMobile"] is! String) {
+    throw Exception('Token was not given during authentication.');
+  }
+
+  // Decrypt the new AES key.
+  final decryptedAuthKey = session.encryption.aes.decrypt(loginAuthenticate["donnees"]["cle"],
+    key: challengeAesKey
+  );
+
+  final authKeyBytesArray = decryptedAuthKey.split(',').map((e) => int.parse(e)).toList();
+  final authKey = hex.encode(authKeyBytesArray);
+  session.encryption.aes.key = authKey;
+
+  final userData = await callApiUserData(session);
+  // TODO: Handle user data in a new class.
 }

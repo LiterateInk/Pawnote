@@ -11,36 +11,32 @@ class SessionEncryptionAes {
     this.key,
   });
 
-  IV _constructIV () {
+  IV _constructIV (IV? iv) {
+    iv ??= this.iv;
+
     if (iv == null) {
       return IV.allZerosOfLength(16);
     }
     else {
-      return IV.fromBase16(md5.convert(iv!.bytes).toString());
+      return IV.fromBase16(md5.convert(iv.bytes).toString());
     }
   }
 
-  Key _constructKey () {
+  Key _constructKey (String? key) {
+    key ??= this.key ?? "";
+
     return Key.fromBase16(
-      md5.convert(
-        Key.fromBase16(key ?? "").bytes
-      ).toString()
+      md5.convert(Key.fromBase16(key).bytes).toString()
     );
   }
 
-  String encrypt (String data) {
-    final key = _constructKey();
-    final iv = _constructIV();
-
-    final cipher = Encrypter(AES(key, mode: AESMode.cbc, padding: "PKCS7"));
-    return cipher.encrypt(data, iv: iv).base16;
+  String encrypt (String data, { String? key, IV? iv }) {
+    final cipher = Encrypter(AES(_constructKey(key), mode: AESMode.cbc, padding: "PKCS7"));
+    return cipher.encrypt(data, iv: _constructIV(iv)).base16;
   }
 
-  String decrypt (String data) {
-    final key = _constructKey();
-    final iv = _constructIV();
-
-    final cipher = Encrypter(AES(key, mode: AESMode.cbc, padding: "PKCS7"));
-    return cipher.decrypt(Encrypted.fromBase16(data), iv: iv);
+  String decrypt (String data, { String? key, IV? iv }) {
+    final cipher = Encrypter(AES(_constructKey(key), mode: AESMode.cbc, padding: "PKCS7"));
+    return cipher.decrypt(Encrypted.fromBase16(data), iv: _constructIV(iv));
   }
 }

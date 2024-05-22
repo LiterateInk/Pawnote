@@ -6,4 +6,5 @@ A simple wrapper around [Index-Education's Pronote](https://www.index-education.
 
 ## TODO
 
-- [ ] Implement the authentication process
+- [x] Implement the authentication process with credentials
+- [ ] Implement re-authentication using a token and device UUID

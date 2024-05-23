@@ -1,11 +1,12 @@
-import 'package:pawnote/pawnote.dart' as pronote;
+import 'package:pawnote/pawnote.dart';
 
 void main() async {
-  pronote.authenticateWithCredentials(
+  final client = await Authenticator.withStudentCredentials(
     loginPortalUrl: 'https://demo.index-education.net/pronote',
-    accountType: pronote.ApiAccountType.student,
     username: 'demonstration',
     password: 'pronotevs',
     deviceUuid: 'my-device-uuid'
   );
+
+  print("Authenticated as '${client.username}' on instance '${client.instanceRootUri}' with token '${client.nextTimeToken}'.");
 }

@@ -99,7 +99,7 @@ npm install pawnote
 
 ## Documentation & Guides
 
-You can find the documentation, some guides and small examples at [pawnote.js.org](https://literate.ink/pawnote) for more information about the API and how to use it.
+You can find the documentation, some guides and small examples at [literate.ink/pawnote](https://literate.ink/pawnote) for more information about the API and how to use it.
 
 If you need complete examples, then we got **a lot** of those in the [`examples`](https://github.com/LiterateInk/Pawnote/tree/js/examples) folder, hoping you can find your joy in there.
 

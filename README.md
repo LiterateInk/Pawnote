@@ -5,7 +5,7 @@ A simple wrapper around [Index-Education's Pronote](https://www.index-education.
 > [!NOTE]  
 > This project is not affiliated with Index-Education or Pronote in any way.
 
-> Join [LiterateInk's Discord server](https://discord.gg/f5KNCnMWzB) to talk about Pawnote, get help and be notified about the latest updates !
+> Join [LiterateInk's Discord server](https://literate.ink/discord) to talk about Pawnote, get help and be notified about the latest updates !
 
 ## Supported
 
@@ -80,6 +80,8 @@ It returns a boolean that is `true` when the server is a demo.
 - Error handlers
   - `PawnoteNetworkFail`
 
+...and a lot more !
+
 ## Installation
 
 Use your favorite package manager to install [Pawnote from NPM](https://www.npmjs.com/package/pawnote).
@@ -97,9 +99,9 @@ npm install pawnote
 
 ## Documentation & Guides
 
-You can find the documentation, some guides and small examples at [pawnote.js.org](https://pawnote.js.org) for more informations about the API and how to use it.
+You can find the documentation, some guides and small examples at [pawnote.js.org](https://literate.ink/pawnote) for more information about the API and how to use it.
 
-If you need complete examples, then we got **a lot** of those in the [`examples`](./examples) folder, hoping you can find your joy in there.
+If you need complete examples, then we got **a lot** of those in the [`examples`](https://github.com/LiterateInk/Pawnote/tree/js/examples) folder, hoping you can find your joy in there.
 
 If none of those are helpful, you can always [open an issue](https://github.com/LiterateInk/Pawnote/issues) to ask for help.
 

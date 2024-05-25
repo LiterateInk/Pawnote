@@ -57,7 +57,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeTyp
         console.log("-> Grade is optional, only counted if value increases the student's average.");
 
       console.log("Grade:  ", handleGradeValue(grade.value, grade.outOf, grade.coefficient));
-      console.log("Average:", handleGradeValue(grade.average, grade.outOf, grade.coefficient));
+      if (grade.average) console.log("Average:", handleGradeValue(grade.average, grade.outOf, grade.coefficient));
       console.log("Minimum:", handleGradeValue(grade.min, grade.outOf, grade.coefficient));
       console.log("Maximum:", handleGradeValue(grade.max, grade.outOf, grade.coefficient));
       if (grade.subjectFile) console.log("Subject:", grade.subjectFile.name, "=>", grade.subjectFile.url);

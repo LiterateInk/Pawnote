@@ -42,12 +42,12 @@
     "git": {
       "commitMessage": "chore: release v${version}",
       "tagAnnotation": "Release v${version}",
-      "tagName": "v${version}"
+      "tagName": "js-v${version}"
     },
     "github": {
       "release": true,
       "draft": false,
-      "releaseName": "v${version}"
+      "releaseName": "js v${version}"
     },
     "npm": {
       "publish": true

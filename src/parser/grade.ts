@@ -14,7 +14,7 @@ export class StudentGrade {
   readonly #defaultOutOf?: number | PronoteApiGradeType;
   readonly #date: Date;
   readonly #subject: StudentSubject;
-  readonly #average: number | PronoteApiGradeType;
+  readonly #average?: number | PronoteApiGradeType;
   readonly #max: number | PronoteApiGradeType;
   readonly #min: number | PronoteApiGradeType;
   readonly #coefficient: number;
@@ -33,7 +33,11 @@ export class StudentGrade {
     this.#defaultOutOf = readPronoteApiGrade(grade.baremeParDefaut.V);
     this.#date = readPronoteApiDate(grade.date.V);
     this.#subject = new StudentSubject(grade.service.V);
-    this.#average = readPronoteApiGrade(grade.moyenne.V);
+
+    if (grade.moyenne) {
+      this.#average = readPronoteApiGrade(grade.moyenne.V);
+    }
+
     this.#max = readPronoteApiGrade(grade.noteMax.V);
     this.#min = readPronoteApiGrade(grade.noteMin.V);
     this.#coefficient = grade.coefficient;
@@ -94,7 +98,7 @@ export class StudentGrade {
   }
 
   /** the average of the class */
-  get average (): number | PronoteApiGradeType {
+  get average (): number | PronoteApiGradeType | undefined {
     return this.#average;
   }
 

@@ -141,7 +141,7 @@ export interface PronoteApiUserGrades {
             V: unknown[]
           }
 
-          moyenne: {
+          moyenne?: {
             _T: 10
             /** Overall grade on this exam. */
             V: string

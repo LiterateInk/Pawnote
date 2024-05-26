@@ -4,8 +4,8 @@ A simple wrapper around [Index-Education's Pronote](https://www.index-education.
 
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="https://github.com/LiterateInk/Pawnote/raw/main/assets/pawnote_dark.png">
-        <img alt="Pawnote Logo" src="https://github.com/LiterateInk/Pawnote/raw/main/assets/pawnote_light.png">
+        <source media="(prefers-color-scheme: dark)" srcset="https://github.com/LiterateInk/Pawnote/blob/684ef3fc38493bbf5b03f7e89becfc4245bcb028/assets/pawnote_dark.png">
+        <img alt="Pawnote Logo" src="https://github.com/LiterateInk/Pawnote/blob/684ef3fc38493bbf5b03f7e89becfc4245bcb028/assets/pawnote_light.png">
     </picture>
 </p>
 

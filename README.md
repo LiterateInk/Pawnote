@@ -1,7 +1,7 @@
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="https://github.com/LiterateInk/Pawnote/blob/684ef3fc38493bbf5b03f7e89becfc4245bcb028/assets/pawnote_dark.png">
-        <img alt="Pawnote Logo" src="https://github.com/LiterateInk/Pawnote/blob/684ef3fc38493bbf5b03f7e89becfc4245bcb028/assets/pawnote_light.png">
+        <source media="(prefers-color-scheme: dark)" srcset="https://github.com/LiterateInk/Pawnote/blob/42e03e934d7ce4e058b69ee24dc18d11c6a2a4a8/.github/pawnote_dark.png">
+        <img alt="Pawnote Logo" src="https://github.com/LiterateInk/Pawnote/blob/42e03e934d7ce4e058b69ee24dc18d11c6a2a4a8/.github/pawnote_light.png">
     </picture>
 </p>
 

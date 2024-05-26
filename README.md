@@ -2,6 +2,13 @@
 
 A simple wrapper around [Index-Education's Pronote](https://www.index-education.com/fr/logiciel-gestion-vie-scolaire.php) internal API.
 
+<p align="center">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://github.com/LiterateInk/Pawnote/raw/main/assets/pawnote_dark.png">
+        <img alt="Pawnote Logo" src="https://github.com/LiterateInk/Pawnote/raw/main/assets/pawnote_light.png">
+    </picture>
+</p>
+
 > [!NOTE]  
 > This project is not affiliated with Index-Education or Pronote in any way.
 

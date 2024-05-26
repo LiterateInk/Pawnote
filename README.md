@@ -5,7 +5,10 @@
     </picture>
 </p>
 
-A simple wrapper around [Index-Education's Pronote](https://www.index-education.com/fr/logiciel-gestion-vie-scolaire.php) internal API.
+
+Pronote is a school management application used by educational establishments to centralize and facilitate communication between teachers, students and parents. It lets you manage and consult timetables, grades, absences and homework, as well as communicate via messages. Pronote aims to improve the transparency and efficiency of day-to-day school management.
+
+Pawnote is a simple wrapper around [Index-Education's Pronote](https://www.index-education.com/fr/logiciel-gestion-vie-scolaire.php) internal API.
 
 > [!NOTE]
 > This project is not affiliated with Index-Education or Pronote in any way.

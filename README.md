@@ -24,19 +24,19 @@ For now, since we're still in the early stages of development, the documentation
 
 You might go look at the examples for the language you want to use for now.
 
-## Resources
+## Get help
 
-Without these very useful resources, I wouldn't be able to write Pawnote by myself.
+Join [LiterateInk's Discord server](https://discord.gg/f5KNCnMWzB) to talk about Pawnote, get help and be notified about the latest updates !
+
+## Credits
+
+Without those people / projects, this library wouldn't be here.
 
 - [Pronote Protocol](https://github.com/bain3/pronotepy/blob/master/PRONOTE%20protocol.md) written by developers of `pronotepy`.
 - [`pronote-api`](https://github.com/Merlode11/pronote-api)'s (forked) source code.
 - [`pronotepy`](https://github.com/bain3/pronotepy)'s source code.
 - [Pronote QR Code API](https://github.com/Androz2091/pronote-qrcode-api)
 - [Read encrypted/compressed responses from Pronote](https://gist.github.com/Vexcited/3b599b4eaf0797b532f087540728ec09)
-
-## Get help
-
-Join [LiterateInk's Discord server](https://discord.gg/f5KNCnMWzB) to talk about Pawnote, get help and be notified about the latest updates !
 
 ## License
 

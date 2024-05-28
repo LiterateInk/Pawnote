@@ -1,5 +1,6 @@
 import type { PronoteValue } from "~/api/type";
 import type { PronoteApiFunctions } from "~/constants/functions";
+import { PronoteApiID } from "~/constants/id";
 import type { PronoteApiOnglets } from "~/constants/onglets";
 import type { PronoteApiUserResourceType } from "~/constants/users";
 import type { Session } from "~/session";
@@ -27,10 +28,17 @@ export interface PronoteApiUserCreateDiscussionRecipients {
   response: {
     donnees: {
       listeRessourcesPourCommunication: PronoteValue<24, Array<{
+        /** Name of the person. */
         L: string
-        N: string
-        P: number
+        N: (
+          // Teacher
+          | PronoteApiID<116>
+          // Personal
+          | PronoteApiID<113>
+        )
         G: PronoteApiUserResourceType
+        // NOTE: Not sure what is this.
+        P: number
 
         /**
          * Whether this user can discuss with the current user.
@@ -42,14 +50,20 @@ export interface PronoteApiUserCreateDiscussionRecipients {
          */
         estPrincipal?: boolean
 
-        listeRessources: PronoteValue<24, Array<{
+        listeRessources?: PronoteValue<24, Array<{
           L: string
-          N: string
+          N: PronoteApiID<140>
           estUneSousMatiere?: boolean
         } & {
           estUneSousMatiere: true
           libelleMatiere: string
         }>>
+
+        fonction?: PronoteValue<24, {
+          /** @example "Psychologue E.N." */
+          L: string
+          N: PronoteApiID<62>
+        }>
       }>>
     }
     nom: PronoteApiFunctions.CreateDiscussionRecipients

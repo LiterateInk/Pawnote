@@ -3,86 +3,55 @@ import type { PronoteApiUserMessageRecipient } from "~/constants/recipients";
 import type { PronoteApiUserResourceType } from "~/constants/users";
 
 export class MessageRecipient {
-  readonly #name: string;
-  readonly #type: PronoteApiUserResourceType;
+  public readonly name: string;
+  public readonly type: PronoteApiUserResourceType;
 
   public constructor (data: Omit<PronoteApiUserMessageRecipient, "N" | "P" | "refusMess">) {
-    this.#name = data.L;
-    this.#type = data.G;
-  }
-
-  public get name (): string {
-    return this.#name;
-  }
-
-  public get type (): PronoteApiUserResourceType {
-    return this.#type;
+    this.name = data.L;
+    this.type = data.G;
   }
 }
 
 export class FetchedMessageRecipient extends MessageRecipient {
-  readonly #id: string;
-  readonly #refuseMessages: boolean;
+  public readonly id: string;
+  public readonly refuseMessages: boolean;
 
   public constructor (data: PronoteApiUserMessageRecipient) {
     super(data);
-    this.#id = data.N;
-    this.#refuseMessages = data.refusMess ?? false;
-  }
-
-  public get id (): string {
-    return this.#id;
-  }
-
-  public get refuseMessages (): boolean {
-    return this.#refuseMessages;
+    this.id = data.N;
+    this.refuseMessages = data.refusMess ?? false;
   }
 }
 
 class DiscussionCreationRecipientSubResource {
-  readonly #id: string;
-  readonly #name: string;
-  readonly #from: string;
+  public readonly id: string;
+  public readonly name: string;
+  public readonly from: string;
 
-  constructor(data: PronoteApiUserCreateDiscussionRecipients["response"]["donnees"]["listeRessourcesPourCommunication"]["V"][number]["listeRessources"]["V"][number]) {
-    this.#id = data.N;
-    this.#name = data.L;
-    this.#from = data.libelleMatiere;
-  }
-
-  public get id (): string {
-    return this.#id;
-  }
-
-  public get name (): string {
-    return this.#name;
-  }
-
-  public get from (): string {
-    return this.#from;
+  public constructor (data: NonNullable<PronoteApiUserCreateDiscussionRecipients["response"]["donnees"]["listeRessourcesPourCommunication"]["V"][number]["listeRessources"]>["V"][number]) {
+    this.id = data.N;
+    this.name = data.L;
+    this.from = data.libelleMatiere;
   }
 }
 
 class DiscussionCreationRecipientResource {
-  readonly #id: string;
-  readonly #name: string;
-  readonly #sub: DiscussionCreationRecipientSubResource[];
+  public readonly id: string;
+  public readonly name: string;
+  public readonly sub: DiscussionCreationRecipientSubResource[];
 
-  constructor(data: PronoteApiUserCreateDiscussionRecipients["response"]["donnees"]["listeRessourcesPourCommunication"]["V"][number]["listeRessources"]["V"][number], sub: DiscussionCreationRecipientSubResource[]) {
-    this.#id = data.N;
-    this.#name = data.L;
-    this.#sub = sub;
+  public constructor (data: NonNullable<PronoteApiUserCreateDiscussionRecipients["response"]["donnees"]["listeRessourcesPourCommunication"]["V"][number]["listeRessources"]>["V"][number], sub: DiscussionCreationRecipientSubResource[]) {
+    this.id = data.N;
+    this.name = data.L;
+    this.sub = sub;
   }
-
-  public get id (): string {
-    return this.#id;
-  }
+}
 
 class DiscussionCreationRecipientFunction {
   public readonly id: string;
   public readonly name: string;
 
-  constructor (data: NonNullable<PronoteApiUserCreateDiscussionRecipients["response"]["donnees"]["listeRessourcesPourCommunication"]["V"][number]["fonction"]>["V"]) {
+  public constructor (data: NonNullable<PronoteApiUserCreateDiscussionRecipients["response"]["donnees"]["listeRessourcesPourCommunication"]["V"][number]["fonction"]>["V"]) {
     this.id = data.N;
     this.name = data.L;
   }
@@ -94,7 +63,7 @@ export class DiscussionCreationRecipient extends MessageRecipient {
   public readonly subjects: Array<DiscussionCreationRecipientResource> = [];
   public readonly function?: DiscussionCreationRecipientFunction;
 
-  constructor (data: PronoteApiUserCreateDiscussionRecipients["response"]["donnees"]["listeRessourcesPourCommunication"]["V"][number]) {
+  public constructor (data: PronoteApiUserCreateDiscussionRecipients["response"]["donnees"]["listeRessourcesPourCommunication"]["V"][number]) {
     super(data);
 
     if (data.listeRessources) {

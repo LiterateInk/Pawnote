@@ -12,7 +12,7 @@ module.exports = [
     }
   },
   {
-    ignores: ["dist/**", "docs/.astro/**", "docs/dist/**"],
+    ignores: ["dist/**"],
     plugins: {
       stylistic: require("@stylistic/eslint-plugin")
     },

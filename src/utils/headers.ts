@@ -11,5 +11,5 @@ export const retrieveResponseCookies = (headers: Record<string, string> | Header
 };
 
 export const getHeaderFromFetcherResponse = (headers: Record<string, string> | Headers, item: string): string | null => {
-  return headers instanceof Headers ? headers.get(item) : headers[item];
+  return (typeof headers.get === "function") ? headers.get(item) : headers[item];
 };

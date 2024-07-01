@@ -1,6 +1,10 @@
 import cookieParser from "set-cookie-parser";
 
-export const retrieveResponseCookies = (headers: Record<string, string> | Headers): string[] => {
+interface HeadersLike {
+  get (key: string): string | null
+};
+
+export const retrieveResponseCookies = (headers: Record<string, string> | Headers | HeadersLike): string[] => {
   const setCookieHeader = getHeaderFromFetcherResponse(headers, "set-cookie");
   if (setCookieHeader === null) return [];
 
@@ -10,6 +14,8 @@ export const retrieveResponseCookies = (headers: Record<string, string> | Header
   return cookies;
 };
 
-export const getHeaderFromFetcherResponse = (headers: Record<string, string> | Headers, item: string): string | null => {
-  return (typeof headers.get === "function") ? headers.get(item) : headers[item];
+export const getHeaderFromFetcherResponse = (headers: Record<string, string> | Headers | HeadersLike, item: string): string | null => {
+  return typeof headers.get === "function"
+    ? headers.get(item)
+    : (headers as Record<string, string>)[item];
 };

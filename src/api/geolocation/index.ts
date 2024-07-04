@@ -36,6 +36,7 @@ export const callApiGeolocation = makeApiHandler<ApiGeolocation>(async (fetcher,
     name: decode(result.nomEtab) // Use UTF8 instead of HTML entities encoding.
       .replace("COLLEGE", "COLLÈGE")
       .replace("LYCEE", "LYCÉE")
+      .toLowerCase() // Replaces `/ProNote` with `/pronote` to avoid session conflicts
       .trim(), // Prevent some `\r\n` at the end of some strings.
 
     latitude: parseFloat(result.lat),

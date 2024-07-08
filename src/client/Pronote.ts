@@ -242,13 +242,25 @@ export default class Pronote {
     return this.session.getAESEncryptionKeys();
   }
 
-  public async getTimetableOverview (start: Date, end?: Date): Promise<TimetableOverview> {
+  public async getTimetableOverviewForInterval (start: Date, end?: Date): Promise<TimetableOverview> {
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserTimetable(this.fetcher, {
         resource: this.user.ressource,
         session: this.session,
         startPronoteDate: transformDateToPronoteString(start),
         endPronoteDate: end && transformDateToPronoteString(end)
+      });
+
+      return new TimetableOverview(this, data);
+    });
+  }
+
+  public async getTimetableOverviewForWeek (weekNumber: number): Promise<TimetableOverview> {
+    return this.queue.push(async () => {
+      const { data: { donnees: data } } = await callApiUserTimetable(this.fetcher, {
+        resource: this.user.ressource,
+        session: this.session,
+        weekNumber
       });
 
       return new TimetableOverview(this, data);

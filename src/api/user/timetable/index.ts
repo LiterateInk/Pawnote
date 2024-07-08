@@ -23,24 +23,29 @@ export const callApiUserTimetable = makeApiHandler<ApiUserTimetable>(async (fetc
 
       edt: { G: 16, L: "Emploi du temps" },
 
-      DateDebut: {
-        _T: 7,
-        V: input.startPronoteDate
-      },
-      dateDebut: {
-        _T: 7,
-        V: input.startPronoteDate
-      },
-
-      ...(input.endPronoteDate && {
-        DateFin: {
+      ...("weekNumber" in input ? {
+        numeroSemaine: input.weekNumber,
+        NumeroSemaine: input.weekNumber
+      } : {
+        DateDebut: {
           _T: 7,
-          V: input.endPronoteDate
+          V: input.startPronoteDate
         },
-        dateFin: {
+        dateDebut: {
           _T: 7,
-          V: input.endPronoteDate
-        }
+          V: input.startPronoteDate
+        },
+
+        ...(input.endPronoteDate && {
+          DateFin: {
+            _T: 7,
+            V: input.endPronoteDate
+          },
+          dateFin: {
+            _T: 7,
+            V: input.endPronoteDate
+          }
+        })
       }),
 
       Ressource: input.resource,

@@ -246,14 +246,19 @@ export interface PronoteApiUserTimetable {
 
 export interface ApiUserTimetable {
   input: {
-    /** Should be transformed using `transformDateToPronoteString` method. */
-    startPronoteDate: string
-    /** Should be transformed using `transformDateToPronoteString` method. */
-    endPronoteDate?: string
-
     session: Session
     resource: PronoteApiUserData["response"]["donnees"]["ressource"]
-  }
+  } & (
+    | {
+      /** Should be transformed using `transformDateToPronoteString` method. */
+      startPronoteDate: string
+      /** Should be transformed using `transformDateToPronoteString` method. */
+      endPronoteDate?: string
+    }
+    | {
+      weekNumber: number
+    }
+  )
 
   output: {
     data: PronoteApiUserTimetable["response"]

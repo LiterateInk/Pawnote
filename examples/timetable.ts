@@ -1,7 +1,7 @@
 import { authenticatePronoteCredentials, PronoteApiAccountId, TimetableDetention, TimetableLesson, TimetableOverview } from "../src";
 
 (async () => {
-  const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev/pronote", {
+  const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev", {
     accountTypeID: PronoteApiAccountId.Student,
     username: "lisa.boulanger",
     password: "12345678",
@@ -10,10 +10,12 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, TimetableDetention
     deviceUUID: "my-device-uuid"
   });
 
-  const overview = await pronote.getTimetableOverview(
-    new Date("2024-05-06"),
-    new Date("2024-05-08")
-  );
+  const overview = await pronote.getTimetableOverviewForWeek(1);
+
+  // const overview = await pronote.getTimetableOverviewForInterval(
+  //   new Date("2024-09-02"),
+  //   new Date("2024-09-06")
+  // );
 
   const timetable = overview.parse({
     withSuperposedCanceledClasses: false,

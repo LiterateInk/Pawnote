@@ -32,6 +32,9 @@ export const authenticatePronoteCredentials = async (pronoteStringURL: string, o
     cookies: pronoteCookies
   });
 
+  // We add the version to the session (was an empty [])
+  session.instance.version = loginInformations.donnees.General.versionPN.split(".").map(Number);
+
   const { data: loginIdentifier } = await callApiLoginIdentify(fetcher, {
     cookies: pronoteCookies,
     username: options.username,
@@ -146,6 +149,9 @@ export const authenticateToken = async (pronoteStringURL: string, options: Authe
     pronoteURL: pronoteURL.href,
     cookies: pronoteCookies
   });
+
+  // We add the version to the session (was an empty [])
+  session.instance.version = loginInformations.donnees.General.versionPN.split(".").map(Number);
 
   const { data: loginIdentifier } = await callApiLoginIdentify(fetcher, {
     cookies: pronoteCookies,
@@ -264,6 +270,9 @@ export const authenticatePronoteQRCode = async (options: AuthenticateQRCodeOptio
     pronoteURL: pronoteURL.href,
     cookies: pronoteCookies
   });
+
+  // We add the version to the session (was an empty [])
+  session.instance.version = loginInformations.donnees.General.versionPN.split(".").map(Number);
 
   const { data: loginIdentifier } = await callApiLoginIdentify(fetcher, {
     cookies: pronoteCookies,

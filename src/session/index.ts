@@ -8,9 +8,9 @@ import pako from "pako";
 import { PronoteApiAccountId } from "~/constants/accounts";
 import aes from "~/utils/aes";
 
-export enum SessionInstanceVersion {
-  BEFORE_V2023 = "BEFORE_V2023",
-  V2023 = "V2023"
+export enum SessionEncryptionRSAMethod {
+  FROM_SESSION_DATA = "FROM_SESSION_DATA",
+  CONSTANTS = "CONSTANTS"
 }
 
 export interface SessionInstance {
@@ -28,7 +28,7 @@ export interface SessionInstance {
   demo: boolean
 
   order: number
-  version: SessionInstanceVersion
+  version: number[]
 }
 
 export interface SessionEncryption {
@@ -38,6 +38,7 @@ export interface SessionEncryption {
   }
 
   rsa: {
+    method: SessionEncryptionRSAMethod
     modulus: string,
     exponent: string
   }
@@ -66,12 +67,12 @@ export class Session {
       aes_iv = forge.random.getBytesSync(16);
     }
 
-    // Fallback to the latest version.
-    let version: SessionInstanceVersion = SessionInstanceVersion.V2023;
+    // Fallback to the latest version method.
+    let methodRSA: SessionEncryptionRSAMethod = SessionEncryptionRSAMethod.CONSTANTS;
 
-    // Before the v2023 update, we would have those two parameters for RSA.
+    // Before the 2023 update, we would have those two parameters for RSA.
     if (typeof session_data.ER === "string" && typeof session_data.MR === "string") {
-      version = SessionInstanceVersion.BEFORE_V2023;
+      methodRSA = SessionEncryptionRSAMethod.FROM_SESSION_DATA;
     }
 
     return new Session({
@@ -88,7 +89,8 @@ export class Session {
       demo: session_data.d ?? false,
 
       order: 0,
-      version
+      // Empty since will be filled once the first request is done.
+      version: []
     }, {
       aes: {
         iv: aes_iv,
@@ -96,6 +98,7 @@ export class Session {
       },
 
       rsa: {
+        method: methodRSA,
         exponent: session_data.ER ?? RSA_EXPONENT_1024,
         modulus: session_data.MR ?? RSA_MODULO_1024
       }

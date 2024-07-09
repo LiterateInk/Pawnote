@@ -295,7 +295,7 @@ export interface PronoteApiUserData {
 
       listeOnglets: Array<{
         G: number
-        Onglet: Array<{
+        Onglet?: Array<{
           G: number
         }>
       }>

@@ -18,8 +18,8 @@ export interface ApiInstance {
   }
 
   output: {
-    version: number;
-    schoolName: string;
+    version: number[]
+    schoolName: string
 
     accounts: Array<{
       name: string

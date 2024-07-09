@@ -42,7 +42,7 @@ export const callApiInstance = makeApiHandler<ApiInstance>(async (fetcher, input
   return {
     accounts,
     pronoteRootURL: pronoteURL,
-    version: data.version[0],
+    version: data.version,
     schoolName: data.nomEtab,
     entURL: data.CAS.actif ? data.CAS.casURL : undefined,
     entToken: data.CAS.actif ? data.CAS.jetonCAS : undefined

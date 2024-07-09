@@ -2,19 +2,19 @@ import { ApiUserData } from "~/api";
 import { PronoteApiOnglets } from "~/constants/onglets";
 
 export class Onglets {
-  public grades: boolean
-  public resources: boolean
-  public homework: boolean
-  public timetable: boolean
-  public evaluations: boolean
-  public account: boolean
-  public presence: boolean
-  public news: boolean
-  public attendance: boolean
-  public discussions: boolean
-  public gradesreport: boolean
+  public readonly grades: boolean
+  public readonly resources: boolean
+  public readonly homework: boolean
+  public readonly timetable: boolean
+  public readonly evaluations: boolean
+  public readonly account: boolean
+  public readonly presence: boolean
+  public readonly news: boolean
+  public readonly attendance: boolean
+  public readonly discussions: boolean
+  public readonly gradesreport: boolean
 
-  public ongletsVisibles: number[];
+  public readonly ongletsVisibles: number[];
   private rawData: ApiUserData["output"]["data"]["donnees"]["listeOnglets"]
   constructor(
     data: ApiUserData["output"]["data"]["donnees"]

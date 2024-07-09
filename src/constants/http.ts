@@ -1,4 +1,3 @@
-// TODO: should use in PronoteValue type
 export enum PronoteApiHTTPType {
   Categorie = 0,
   Cardinal = 1,

@@ -4,7 +4,7 @@ import { makeApiHandler } from "~/utils/api";
 import { PRONOTE_ACCOUNT_TYPES } from "~/constants/accounts";
 import { downloadPronotePage } from "~/pronote/page";
 import { extractPronoteSessionFromHTML } from "~/pronote/session";
-import { Session, SessionInstanceVersion } from "~/session";
+import { Session, SessionEncryptionRSAMethod } from "~/session";
 import { cleanPronoteUrl } from "~/pronote/url";
 import { PronoteApiFunctions } from "~/constants/functions";
 import { createPronoteAPICall } from "~/pronote/requestAPI";
@@ -39,15 +39,13 @@ export const callApiLoginInformations = makeApiHandler<ApiLoginInformations>(asy
   // Create "Uuid" property for the request.
   let rsa_uuid: string;
 
-  switch (session.instance.version) {
-    case SessionInstanceVersion.BEFORE_V2023:
+  switch (session.encryption.rsa.method) {
+    case SessionEncryptionRSAMethod.FROM_SESSION_DATA:
       rsa_uuid = forge.util.encode64(rsa_key.encrypt(aes_iv));
       break;
-
-    case SessionInstanceVersion.V2023: {
+    case SessionEncryptionRSAMethod.CONSTANTS:
       rsa_uuid = forge.util.encode64(session.instance.http ? rsa_key.encrypt(aes_iv) : aes_iv, 64);
       break;
-    }
   }
 
   const cookies = input.cookies ?? [];

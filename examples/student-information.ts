@@ -23,6 +23,9 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
   if (pronote.studentProfilePictureURL) {
     console.log("-> Profile Picture URL:", pronote.studentProfilePictureURL);
   }
+  if (information.iCalToken) {
+    console.log("-> Timetable .ics URL:", pronote.getTimetableICalURL(information.iCalToken));
+  }
 
   console.log("-> INE:", information.INE);
 })();

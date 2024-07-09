@@ -1,35 +1,47 @@
 import type { PronoteApiUserPersonalInformation } from "~/api/user/personalInformation/types";
+import type { Session } from "~/session";
 
 export class StudentPersonalInformation {
-  public address: string[];
+  public readonly address: string[];
 
-  public postalCode: string;
-  public province: string;
-  public country: string;
-  public city: string;
+  public readonly postalCode: string;
+  public readonly province: string;
+  public readonly country: string;
+  public readonly city: string;
 
-  public email: string;
-  /** In the format: +[country-code][phone-number]` */
-  public phone: string;
+  public readonly email: string;
+  /** @format `+[country-code][phone-number]` */
+  public readonly phone: string;
 
-  public INE: string;
+  public readonly INE: string;
 
-  constructor (personalInformation: PronoteApiUserPersonalInformation["response"]["donnees"]["Informations"]) {
+  /**
+   * Only available on instances with version 2024.1.3 or higher.
+   *
+   * iCal feature also requires to be enabled on the instance.
+   */
+  public readonly iCalToken?: string;
+
+  constructor (session: Session, { Informations, iCal }: PronoteApiUserPersonalInformation["response"]["donnees"]) {
     this.address = [
-      personalInformation.adresse1,
-      personalInformation.adresse2,
-      personalInformation.adresse3,
-      personalInformation.adresse4
+      Informations.adresse1,
+      Informations.adresse2,
+      Informations.adresse3,
+      Informations.adresse4
     ];
 
-    this.postalCode = personalInformation.codePostal;
-    this.province = personalInformation.province;
-    this.country = personalInformation.pays;
-    this.city = personalInformation.ville;
+    this.postalCode = Informations.codePostal;
+    this.province = Informations.province;
+    this.country = Informations.pays;
+    this.city = Informations.ville;
 
-    this.email = personalInformation.eMail;
-    this.phone = `+${personalInformation.indicatifTel}${personalInformation.telephonePortable}`;
+    this.email = Informations.eMail;
+    this.phone = `+${Informations.indicatifTel}${Informations.telephonePortable}`;
 
-    this.INE = personalInformation.numeroINE;
+    this.INE = Informations.numeroINE;
+
+    if (session.instance.version[0] >= 2024) {
+      this.iCalToken = iCal?.liste.V[0]?.paramICal;
+    }
   }
 }

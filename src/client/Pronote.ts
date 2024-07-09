@@ -461,9 +461,14 @@ export default class Pronote {
         userID: this.user.ressource.N
       });
 
-      this.personalInformationCache = new StudentPersonalInformation(data.Informations);
+      this.personalInformationCache = new StudentPersonalInformation(this.session, data);
       return this.personalInformationCache;
     });
+  }
+
+  public getTimetableICalURL (iCalToken: string, fileName = "timetable"): string {
+    const version = this.session.instance.version.join(".");
+    return `${this.pronoteRootURL}/ical/${fileName}.ics?icalsecurise=${iCalToken}&version=${version}&param=266f3d32`;
   }
 
   private presenceRequestsInterval?: ReturnType<typeof setInterval>;

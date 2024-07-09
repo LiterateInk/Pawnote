@@ -10,7 +10,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, TimetableActivity,
     deviceUUID: "my-device-uuid"
   });
 
-  const timetable = await pronote.getTimetableOverview(new Date("2024-04-15"));
+  const timetable = await pronote.getTimetableOverviewForInterval(new Date("2024-04-15"));
   const classes = timetable.parse({
     withSuperposedCanceledClasses: false,
     withCanceledClasses: true,

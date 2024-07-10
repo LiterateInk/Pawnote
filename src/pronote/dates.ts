@@ -15,6 +15,7 @@ export const translateToPronoteWeekNumber = (dateToTranslate: Date, startDay: Da
 const SHORT_DATE_RE = /^\d{2}\/\d{2}\/\d{4}$/;
 const LONG_DATE_LONG_HOURS_RE = /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/;
 const LONG_DATE_SHORT_HOURS_RE = /^\d{2}\/\d{2}\/\d{2} \d{2}h\d{2}$/;
+const YEAR_FIRST_TWO_CHARS = new Date().getFullYear().toString().slice(0, 2);
 
 /**
  * Convert a date from Pronote API to a JS `Date`.
@@ -40,8 +41,7 @@ export const readPronoteApiDate = (formatted: string): Date => {
     const [day, month, year] = date.split("/").map(Number);
     const [hours, minutes] = time.split("h").map(Number);
 
-    // NOTE: Fix this when we're 2100, just saying.
-    const output = new Date(parseInt(`20${year}`), month - 1, day);
+    const output = new Date(parseInt(`${YEAR_FIRST_TWO_CHARS}${year}`), month - 1, day);
     output.setHours(hours, minutes);
     return output;
   }

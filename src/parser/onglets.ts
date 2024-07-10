@@ -2,35 +2,37 @@ import { ApiUserData } from "~/api";
 import { PronoteApiOnglets } from "~/constants/onglets";
 
 export class Onglets {
-  public readonly grades: boolean
-  public readonly resources: boolean
-  public readonly homework: boolean
-  public readonly timetable: boolean
-  public readonly evaluations: boolean
-  public readonly account: boolean
-  public readonly presence: boolean
-  public readonly news: boolean
-  public readonly attendance: boolean
-  public readonly discussions: boolean
-  public readonly gradesreport: boolean
+  public readonly grades: boolean;
+  public readonly resources: boolean;
+  public readonly homework: boolean;
+  public readonly timetable: boolean;
+  public readonly evaluations: boolean;
+  public readonly account: boolean;
+  public readonly presence: boolean;
+  public readonly news: boolean;
+  public readonly attendance: boolean;
+  public readonly discussions: boolean;
+  public readonly gradesreport: boolean;
 
   public readonly ongletsVisibles: number[];
-  private rawData: ApiUserData["output"]["data"]["donnees"]["listeOnglets"]
+  private rawData: ApiUserData["output"]["data"]["donnees"]["listeOnglets"];
   constructor(
     data: ApiUserData["output"]["data"]["donnees"]
   ) {
     this.rawData = data.listeOnglets;
     function explore(data: Array<OngletType>, deep: number) {
-      let list: number[] = []
+      let list: number[] = [];
       function traverse(obj: OngletType) {
-        if ('G' in obj) {
+        if ("G" in obj) {
           list.push(obj.G);
         }
         if (obj.Onglet) {
-          obj.Onglet.forEach(child => traverse(child))
+          obj.Onglet.forEach((child) => traverse(child));
         }
       }
-      data.forEach(item => { traverse(item) })
+      data.forEach((item) => {
+        traverse(item);
+      });
       return list;
     }
     this.ongletsVisibles = explore(this.rawData, 0);
@@ -56,4 +58,4 @@ export class Onglets {
 type OngletType = {
   G: number,
   Onglet?: OngletType[]
-}
+};

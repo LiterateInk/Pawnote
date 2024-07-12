@@ -107,15 +107,14 @@ export class TimetableOverview {
   }
 
   #getSuperimposedClassesIndexes(
-    classes: TimetableClass[],
+    classItem: TimetableClass,
     classIndex: number,
     busyPositions: number[]
   ) {
-    const classFromIndex = classes[classIndex];
     const classesSuperimposed = [classIndex];
 
-    const startBlockPosition = classFromIndex.blockPosition;
-    const endBlockPosition = this.#getClassEndBlockPosition(classFromIndex);
+    const startBlockPosition = classItem.blockPosition;
+    const endBlockPosition = this.#getClassEndBlockPosition(classItem);
 
     for (let currentBlockPosition = startBlockPosition; currentBlockPosition <= endBlockPosition; currentBlockPosition++) {
       const busyClassIndex = busyPositions[currentBlockPosition];
@@ -132,10 +131,14 @@ export class TimetableOverview {
   }
 
   #makeSuperimposedCanceledClassesInvisible (classes: TimetableClassWithVisible[]): boolean {
-    const busyPositions: number[] = [];
+    /** key = week number, value */
+    const busyPositionsPerWeek: Record<number, number[]> = {};
 
     for (let classIndex = 0; classIndex < classes.length; classIndex++) {
       const currentClass = classes[classIndex];
+
+      if (!(currentClass.weekNumber in busyPositionsPerWeek)) busyPositionsPerWeek[currentClass.weekNumber] = [];
+      const busyPositions = busyPositionsPerWeek[currentClass.weekNumber];
 
       const startBlockPosition = currentClass.blockPosition;
       const endBlockPosition = this.#getClassEndBlockPosition(currentClass);
@@ -147,7 +150,7 @@ export class TimetableOverview {
           }
           else {
             const superimposedClassesIndexes = this.#getSuperimposedClassesIndexes(
-              classes,
+              currentClass,
               classIndex,
               busyPositions
             );

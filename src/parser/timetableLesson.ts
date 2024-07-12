@@ -3,7 +3,7 @@ import Pronote from "~/client/Pronote";
 
 import type { StudentLessonResource } from "./lessonResource";
 
-import { translatePositionToTime, readPronoteApiDate } from "~/pronote/dates";
+import { translatePositionToTime, readPronoteApiDate, translateToPronoteWeekNumber } from "~/pronote/dates";
 import { PronoteApiResourceType } from "~/constants/resources";
 import { StudentSubject } from "~/parser/subject";
 import { PronoteApiLessonStatusType } from "~/constants/lessonCategory";
@@ -48,12 +48,18 @@ abstract class TimetableItem {
     return this.#notes;
   }
 
+  readonly #weekNumber: number;
+  public get weekNumber (): number {
+    return this.#weekNumber;
+  }
+
   protected constructor (client: Pronote, item: TTimetableItem) {
     this.#item = item;
     this.#id = this.#item.N;
     this.#startDate = readPronoteApiDate(this.#item.DateDuCours.V);
     this.#blockLength = this.#item.duree;
     this.#blockPosition = this.#item.place;
+    this.#weekNumber = translateToPronoteWeekNumber(this.#startDate, client.firstMonday);
 
     if ("CouleurFond" in this.#item && typeof this.#item.CouleurFond === "string") {
       this.#backgroundColor = this.#item.CouleurFond;

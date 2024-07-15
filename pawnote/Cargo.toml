@@ -1,0 +1,11 @@
+[package]
+name = "pawnote"
+version = "0.0.0"
+authors = ["Mikkel ALMONTE--RINGAUD <mikkel@milescode.dev>"]
+description = "TODO"
+documentation = "https://docs.literate.ink/pawnote"
+edition = "2018"
+repository = "https://github.com/LiterateInk/Pawnote"
+rust-version = "1.31"
+
+[dependencies]

@@ -8,7 +8,7 @@ async fn main() {
     "username".to_string(),
     "password".to_string(),
     "device_uuid".to_string(),
-    utilities::reqwest_fetcher
+    pawnote::utilities::reqwest_fetcher
   ).await;
 
   match response {

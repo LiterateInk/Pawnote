@@ -1,8 +1,8 @@
 [package]
 name = "authenticate"
 version = "0.0.0"
-edition = "2018"
+edition = "2021"
 
 [dependencies]
-pawnote = { version = "0.0.0", path = "../../pawnote" }
+pawnote = { path = "../../../pawnote" }
 tokio = { version = "1", features = ["full"] }

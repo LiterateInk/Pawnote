@@ -1,4 +1,6 @@
 use url::Url;
+use utilities::Request;
+use std::future::Future;
 
 pub fn retrieve_pronote_root_url (pronote_url: String) -> String {
   let url = Url::parse(&pronote_url).unwrap();
@@ -71,4 +73,32 @@ impl WebSpace {
       WebSpace::Management => "mobile.direction.html".into(),
     }
   }
+}
+
+pub async fn authenticate_with_credentials<F, Fut>(
+  pronote_url: String, 
+  web_space: WebSpace,
+  username: String, 
+  password: String, 
+  device_uuid: String, 
+  fetcher: F
+) -> Result<utilities::Response, String>
+where
+  F: Fn(utilities::Request) -> Fut,
+  Fut: Future<Output = Result<utilities::Response, String>>,
+{
+  let root_url = retrieve_pronote_root_url(pronote_url);
+  let response = fetcher(Request {
+    url: root_url,
+    method: "GET".into(),
+    content: None,
+    headers: vec![]
+  }).await?;
+
+  _ = web_space;
+  _ = username;
+  _ = password;
+  _ = device_uuid;
+  
+  Ok(response)
 }

@@ -24,7 +24,7 @@ pub async fn authenticate_with_credentials(
   device_uuid: String, 
   fetcher: &js_sys::Function
 ) -> Result<JsValue, String> {
-  let fetcher = utilities::wasm_wrap_fetcher(fetcher);
+  let fetcher = pawnote::utilities::wasm_wrap_fetcher(fetcher);
 
   // Call the pawnote authenticate function and handle the result
   let result = pawnote::authenticate_with_credentials(

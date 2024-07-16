@@ -1,6 +1,8 @@
 use url::Url;
-use utilities::Request;
 use std::future::Future;
+
+/// Quick access to `LiterateInk/Utilities` crate.
+pub use utilities;
 
 pub fn retrieve_pronote_root_url (pronote_url: String) -> String {
   let url = Url::parse(&pronote_url).unwrap();
@@ -88,7 +90,7 @@ where
   Fut: Future<Output = Result<utilities::Response, String>>,
 {
   let root_url = retrieve_pronote_root_url(pronote_url);
-  let response = fetcher(Request {
+  let response = fetcher(utilities::Request {
     url: root_url,
     method: "GET".into(),
     content: None,

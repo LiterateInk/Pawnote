@@ -1,12 +1,12 @@
 [package]
 name = "pawnote"
 version = "0.0.0"
-authors = ["Mikkel ALMONTE--RINGAUD <mikkel@milescode.dev>"]
-description = "TODO"
+authors = ["Mikkel ALMONTE--RINGAUD <mikkel@milescode.dev> (https://github.com/Vexcited)"]
+description = "A wrapper around Index-Education's PRONOTE internal API."
 documentation = "https://docs.literate.ink/pawnote"
-edition = "2021"
 repository = "https://github.com/LiterateInk/Pawnote"
-rust-version = "1.56"
+license = "GPL-3.0"
+edition = "2021"
 
 [lib]
 crate-type = ["lib"]

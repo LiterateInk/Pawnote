@@ -1,6 +1,8 @@
 {
   "name": "pawnote",
   "version": "1.0.0",
+  "description": "A wrapper around Index-Education's PRONOTE internal API.",
+  "repository": "github:LiterateInk/Pawnote",
   "scripts": {
     "build": "node ./scripts/build.mjs"
   },
@@ -14,6 +16,22 @@
     "index.d.ts",
     "dist"
   ],
+  "keywords": [
+    "pronote",
+    "api",
+    "wrapper",
+    "student",
+    "France"
+  ],
+  "author": "Mikkel RINGAUD <mikkel@milescode.dev> (https://github.com/Vexcited)",
+  "homepage": "https://literate.ink/pawnote",
+  "bugs": {
+    "url": "https://github.com/LiterateInk/Pawnote/issues"
+  },
+  "license": "GPL-3.0",
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
     "@types/node": "^20.14.11",
     "terser": "^5.31.3",

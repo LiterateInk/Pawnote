@@ -4,14 +4,22 @@
 
 ## Usage
 
-### Browser
+### Node.js, Bun, (Deno ?)
+
+Works out of the box.
+
+### Browser, Tauri, Capacitor
+
+> NOT SUPPORTED
 
 If for some reason you want to run this library in a browser, you won't be able to do this for now.
 We only supports Node.js targets, but in the future it might be possible.
 
 ### React Native
 
-You might need to install [`react-native-webassembly`](https://github.com/cawfree/react-native-webassembly) to use this package. The library wasn't tested in such environment though so some adjustments might be needed.
+> NOT SUPPORTED
+
+You might need to install [`react-native-webassembly`](https://github.com/cawfree/react-native-webassembly) to use this package when it'll support React Native.
 
 ## Development
 

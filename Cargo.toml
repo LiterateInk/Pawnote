@@ -1,5 +1,7 @@
 [workspace]
 members = [
   "pawnote",
+  "examples/*",
+
   "pawnote_js"
 ]

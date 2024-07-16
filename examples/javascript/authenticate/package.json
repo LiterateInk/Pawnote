@@ -1,0 +1,15 @@
+{
+  "name": "authenticate",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "tsx index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.11",
+    "tsx": "^4.16.2"
+  },
+  "dependencies": {
+    "pawnote": "link:..\\..\\..\\pawnote_js"
+  }
+}

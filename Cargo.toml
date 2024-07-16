@@ -1,7 +1,7 @@
 [workspace]
 members = [
   "pawnote",
-  "examples/*",
-
-  "pawnote_js"
+  "examples/rust/*",
+  "pawnote_wasm",
+  "pawnote_ffi"
 ]

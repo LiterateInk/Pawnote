@@ -1,11 +1,11 @@
 # Pawnote - Examples in JavaScript
 
-We use [Bun](https://bun.sh/) here to run the examples but you can use [Node.js](https://nodejs.org/) with [`tsx`](https://www.npmjs.com/package/tsx) (`npm install --global tsx`).
+> Note these examples are in ESM.
+> If you want to use CommonJS (CJS), you can use `require` instead of `import`.
 
 ```bash
-pnpm start # to run with Node.js + tsx
-# or
-bun run . # to run with Bun
-```
+pnpm run authenticate # to run "./authenticate.ts" with tsx
 
-Each sub-directory is a specific example that you can run.
+# Or you can use whatever executes TypeScript directly.
+bun run ./authenticate.ts
+```

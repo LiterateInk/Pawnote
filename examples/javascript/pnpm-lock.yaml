@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       pawnote:
-        specifier: link:..\..\..\pawnote_js
-        version: link:../../../pawnote_js
+        specifier: link:../../pawnote_js
+        version: link:../../pawnote_js
     devDependencies:
       '@types/node':
         specifier: ^20.14.11

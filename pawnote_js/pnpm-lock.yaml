@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@literate.ink/utilities':
-        specifier: github:LiterateInk/Utilities#path:npm
-        version: https://codeload.github.com/LiterateInk/Utilities/tar.gz/1efcb3e7094d33b41b7980a03a664da802250ae9#path:npm
+        specifier: 1.0.0-9978039069.1
+        version: 1.0.0-9978039069.1
     devDependencies:
       '@types/node':
         specifier: ^20.14.11
@@ -186,10 +186,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@literate.ink/utilities@https://codeload.github.com/LiterateInk/Utilities/tar.gz/1efcb3e7094d33b41b7980a03a664da802250ae9#path:npm':
-    resolution: {path: npm, tarball: https://codeload.github.com/LiterateInk/Utilities/tar.gz/1efcb3e7094d33b41b7980a03a664da802250ae9}
-    version: 1.1.0
-    engines: {node: '>=18'}
+  '@literate.ink/utilities@1.0.0-9978039069.1':
+    resolution: {integrity: sha512-0dU2mqADWJu0yaCzRo1AFfCqwM6fMl9vNYrBR9+nAeK0c2xYHksk4tw3VoMtIvjN5SrZ9r0ptYkfuHrJbdlKYw==}
 
   '@types/node@20.14.11':
     resolution: {integrity: sha512-kprQpL8MMeszbz6ojB5/tU8PLN4kesnN8Gjzw349rDlNgsSzg90lAVj3llK99Dh7JON+t9AuscPPFW6mPbTnSA==}
@@ -339,7 +337,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@literate.ink/utilities@https://codeload.github.com/LiterateInk/Utilities/tar.gz/1efcb3e7094d33b41b7980a03a664da802250ae9#path:npm': {}
+  '@literate.ink/utilities@1.0.0-9978039069.1': {}
 
   '@types/node@20.14.11':
     dependencies:

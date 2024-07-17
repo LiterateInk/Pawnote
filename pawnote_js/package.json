@@ -38,6 +38,6 @@
     "typescript": "^5.5.3"
   },
   "dependencies": {
-    "@literate.ink/utilities": "github:LiterateInk/Utilities#path:npm"
+    "@literate.ink/utilities": "1.0.0-9978039069.1"
   }
 }

@@ -3,18 +3,16 @@ async fn main() {
   println!("{}", pawnote::WebSpace::Students.to_path());
 
   let response = pawnote::authenticate_with_credentials(
-    "https://google.com".to_string(),
+    "https://demo.index-education.net/pronote".to_string(),
     pawnote::WebSpace::Students,
     "username".to_string(),
     "password".to_string(),
-    "device_uuid".to_string(),
-    pawnote::utilities::reqwest_fetcher
+    "device_uuid".to_string()
   ).await;
 
   match response {
     Ok(result) => {
-      let headers_string = result.headers.iter().map(|(k, v)| format!("[ \"{}\", \"{}\" ]", k, v)).collect::<Vec<String>>().join(", ");
-      println!("Async operation successful: {}", headers_string);
+      println!("Async operation successful: {}", result.content);
     },
     Err(err) => {
         eprintln!("Async operation failed: {}", err);

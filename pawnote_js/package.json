@@ -8,12 +8,11 @@
   },
   "exports": {
     ".": {
-      "types": "./index.d.ts",
-      "default": "./dist/node.js"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     }
   },
   "files": [
-    "index.d.ts",
     "dist"
   ],
   "keywords": [

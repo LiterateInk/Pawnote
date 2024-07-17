@@ -1,7 +1,11 @@
 [workspace]
+resolver = "2"
 members = [
   "pawnote",
   "examples/rust/*",
-  "pawnote_wasm",
   "pawnote_ffi"
 ]
+
+[workspace.package]
+version = "1.0.0"
+license-file = "LICENSE"

@@ -574,10 +574,14 @@ dependencies = [
 
 [[package]]
 name = "pawnote"
-version = "0.0.0"
+version = "1.0.0"
 dependencies = [
+ "js-sys",
+ "serde-wasm-bindgen",
  "url",
  "utilities",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
 ]
 
 [[package]]
@@ -585,17 +589,6 @@ name = "pawnote_ffi"
 version = "0.0.0"
 dependencies = [
  "pawnote",
-]
-
-[[package]]
-name = "pawnote_wasm"
-version = "0.0.0"
-dependencies = [
- "js-sys",
- "pawnote",
- "serde-wasm-bindgen",
- "wasm-bindgen",
- "wasm-bindgen-futures",
 ]
 
 [[package]]

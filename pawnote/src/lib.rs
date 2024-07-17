@@ -1,9 +1,11 @@
 use url::Url;
 use std::future::Future;
+use wasm_bindgen::prelude::*;
 
 /// Quick access to `LiterateInk/Utilities` crate.
 pub use utilities;
 
+#[wasm_bindgen]
 pub fn retrieve_pronote_root_url (pronote_url: String) -> String {
   let url = Url::parse(&pronote_url).unwrap();
   let origin = url.origin().ascii_serialization();
@@ -33,6 +35,7 @@ pub fn retrieve_pronote_root_url (pronote_url: String) -> String {
   }
 }
 
+#[wasm_bindgen]
 pub enum WebSpace {
   Students = 6, // = Élèves
   
@@ -77,7 +80,7 @@ impl WebSpace {
   }
 }
 
-pub async fn authenticate_with_credentials<F, Fut>(
+async fn authenticate_with_credentials_base<F, Fut>(
   pronote_url: String, 
   web_space: WebSpace,
   username: String, 
@@ -103,4 +106,50 @@ where
   _ = device_uuid;
   
   Ok(response)
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen(js_name = authenticate_with_credentials)]
+pub async fn authenticate_with_credentials_wasm(
+  pronote_url: String, 
+  web_space: WebSpace,
+  username: String, 
+  password: String, 
+  device_uuid: String, 
+  fetcher: &js_sys::Function
+) -> Result<JsValue, String> {
+  let fetcher = utilities::wasm_wrap_fetcher(fetcher);
+
+  // Call the pawnote authenticate function and handle the result
+  let result = authenticate_with_credentials_base(
+    pronote_url,
+    WebSpace::from_id(web_space as u8).unwrap(),
+    username, 
+    password, 
+    device_uuid,
+    fetcher
+  ).await;
+
+  match result {
+    Ok(response) => Ok(serde_wasm_bindgen::to_value(&response).unwrap()),
+    Err(err) => Err(err)
+  }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+pub async fn authenticate_with_credentials(
+  pronote_url: String, 
+  web_space: WebSpace,
+  username: String, 
+  password: String, 
+  device_uuid: String,
+) -> Result<utilities::Response, String> {
+  authenticate_with_credentials_base(
+    pronote_url,
+    WebSpace::from_id(web_space as u8).unwrap(),
+    username, 
+    password, 
+    device_uuid,
+    utilities::reqwest_fetcher
+  ).await
 }

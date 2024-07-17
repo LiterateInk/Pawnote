@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 pawnote = { path = "../../../pawnote" }
 tokio = { version = "1", features = ["full"] }
+serde_json = "1.0"

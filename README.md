@@ -17,8 +17,8 @@ Pawnote is a wrapper around [Index-Education's PRONOTE](https://www.index-educat
 This library is meant to be used in various languages and platforms, it's very important
 for Literate since it runs on multiple platforms with multiple languages.
 
-- [`pawnote`](/pawnote) : "core" implementation written in Rust - if you want to use this library in Rust, you should use this crate ;
-- [`pawnote_wasm`](/pawnote_wasm) : WebAssembly bindings especially meant for JavaScript (NPM package in [`pawnote_js`](/pawnote_js)) ;
+- [`pawnote`](/pawnote) : "core" implementation written in Rust ;
+- [`pawnote_js`](/pawnote_js) : NPM package made from WebAssembly bindings ;
 - [`pawnote_ffi`](/pawnote_ffi) : Foreign Function Interface bindings for C, C++, Python, etc. - currently a work in progress.
 
 ## Credits

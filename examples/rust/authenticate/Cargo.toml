@@ -7,3 +7,5 @@ edition = "2021"
 pawnote = { path = "../../../pawnote" }
 tokio = { version = "1", features = ["full"] }
 serde_json = "1.0"
+peak_alloc = "0.2.1"
+uuid = { version = "1.10.0", features = ["v4", "fast-rng", "macro-diagnostics"] }

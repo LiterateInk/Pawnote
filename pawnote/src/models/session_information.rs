@@ -4,7 +4,7 @@ use crate::constants::{WebSpace, SessionAccessType};
 
 #[derive(Serialize, Deserialize, Clone)]
 #[wasm_bindgen(getter_with_clone)]
-pub struct PronoteSession {
+pub struct SessionInformation {
   /// Session ID as a string, needs to be converted to a number
   /// for easier usage within API requests later.
   #[serde(rename(deserialize = "h"))]

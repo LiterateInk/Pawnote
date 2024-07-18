@@ -1,9 +1,9 @@
 use utilities::Response;
 use regex::Regex;
 
-use crate::models::PronoteSession;
+use crate::models::SessionInformation;
 
-pub fn parse_response (response: Response) -> PronoteSession {
+pub fn parse_response (response: Response) -> SessionInformation {
   let relaxed_data = {
     let start = "Start (";
     let start_pos = response.content.find(start).ok_or("Failed to find start marker").unwrap() + start.len();

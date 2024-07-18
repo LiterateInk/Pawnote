@@ -1,5 +1,5 @@
 mod session;
 pub use session::Session;
 
-mod pronote_session;
-pub use pronote_session::PronoteSession;
+mod session_information;
+pub use session_information::SessionInformation;

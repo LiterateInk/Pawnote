@@ -7,19 +7,15 @@ const WASM_PKG_FILE_NAME = "pawnote_bg.wasm";
 const WASM_DIST_FILE_NAME = "node.wasm";
 const UTILITIES_PACKAGE_NAME = "@literate.ink/utilities";
 
-{
-  console.info("[INFO]: Building the WASM file in 'pawnote' crate...");
-  spawnSync('wasm-pack', ["build", "--target", "nodejs", "--release"], {
-    cwd: "../pawnote",
-    stdio: "inherit"
-  });
-}
+console.info("[INFO]: Building the WASM file in 'pawnote' crate...");
+spawnSync('wasm-pack', ["build", "--target", "nodejs", "--release"], {
+  cwd: "../pawnote",
+  stdio: "inherit"
+});
 
-{
-  console.info("[INFO]: Setting up 'dist' in 'pawnote_js'...");
-  await rm("./dist", { force: true, recursive: true });
-  await mkdir("./dist");
-}
+console.info("[INFO]: Setting up 'dist' in 'pawnote_js'...");
+await rm("./dist", { force: true, recursive: true });
+await mkdir("./dist");
 
 /**
  * @param {string} from
@@ -43,10 +39,8 @@ const readFromPKG = (name) => readFile(`../pawnote/pkg/${name}`, "utf8");
  */
 const writeToDIST = (name, content) => writeFile(`./dist/${name}`, content, "utf8");
 
-{
-  await copyFromPKG(WASM_PKG_FILE_NAME, WASM_DIST_FILE_NAME);
-  console.info("[JS]: Copied WASM file.");
-}
+await copyFromPKG(WASM_PKG_FILE_NAME, WASM_DIST_FILE_NAME);
+console.info("[JS]: Copied WASM file.");
 
 { // Process the JS file.
   let content = await readFromPKG("pawnote.js");

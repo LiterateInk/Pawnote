@@ -1,6 +1,6 @@
 <p align="center">
   <picture>
-    <img alt="Pawnote Banner" src="https://github.com/LiterateInk/Pawnote/blob/d30e0dea20990a7488d4f6c961c6816dd5c89ebb/.github/assets/%5BPawnote%5D%20README.svg">
+    <img alt="Pawnote Banner" src="https://github.com/LiterateInk/Pawnote/blob/29d8377d31d75b3637c599cdf39e2f7434b0dad9/.github/assets/readme.svg">
   </picture>
 </p>
 

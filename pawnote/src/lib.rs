@@ -1,6 +1,6 @@
 use std::future::Future;
 use utilities::{Request, Response};
-use models::PronoteSession;
+use models::Session;
 
 mod api;
 
@@ -17,7 +17,7 @@ async fn authenticate_with_credentials_base<F, Fut>(
   password: String, 
   device_uuid: String, 
   fetcher: F
-) -> Result<PronoteSession, String>
+) -> Result<Session, String>
 where
   F: Fn(Request) -> Fut,
   Fut: Future<Output = Result<Response, String>>,
@@ -32,12 +32,14 @@ where
   // 2. create a PRONOTE session
   let response = fetcher(api::create_pronote_session::build_request(pronote_url)).await?;
   let pronote_session = api::create_pronote_session::parse_response(response);
+
+  let session = Session::new(pronote_root_url, pronote_session);
   
   _ = username;
   _ = password;
   _ = device_uuid;
 
-  Ok(pronote_session)
+  Ok(session)
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -52,7 +54,7 @@ pub async fn authenticate_with_credentials(
   password: String, 
   device_uuid: String, 
   fetcher: &js_sys::Function
-) -> Result<PronoteSession, String> {
+) -> Result<Session, String> {
   authenticate_with_credentials_base(
     pronote_url,
     web_space,
@@ -70,7 +72,7 @@ pub async fn authenticate_with_credentials(
   username: String, 
   password: String, 
   device_uuid: String,
-) -> Result<PronoteSession, String> {
+) -> Result<Session, String> {
   authenticate_with_credentials_base(
     pronote_url,
     web_space,

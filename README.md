@@ -1,4 +1,8 @@
-![image](https://github.com/user-attachments/assets/7b5a00ac-a180-4424-a5e9-24dd5469989b)
+<p align="center">
+  <picture>
+    <img alt="Pawnote Banner" src="https://github.com/LiterateInk/Pawnote/blob/d30e0dea20990a7488d4f6c961c6816dd5c89ebb/.github/assets/%5BPawnote%5D%20README.svg">
+  </picture>
+</p>
 
 [PRONOTE](https://www.index-education.com/fr/logiciel-gestion-vie-scolaire.php) is a school management application used by educational establishments to centralize and facilitate communication between teachers, students and parents. It lets you manage and consult timetables, grades, absences and homework, as well as communicate via messages. PRONOTE aims to improve the transparency and efficiency of day-to-day school management.
 

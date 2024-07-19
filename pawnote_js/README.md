@@ -29,17 +29,17 @@ A support for other accounts (such as parents) will be added in the future.
 
 ### Authentication
 
-- `username` and `password` (no ENT/CAS)
+- `username` and `password` (no CAS)
 - `username` and `token`
 - [QR Code](https://forum.index-education.com/upfiles/qrcode.png)
 
-#### Note about ENT/CAS native support
+#### Note about CAS (Central Authentication Service)
 
-It's **not and will never** be supported by Pawnote, for the reason that implementing each of them with every specificities requires a lot of time and effort. It's a pain to implement and track; as a matter of fact, most of the issues on [pronotepy](https://github.com/bain3/pronotepy/issues) - a similar project - are related to it. If you need to authenticate to an account protected by an ENT/CAS, you should go for the token or QR Code authentication.
+It's **not and will never** be supported by Pawnote, for the reason that implementing each of them with every specificities requires a lot of time and effort. It's a pain to implement and track; as a matter of fact, most of the issues on [pronotepy](https://github.com/bain3/pronotepy/issues) - a similar project - are related to it. If you need to authenticate to an account protected by an CAS, you should go for the token or QR Code authentication.
 
 #### Note about demonstration servers
 
-Credentials (username and password without ENT/CAS) authentication works, but **token and QR Code authentication won't work**.
+Credentials (username and password without CAS) authentication works, but **token and QR Code authentication won't work**.
 
 This is because demonstration servers doesn't save next-time tokens, even if it's able to generate them.
 

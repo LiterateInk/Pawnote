@@ -6,6 +6,7 @@ mod api;
 
 pub mod models;
 pub mod helpers;
+pub mod services;
 pub mod constants;
 
 pub use constants::WebSpace;

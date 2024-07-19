@@ -5,10 +5,8 @@
 //! set up or not. We can also grab the currently available webspaces
 //! and the instance PRONOTE version.
 
-// TODO
-// mod request;
-// TODO
-// mod response;
+mod request;
+mod response;
 
-// pub use request::build_request;
-// pub use response::parse_response;
+pub use request::build_request;
+pub use response::parse_response;

@@ -5,24 +5,24 @@ use serde::{Deserialize, Serialize};
 #[wasm_bindgen(getter_with_clone)]
 pub struct InstanceInformationWebspace {
   #[serde(rename(deserialize = "nom"))]
-  name: String,
+  pub name: String,
   #[serde(rename(deserialize = "URL"))]
-  path: String,
+  pub path: String,
   #[serde(rename(deserialize = "avecDelegation"))]
-  with_delegation: Option<bool>,
+  pub with_delegation: Option<bool>,
   #[serde(rename(deserialize = "protocole"))]
-  protocol: Option<String>
+  pub protocol: Option<String>
 }
 
 #[derive(Serialize, Deserialize, Clone)]
 #[wasm_bindgen(getter_with_clone)]
 pub struct InstanceInformationCAS {
   #[serde(rename(deserialize = "actif"))]
-  active: bool,
+  pub active: bool,
   #[serde(rename(deserialize = "casURL"))]
-  url: String,
+  pub url: String,
   #[serde(rename(deserialize = "jetonCAS"))]
-  token: Option<String>
+  pub token: Option<String>
 }
 
 #[derive(Serialize, Deserialize, Clone)]

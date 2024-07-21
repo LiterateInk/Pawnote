@@ -406,6 +406,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "instance-information"
+version = "0.0.0"
+dependencies = [
+ "pawnote",
+ "peak_alloc",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "ipnet"
 version = "2.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

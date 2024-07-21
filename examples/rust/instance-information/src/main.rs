@@ -1,10 +1,5 @@
 use peak_alloc::PeakAlloc;
-use uuid::Uuid;
-
-use pawnote::{
-  WebSpace,
-  authenticate_with_credentials
-};
+use pawnote::services::get_instance_information;
 
 #[global_allocator]
 static PEAK_ALLOC: PeakAlloc = PeakAlloc;
@@ -12,19 +7,9 @@ static PEAK_ALLOC: PeakAlloc = PeakAlloc;
 #[tokio::main]
 async fn main() {
   let pronote_url = String::from("https://demo.index-education.net/pronote");
-  let username = String::from("demonstration");
-  let password = String::from("pronotevs");
-  let device_uuid = Uuid::new_v4();
+  let instance_information = get_instance_information(pronote_url).await;
 
-  let session = authenticate_with_credentials(
-    pronote_url,
-    WebSpace::Students,
-    username,
-    password,
-    device_uuid.to_string()
-  ).await.unwrap();
-
-  println!("{}", serde_json::to_string_pretty(&session).unwrap());
+  println!("{}", serde_json::to_string_pretty(&instance_information).unwrap());
 
   // We do a lil' memory usage check at the end.
   let peak_mem = PEAK_ALLOC.peak_usage_as_kb();

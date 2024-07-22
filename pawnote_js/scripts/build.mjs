@@ -1,14 +1,13 @@
 // @ts-check
 import { spawnSync } from "node:child_process";
-import { copyFile, mkdir, readFile, writeFile, rm } from "node:fs/promises";
+import { mkdir, readFile, writeFile, rm } from "node:fs/promises";
 import { minify } from "terser";
 
 const WASM_PKG_FILE_NAME = "pawnote_bg.wasm";
-const WASM_DIST_FILE_NAME = "node.wasm";
 const UTILITIES_PACKAGE_NAME = "@literate.ink/utilities";
 
 console.info("[INFO]: Building the WASM file in 'pawnote' crate...");
-spawnSync('wasm-pack', ["build", "--target", "nodejs", "--release"], {
+spawnSync('wasm-pack', ["build", "--target", "web", "--release"], {
   cwd: "../pawnote",
   stdio: "inherit"
 });
@@ -18,18 +17,10 @@ await rm("./dist", { force: true, recursive: true });
 await mkdir("./dist");
 
 /**
- * @param {string} from
- * @param {string} to
- * @returns {Promise<void>}
+ * @param {string} name
+ * @returns {string}
  */
-const copyFromPKG = (from, to) => copyFile(`../pawnote/pkg/${from}`, `./dist/${to}`);
-
-/**
- * 
- * @param {string} name 
- * @returns {Promise<string>}
- */
-const readFromPKG = (name) => readFile(`../pawnote/pkg/${name}`, "utf8");
+const pathFromPKG = (name) => `../pawnote/pkg/${name}`;
 
 /**
  * 
@@ -39,33 +30,39 @@ const readFromPKG = (name) => readFile(`../pawnote/pkg/${name}`, "utf8");
  */
 const writeToDIST = (name, content) => writeFile(`./dist/${name}`, content, "utf8");
 
-await copyFromPKG(WASM_PKG_FILE_NAME, WASM_DIST_FILE_NAME);
-console.info("[JS]: Copied WASM file.");
+const WASM = await readFile(pathFromPKG(WASM_PKG_FILE_NAME));
 
 { // Process the JS file.
-  let content = await readFromPKG("pawnote.js");
+  let content = await readFile(pathFromPKG("pawnote.js"), "utf8");
   
   // Clean imports.
-  const USELESS_TEXT_ENCODER_IMPORTS = `const { TextEncoder, TextDecoder } = require(\`util\`);`;
-  content = content.replace(USELESS_TEXT_ENCODER_IMPORTS, "");
-  console.info("[JS]: Removed useless imports.");
+  // const USELESS_TEXT_ENCODER_IMPORTS = `const { TextEncoder, TextDecoder } = require(\`util\`);`;
+  // content = content.replace(USELESS_TEXT_ENCODER_IMPORTS, "");
+  // console.info("[JS]: Removed useless imports.");
   
   // Add an import to utilities.
-  const UTILITIES_IMPORT_NAME = "_literate_ink_utilities_";
-  content = `const ${UTILITIES_IMPORT_NAME} = require('${UTILITIES_PACKAGE_NAME}');\n` + content;
+  content = `import { defaultFetcher as utils__defaultFetcher } from '${UTILITIES_PACKAGE_NAME}';\n` + content;
   console.info("[JS]: Added utilities import.");
   
   // Replace the WASM file name.
-  content = content.replace(WASM_PKG_FILE_NAME, WASM_DIST_FILE_NAME);
-  console.info("[JS]: Rewrote WASM file name.");
+  // content = content.replace(WASM_PKG_FILE_NAME, WASM_DIST_FILE_NAME);
+  // console.info("[JS]: Rewrote WASM file name.");
 
   // Add default fetcher to the fetcher parameter (to make it optional)
   content = content.replace(
     // Since fetcher parameter is always the last, we can match it that way. 
     /, fetcher\) {/g,
-    `, fetcher = ${UTILITIES_IMPORT_NAME}.defaultFetcher) {`
+    `, fetcher = utils__defaultFetcher) {`
   );
   console.info("[JS]: Added default fetcher to 'fetcher' parameters.");
+
+  // Remove useless exports.
+  content = content.replace("export { initSync }", "");
+  content = content.replace("export default __wbg_init;", "");
+
+  // Add the WASM file to the bundle.
+  content += `await __wbg_init(${JSON.stringify("data:application/wasm;base64," + WASM.toString("base64"))})`;
+  console.info("[JS]: Copied WASM file into the file itself.");
 
   content = (await minify(content)).code || "";
   console.info("[JS]: Minified !");
@@ -75,7 +72,7 @@ console.info("[JS]: Copied WASM file.");
 }
 
 { // Process the D.TS file.
-  let content = await readFromPKG("pawnote.d.ts");
+  let content = await readFile(pathFromPKG("pawnote.d.ts"), "utf8");
 
   // Add an import to utilities.
   content = `import type { Fetcher } from '${UTILITIES_PACKAGE_NAME}';\n` + content;

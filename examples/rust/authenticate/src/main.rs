@@ -2,7 +2,7 @@ use peak_alloc::PeakAlloc;
 use uuid::Uuid;
 
 use pawnote::{
-  WebSpace,
+  Webspace,
   authenticate_with_credentials
 };
 
@@ -18,7 +18,7 @@ async fn main() {
 
   let session = authenticate_with_credentials(
     pronote_url,
-    WebSpace::Students,
+    Webspace::Students,
     username,
     password,
     device_uuid.to_string()

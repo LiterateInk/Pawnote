@@ -3,17 +3,18 @@ use utilities::{Request, Response};
 use models::Session;
 
 mod api;
+mod helpers;
+mod constants;
 
 pub mod models;
-pub mod helpers;
 pub mod services;
-pub mod constants;
 
-pub use constants::WebSpace;
+pub use helpers::pronote_url::*;
+pub use constants::*;
 
 async fn authenticate_with_credentials_base<F, Fut>(
   pronote_url: String, 
-  web_space: WebSpace,
+  webspace: Webspace,
   username: String, 
   password: String, 
   device_uuid: String, 
@@ -27,7 +28,7 @@ where
   let pronote_root_url = helpers::pronote_url::to_root(pronote_url);
   let mut pronote_url = pronote_root_url.clone();
   pronote_url.push('/');
-  pronote_url.push_str(web_space.to_path().as_str());
+  pronote_url.push_str(webspace.to_path().as_str());
   pronote_url.push_str("?fd=1&bydlg=A6ABB224-12DD-4E31-AD3E-8A39A1C2C335&login=true");
 
   // 2. create a PRONOTE session
@@ -50,7 +51,7 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 pub async fn authenticate_with_credentials(
   pronote_url: String, 
-  web_space: WebSpace,
+  webspace: Webspace,
   username: String, 
   password: String, 
   device_uuid: String, 
@@ -58,7 +59,7 @@ pub async fn authenticate_with_credentials(
 ) -> Result<Session, String> {
   authenticate_with_credentials_base(
     pronote_url,
-    web_space,
+    webspace,
     username, 
     password, 
     device_uuid,
@@ -69,14 +70,14 @@ pub async fn authenticate_with_credentials(
 #[cfg(not(target_arch = "wasm32"))]
 pub async fn authenticate_with_credentials(
   pronote_url: String, 
-  web_space: WebSpace,
+  webspace: Webspace,
   username: String, 
   password: String, 
   device_uuid: String,
 ) -> Result<Session, String> {
   authenticate_with_credentials_base(
     pronote_url,
-    web_space,
+    webspace,
     username, 
     password, 
     device_uuid,

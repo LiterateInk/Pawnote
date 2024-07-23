@@ -4,7 +4,7 @@ use serde_repr::*;
 #[derive(Serialize_repr, Deserialize_repr, PartialEq, Clone, Debug)]
 #[wasm_bindgen]
 #[repr(u8)]
-pub enum WebSpace {
+pub enum Webspace {
   Students = 6, // = Élèves
   
   /// This web space is currently not supported in Pawnote.
@@ -23,27 +23,27 @@ pub enum WebSpace {
   Assistants = 26 // = Accompagnants
 }
 
-impl WebSpace {
-  pub fn from_id (id: u8) -> Option<WebSpace> {
+impl Webspace {
+  pub fn from_id (id: u8) -> Option<Webspace> {
     match id {
-      6 => Some(WebSpace::Students),
-      7 => Some(WebSpace::Parents),
-      8 => Some(WebSpace::Teachers),
-      26 => Some(WebSpace::Assistants),
-      14 => Some(WebSpace::Administration),
-      17 => Some(WebSpace::Management),
+      6 => Some(Webspace::Students),
+      7 => Some(Webspace::Parents),
+      8 => Some(Webspace::Teachers),
+      26 => Some(Webspace::Assistants),
+      14 => Some(Webspace::Administration),
+      17 => Some(Webspace::Management),
       _ => None,
     }
   }
   
   pub fn to_path (&self) -> String {
     match self {
-      WebSpace::Students => "mobile.eleve.html".into(),
-      WebSpace::Parents => "mobile.parent.html".into(),
-      WebSpace::Teachers => "mobile.professeur.html".into(),
-      WebSpace::Assistants => "mobile.accompagnant.html".into(),
-      WebSpace::Administration => "mobile.viescolaire.html".into(),
-      WebSpace::Management => "mobile.direction.html".into(),
+      Webspace::Students => "mobile.eleve.html".into(),
+      Webspace::Parents => "mobile.parent.html".into(),
+      Webspace::Teachers => "mobile.professeur.html".into(),
+      Webspace::Assistants => "mobile.accompagnant.html".into(),
+      Webspace::Administration => "mobile.viescolaire.html".into(),
+      Webspace::Management => "mobile.direction.html".into(),
     }
   }
 }

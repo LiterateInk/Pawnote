@@ -11,3 +11,6 @@ pub use session_information::*;
 
 mod instance_information;
 pub use instance_information::*;
+
+mod instance_nearby;
+pub use instance_nearby::*;

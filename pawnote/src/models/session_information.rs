@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
-use crate::constants::{WebSpace, SessionAccessType};
+use crate::constants::{Webspace, SessionAccessType};
 
 #[derive(Serialize, Deserialize, Clone)]
 #[wasm_bindgen(getter_with_clone)]
@@ -12,7 +12,7 @@ pub struct SessionInformation {
 
   /// Web space ID as a number.
   #[serde(rename(deserialize = "a"))]
-  pub web_space: WebSpace,
+  pub web_space: Webspace,
   
   /// Whether the instance is demo or not.
   #[serde(rename(deserialize = "d"), default)]
@@ -43,7 +43,7 @@ pub struct SessionInformation {
   /// Whether we should skip encryption or not.
   #[serde(rename(deserialize = "sCrA"), default)]
   pub skip_encryption: bool,
-  
+      
   /// Whether we should skip compression or not.
   #[serde(rename(deserialize = "sCoA"), default)]
   pub skip_compression: bool,

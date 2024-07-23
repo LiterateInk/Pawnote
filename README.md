@@ -1,14 +1,9 @@
-<p align="center">
-  <picture>
-    <img alt="Pawnote Banner" src="https://github.com/LiterateInk/Pawnote/blob/29d8377d31d75b3637c599cdf39e2f7434b0dad9/.github/assets/readme.svg">
-  </picture>
-</p>
+![Pawnote Banner](.github/assets/banner.svg)
 
 [PRONOTE](https://www.index-education.com/fr/logiciel-gestion-vie-scolaire.php) is a school management application used by educational establishments to centralize and facilitate communication between teachers, students and parents. It lets you manage and consult timetables, grades, absences and homework, as well as communicate via messages. PRONOTE aims to improve the transparency and efficiency of day-to-day school management.
 
-Pawnote is a wrapper around [Index-Education's PRONOTE](https://www.index-education.com/fr/logiciel-gestion-vie-scolaire.php) internal API.
+Pawnote is a wrapper around [PRONOTE](https://www.index-education.com/fr/logiciel-gestion-vie-scolaire.php)'s internal API.
 
-> [!NOTE]
 > This project is not affiliated with [Index-Education](https://www.index-education.com/) or PRONOTE in any way.
 
 ## Implementations
@@ -19,6 +14,57 @@ for Literate since it runs on multiple platforms with multiple languages.
 - [`pawnote`](/pawnote) : "core" implementation written in Rust ;
 - [`pawnote_js`](/pawnote_js) : NPM package made from WebAssembly bindings ;
 - [`pawnote_ffi`](/pawnote_ffi) : Foreign Function Interface bindings for C, C++, Python, etc. - currently a work in progress.
+
+## Supported
+
+### Versions
+
+- 2022
+- 2023
+- 2024 (latest)
+
+> This package wasn't tested for versions before 2022, so if anything is not working, please open an issue about it and mention that it's probably a breaking change between versions.
+>
+> Also, the PRONOTE version for primary schools is not supported yet, not sure if it will be in the future.
+
+### Sessions
+
+- Encrypted
+- Compressed
+
+### Accounts
+
+- `élève` (student)
+
+A support for other accounts (such as parents) will be added in the future.
+
+### Authentication
+
+- `username` and `password` (no CAS)
+- `username` and `token`
+- [QR Code](https://forum.index-education.com/upfiles/qrcode.png)
+
+#### Note about CAS (Central Authentication Service)
+
+It's **not and will never** be supported by Pawnote, for the reason that implementing each of them with every specificities requires a lot of time and effort. It's a pain to implement and track; as a matter of fact, most of the issues on [pronotepy](https://github.com/bain3/pronotepy/issues) - a similar project - are related to it. If you need to authenticate to an account protected by an CAS, you should go for the token or QR Code authentication.
+
+#### Note about demonstration servers
+
+Credentials (username and password without CAS) authentication works, but **token and QR Code authentication won't work**.
+
+This is because demonstration servers doesn't save next-time tokens, even if it's able to generate them.
+
+You can know if a server is a demonstration or not by reading the `isDemo` property on a `Pronote` instance in Pawnote.
+
+## Documentation & Guides
+
+You can find the documentation, some guides at <https://docs.literate.ink/pawnote>.
+
+If you need examples, then you can have some in the [`/examples`](https://github.com/LiterateInk/Pawnote/tree/main/examples) directory, hoping you can find your joy in there.
+
+If none of those are helpful, you can always [open an issue](https://github.com/LiterateInk/Pawnote/issues) to ask for help.
+
+You can also join [LiterateInk's Discord server](https://literate.ink/discord) to talk about Pawnote, get help and be notified about the latest updates !
 
 ## Credits
 

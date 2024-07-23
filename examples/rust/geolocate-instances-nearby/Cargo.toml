@@ -1,0 +1,10 @@
+[package]
+name = "geolocate-instances-nearby"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+pawnote = { path = "../../../pawnote" }
+tokio = { version = "1", features = ["full"] }
+serde_json = "1.0"
+peak_alloc = "0.2.1"

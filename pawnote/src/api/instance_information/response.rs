@@ -1,4 +1,4 @@
-use utilities::Response;
+use literateink_utilities::Response;
 use crate::models::InstanceInformation;
 
 pub fn parse_response (response: Response) -> InstanceInformation {

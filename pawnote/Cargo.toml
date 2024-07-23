@@ -13,7 +13,8 @@ crate-type = ["lib", "cdylib"]
 
 [dependencies]
 url = "2"
-utilities = { git = "https://github.com/LiterateInk/Utilities" }
+literateink-utilities = { git = "https://github.com/LiterateInk/Utilities" }
+literateink-utilities-macros = { git = "https://github.com/LiterateInk/Utilities" }
 js-sys = "0.3"
 wasm-bindgen = "0.2"
 wasm-bindgen-futures = "0.4"
@@ -23,4 +24,3 @@ serde_json = "1.0"
 serde_repr = "0.1"
 regex = "1.10.5"
 tsify = "0.4"
-pawnote-macros = { path = "../macros" }

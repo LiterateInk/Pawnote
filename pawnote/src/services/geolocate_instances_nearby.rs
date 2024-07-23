@@ -1,5 +1,5 @@
 use crate::{api::geolocate_instances_nearby::{build_request, parse_response}, models::InstanceNearby};
-use utilities::{ Request, Response };
+use literateink_utilities::{ Request, Response };
 use std::future::Future;
 
 async fn geolocate_instances_nearby_base<F, Fut>(
@@ -19,7 +19,7 @@ where
 use wasm_bindgen::prelude::*; 
 
 #[cfg(target_arch = "wasm32")]
-#[derive(serde::Serialize, tsify::Tsify, pawnote_macros::TsifyAsync)]
+#[derive(serde::Serialize, tsify::Tsify, literateink_utilities_macros::TsifyAsync)]
 #[tsify(into_wasm_abi)]
 pub struct InstanceNearbyCollection(Vec<InstanceNearby>);
 
@@ -33,7 +33,7 @@ pub async fn geolocate_instances_nearby(
   InstanceNearbyCollection(geolocate_instances_nearby_base(
     latitude,
     longitude,
-    utilities::wasm_wrap_fetcher(fetcher)
+    literateink_utilities::wasm_wrap_fetcher(fetcher)
   ).await)
 }
 
@@ -45,6 +45,6 @@ pub async fn geolocate_instances_nearby(
   geolocate_instances_nearby_base(
     latitude,
     longitude,
-    utilities::reqwest_fetcher
+    literateink_utilities::reqwest_fetcher
   ).await
 }

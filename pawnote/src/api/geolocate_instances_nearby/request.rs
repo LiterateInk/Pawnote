@@ -1,4 +1,4 @@
-use utilities::Request;
+use literateink_utilities::Request;
 
 pub fn build_request (latitude: f32, longitude: f32) -> Request {
   // Build the query string, e.g.:

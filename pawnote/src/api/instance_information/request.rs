@@ -1,4 +1,4 @@
-use utilities::Request;
+use literateink_utilities::Request;
 
 const MOBILE_INFO_ENDPOINT: &str = "/infoMobileApp.json?id=0D264427-EEFC-4810-A9E9-346942A862A4";
 

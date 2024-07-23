@@ -1,4 +1,4 @@
-use utilities::Response;
+use literateink_utilities::Response;
 use crate::models::InstanceNearby;
 
 pub fn parse_response (response: Response) -> Vec<InstanceNearby> {

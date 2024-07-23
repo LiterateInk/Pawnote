@@ -1,6 +1,6 @@
 use crate::api::instance_information::{ build_request, parse_response };
 use crate::models::InstanceInformation;
-use utilities::{ Request, Response };
+use literateink_utilities::{ Request, Response };
 use std::future::Future;
 
 async fn get_instance_information_base<F, Fut>(
@@ -26,7 +26,7 @@ pub async fn get_instance_information(
 ) -> InstanceInformation {
   get_instance_information_base(
     pronote_root_url,
-    utilities::wasm_wrap_fetcher(fetcher)
+    literateink_utilities::wasm_wrap_fetcher(fetcher)
   ).await
 }
 
@@ -36,6 +36,6 @@ pub async fn get_instance_information(
 ) -> InstanceInformation {
   get_instance_information_base(
     pronote_root_url,
-    utilities::reqwest_fetcher
+    literateink_utilities::reqwest_fetcher
   ).await
 }

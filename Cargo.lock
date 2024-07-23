@@ -472,6 +472,29 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "78b3ae25bc7c8c38cec158d1f2757ee79e9b3740fbc7ccf0e59e4b08d793fa89"
 
 [[package]]
+name = "literateink-utilities"
+version = "1.1.0"
+source = "git+https://github.com/LiterateInk/Utilities#633a8e465ef14bb746b4b64ae8af2de7a244fd5e"
+dependencies = [
+ "futures",
+ "js-sys",
+ "reqwest",
+ "serde",
+ "serde-wasm-bindgen",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+]
+
+[[package]]
+name = "literateink-utilities-macros"
+version = "1.1.0"
+source = "git+https://github.com/LiterateInk/Utilities#633a8e465ef14bb746b4b64ae8af2de7a244fd5e"
+dependencies = [
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "lock_api"
 version = "0.4.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -633,7 +656,8 @@ name = "pawnote"
 version = "1.0.0"
 dependencies = [
  "js-sys",
- "pawnote-macros",
+ "literateink-utilities",
+ "literateink-utilities-macros",
  "regex",
  "serde",
  "serde-wasm-bindgen",
@@ -641,17 +665,8 @@ dependencies = [
  "serde_repr",
  "tsify",
  "url",
- "utilities",
  "wasm-bindgen",
  "wasm-bindgen-futures",
-]
-
-[[package]]
-name = "pawnote-macros"
-version = "1.0.0"
-dependencies = [
- "quote",
- "syn",
 ]
 
 [[package]]
@@ -1209,20 +1224,6 @@ dependencies = [
  "form_urlencoded",
  "idna",
  "percent-encoding",
-]
-
-[[package]]
-name = "utilities"
-version = "1.0.0"
-source = "git+https://github.com/LiterateInk/Utilities#5bce84ace557db4237c4caf33537ee2fdcfcb9da"
-dependencies = [
- "futures",
- "js-sys",
- "reqwest",
- "serde",
- "serde-wasm-bindgen",
- "wasm-bindgen",
- "wasm-bindgen-futures",
 ]
 
 [[package]]

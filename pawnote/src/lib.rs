@@ -1,5 +1,5 @@
 use std::future::Future;
-use utilities::{Request, Response};
+use literateink_utilities::{Request, Response};
 use models::Session;
 
 mod api;
@@ -63,7 +63,7 @@ pub async fn authenticate_with_credentials(
     username, 
     password, 
     device_uuid,
-    utilities::wasm_wrap_fetcher(fetcher)
+    literateink_utilities::wasm_wrap_fetcher(fetcher)
   ).await
 }
 
@@ -81,6 +81,6 @@ pub async fn authenticate_with_credentials(
     username, 
     password, 
     device_uuid,
-    utilities::reqwest_fetcher
+    literateink_utilities::reqwest_fetcher
   ).await
 }

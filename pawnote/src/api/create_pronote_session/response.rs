@@ -1,4 +1,4 @@
-use utilities::Response;
+use literateink_utilities::Response;
 use regex::Regex;
 
 use crate::models::SessionInformation;

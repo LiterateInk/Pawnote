@@ -6,6 +6,9 @@
   "scripts": {
     "build": "node ./scripts/build.mjs"
   },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     "types": "./dist/index.d.ts",
     "default": "./dist/index.js"
@@ -21,7 +24,7 @@
     "France"
   ],
   "author": "Mikkel RINGAUD <mikkel@milescode.dev> (https://github.com/Vexcited)",
-  "homepage": "https://literate.ink/pawnote",
+  "homepage": "https://docs.literate.ink/pawnote",
   "bugs": {
     "url": "https://github.com/LiterateInk/Pawnote/issues"
   },

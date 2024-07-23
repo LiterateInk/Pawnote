@@ -1,8 +1,9 @@
-import { WebSpace, authenticate_with_credentials } from "pawnote";
+import { load_async, Webspace, authenticate_with_credentials } from "pawnote";
+await load_async();
 
 const session = await authenticate_with_credentials(
   "https://demo.index-education.net/pronote",
-  WebSpace.Students,
+  Webspace.Students,
   "demonstration",
   "pronotevs",
   "device-uuid",

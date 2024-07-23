@@ -1,4 +1,5 @@
-import { pronote_url_to_root, get_instance_information } from "pawnote";
+import { load_async, pronote_url_to_root, get_instance_information } from "pawnote";
+await load_async();
 
 const pronote_url_root = pronote_url_to_root("https://demo.index-education.net/pronote//");
 const instance_information = await get_instance_information(pronote_url_root);

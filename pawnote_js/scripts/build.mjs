@@ -30,23 +30,26 @@ const pathFromPKG = (name) => `../pawnote/pkg/${name}`;
  */
 const writeToDIST = (name, content) => writeFile(`./dist/${name}`, content, "utf8");
 
+/**
+ * @param {string} content 
+ * @param {string} startsWith 
+ * @param {string} endsWith 
+ * @returns {string}
+ */
+const removeFromUntil = (content, startsWith, endsWith) => {
+  const start = content.indexOf(startsWith);
+  const end = content.indexOf(endsWith, start) + endsWith.length;
+  return content.slice(0, start) + content.slice(end);
+}
+
 const WASM = await readFile(pathFromPKG(WASM_PKG_FILE_NAME));
 
 { // Process the JS file.
   let content = await readFile(pathFromPKG("pawnote.js"), "utf8");
   
-  // Clean imports.
-  // const USELESS_TEXT_ENCODER_IMPORTS = `const { TextEncoder, TextDecoder } = require(\`util\`);`;
-  // content = content.replace(USELESS_TEXT_ENCODER_IMPORTS, "");
-  // console.info("[JS]: Removed useless imports.");
-  
   // Add an import to utilities.
-  content = `import { defaultFetcher as utils__defaultFetcher } from '${UTILITIES_PACKAGE_NAME}';\n` + content;
-  console.info("[JS]: Added utilities import.");
-  
-  // Replace the WASM file name.
-  // content = content.replace(WASM_PKG_FILE_NAME, WASM_DIST_FILE_NAME);
-  // console.info("[JS]: Rewrote WASM file name.");
+  content = `const { defaultFetcher: utils__defaultFetcher } = require(${JSON.stringify(UTILITIES_PACKAGE_NAME)});\n` + content;
+  console.info("[JS]: Added utilities import (using require)");
 
   // Add default fetcher to the fetcher parameter (to make it optional)
   content = content.replace(
@@ -56,13 +59,105 @@ const WASM = await readFile(pathFromPKG(WASM_PKG_FILE_NAME));
   );
   console.info("[JS]: Added default fetcher to 'fetcher' parameters.");
 
-  // Remove useless exports.
   content = content.replace("export { initSync }", "");
   content = content.replace("export default __wbg_init;", "");
+  console.info("[JS]: Removed old exports.");
 
-  // Add the WASM file to the bundle.
-  content += `await __wbg_init(${JSON.stringify("data:application/wasm;base64," + WASM.toString("base64"))})`;
-  console.info("[JS]: Copied WASM file into the file itself.");
+  content = removeFromUntil(content, "async function __wbg_init", "return __wbg_finalize_init(instance, module);\n}");
+  content = content.replace("__wbg_init.__wbindgen_wasm_module = module;", "");
+  console.info("[JS]: Removed '__wbg_init' function.");
+
+  const exports = [];
+
+  content = content.replace(/export class (\w+)/g, (_, match) => {
+    console.log("[JS]: Found class:", match);
+
+    exports.push(match);
+    return `class ${match}`;  
+  });
+
+  content = content.replace(/export function (\w+)/g, (_, match) => {
+    console.log("[JS]: Found function:", match);
+
+    exports.push(match);
+    return `function ${match}`;
+  });
+
+  content = content.replace(/export const (\w+)/g, (_, match) => {
+    console.log("[JS]: Found constant:", match);
+
+    exports.push(match);
+    return `const ${match}`;
+  });
+
+  content += exports.map((name) => `exports.${name} = ${name};`).join("\n");
+  console.info("[JS]: Rewrote exports.");
+
+  content += `
+const __code = ${JSON.stringify("data:application/wasm;base64," + WASM.toString("base64"))};
+
+function sync_read () {
+  var pos = __code;
+  
+  try {
+    var binary = atob_polyfill(pos.slice(29)) // "data:application/wasm;base64,".length
+    var output = new Uint8Array(binary.length);
+    
+    for (pos = 0; pos < binary.length; ++pos)
+      output[pos] = binary.charCodeAt(pos);
+    
+    return output;
+  }
+  catch {
+    throw Error("Converting base64 string to bytes failed.");
+  }
+}
+
+var atob_polyfill = "function" == typeof atob ? atob : function(a){
+  var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+  var b = "";
+  var c = 0;
+  a = a.replace(/[^A-Za-z0-9\\+\\/=]/g,"");
+  
+  do {
+    var d=chars.indexOf(a.charAt(c++));
+    var e=chars.indexOf(a.charAt(c++));
+    var f=chars.indexOf(a.charAt(c++));
+    var g=chars.indexOf(a.charAt(c++));
+    
+    d = d<<2|e>>4;
+    e = (e & 15) <<4|f>>2;
+    
+    var k=(f&3)<<6|g;
+    b += String.fromCharCode(d);
+    
+    64 !== f && (b+=String.fromCharCode(e));
+    64 !== g && (b+=String.fromCharCode(k))
+  } while (c < a.length);
+  
+  return b;
+}
+
+const load_sync = () => void initSync(sync_read());
+exports.load_sync = load_sync;
+
+exports.load_async = async function () {
+  // If already loaded, we ignore. 
+  if (wasm !== undefined) return;
+  const imports = __wbg_get_imports();
+
+  if (typeof fetch !== "function")
+    return load_sync();
+
+  const binary = await fetch(__code, { credentials: "same-origin" });
+
+  __wbg_init_memory(imports);
+
+  const { instance, module } = await __wbg_load(binary, imports);
+  __wbg_finalize_init(instance, module);
+}
+  `;
+  console.info("[JS]: Added 'load_async' and 'load_sync' functions and copied WASM file into the file.");
 
   content = (await minify(content)).code || "";
   console.info("[JS]: Minified !");
@@ -91,6 +186,24 @@ const WASM = await readFile(pathFromPKG(WASM_PKG_FILE_NAME));
     `@param {Fetcher} [fetcher]`
   );
   console.info("[D.TS]: Typed 'fetcher' and made it optional in JSDoc.");
+
+  content = removeFromUntil(content, "export type InitInput", "Promise<InitOutput>;");
+  console.info("[D.TS]: Removed useless types.");
+
+  content += `
+/**
+ * Load the WASM module asynchronously using "fetch".
+ * If "fetch" is not available, it will load synchronously using "load_sync".
+ * @returns {Promise<void>}
+ */
+export function load_async(): Promise<void>;
+/**
+ * Load the WASM module using "Uint8Array" (synchronously).
+ * @returns {void}
+ */
+export function load_sync(): void;
+  `;
+  console.info("[D.TS]: Added 'load' function.");
 
   await writeToDIST("index.d.ts", content);
   console.info("[D.TS]: Wrote file !");

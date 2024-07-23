@@ -54,8 +54,6 @@ Credentials (username and password without CAS) authentication works, but **toke
 
 This is because demonstration servers doesn't save next-time tokens, even if it's able to generate them.
 
-You can know if a server is a demonstration or not by reading the `isDemo` property on a `Pronote` instance in Pawnote.
-
 ## Documentation & Guides
 
 You can find the documentation, some guides at <https://docs.literate.ink/pawnote>.

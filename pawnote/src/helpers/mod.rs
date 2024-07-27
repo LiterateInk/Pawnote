@@ -1,2 +1,2 @@
-pub mod pronote_url;
 pub mod deserializer;
+pub mod pronote_url;

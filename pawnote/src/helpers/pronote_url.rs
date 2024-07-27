@@ -1,13 +1,13 @@
-use wasm_bindgen::prelude::*;
 use url::Url;
+use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(js_name = pronote_url_to_root)]
 /// Takes any PRONOTE URL and transforms it to a root PRONOTE URL.
-pub fn to_root (pronote_url: String) -> String {
+pub fn to_root(pronote_url: String) -> String {
   let url = Url::parse(&pronote_url).unwrap();
   let origin = url.origin().ascii_serialization();
   let mut paths: Vec<&str> = url.path().split('/').collect();
-  
+
   if let Some(last_path) = paths.last() {
     // Remove the last part of the path if ending with a ".json" or ".html".
     if last_path.ends_with(".json") || last_path.ends_with(".html") {
@@ -25,8 +25,7 @@ pub fn to_root (pronote_url: String) -> String {
     // Put everything back, just add the '/' we removed
     // earlier before the actual path.
     origin + "/" + &path_name
-  }
-  else {
+  } else {
     // Path is the root, so no need to append it.
     origin
   }

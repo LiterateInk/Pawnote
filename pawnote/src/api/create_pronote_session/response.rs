@@ -3,14 +3,23 @@ use regex::Regex;
 
 use crate::models::SessionInformation;
 
-pub fn parse_response (response: Response) -> SessionInformation {
+pub fn parse_response(response: Response) -> SessionInformation {
   let relaxed_data = {
     let start = "Start (";
-    let start_pos = response.content.find(start).ok_or("Failed to find start marker").unwrap() + start.len();
-    
+    let start_pos = response
+      .content
+      .find(start)
+      .ok_or("Failed to find start marker")
+      .unwrap()
+      + start.len();
+
     let end = ") } catch";
-    let end_pos = response.content.find(end).ok_or("Failed to find end marker").unwrap();
-    
+    let end_pos = response
+      .content
+      .find(end)
+      .ok_or("Failed to find end marker")
+      .unwrap();
+
     &response.content[start_pos..end_pos]
   };
 

@@ -28,12 +28,12 @@ tab_width = 2
 documentation = true
 documentation_style = "auto"
 documentation_length = "full"
-line_endings = "LF" # also "CR", "CRLF", "Native"
+line_endings = "LF"           # also "CR", "CRLF", "Native"
 
 ############################# Codegen Options ##################################
 
 style = "both"
-sort_by = "Name" # default for `fn.sort_by` and `const.sort_by`
+sort_by = "Name"       # default for `fn.sort_by` and `const.sort_by`
 usize_is_size_t = true
 
 [defines]

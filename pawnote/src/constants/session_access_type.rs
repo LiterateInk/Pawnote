@@ -1,5 +1,5 @@
-use wasm_bindgen::prelude::*;
 use serde_repr::*;
+use wasm_bindgen::prelude::*;
 
 #[derive(Serialize_repr, Deserialize_repr, PartialEq, Default, Clone, Debug)]
 #[wasm_bindgen]
@@ -11,5 +11,5 @@ pub enum SessionAccessType {
   DirectConnection,
   TokenAccountConnection,
   TokenDirectConnection,
-  CookieConnection
+  CookieConnection,
 }

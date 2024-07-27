@@ -1,5 +1,5 @@
+use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
-use serde::{Serialize, Deserialize};
 
 use super::SessionInformation;
 
@@ -10,8 +10,8 @@ pub struct Session {
   pub root_url: String,
 
   /// Issued when navigating on the web space
-  /// for the first time. 
-  pub information: SessionInformation
+  /// for the first time.
+  pub information: SessionInformation,
 }
 
 #[wasm_bindgen]
@@ -20,7 +20,7 @@ impl Session {
   pub fn new(pronote_root_url: String, session_information: SessionInformation) -> Self {
     Session {
       root_url: pronote_root_url,
-      information: session_information
+      information: session_information,
     }
   }
 }

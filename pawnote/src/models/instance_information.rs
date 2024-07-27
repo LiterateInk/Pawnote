@@ -1,5 +1,5 @@
-use wasm_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
+use wasm_bindgen::prelude::*;
 
 #[derive(Serialize, Deserialize, Clone)]
 #[wasm_bindgen(getter_with_clone)]
@@ -11,7 +11,7 @@ pub struct InstanceInformationWebspace {
   #[serde(rename(deserialize = "avecDelegation"))]
   pub with_delegation: Option<bool>,
   #[serde(rename(deserialize = "protocole"))]
-  pub protocol: Option<String>
+  pub protocol: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -22,7 +22,7 @@ pub struct InstanceInformationCAS {
   #[serde(rename(deserialize = "casURL"))]
   pub url: String,
   #[serde(rename(deserialize = "jetonCAS"))]
-  pub token: Option<String>
+  pub token: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -44,14 +44,14 @@ pub struct InstanceInformation {
   // List of available webspaces for that PRONOTE instance.
   #[serde(rename(deserialize = "espaces"))]
   pub webspaces: Vec<InstanceInformationWebspace>,
-  
+
   /// Information about the Central Authentication Service (CAS).
-  /// 
+  ///
   /// When active, we can find here a token to build a CAS authentication on mobile.
   /// Can only be done using a WebView though.
   #[serde(rename(deserialize = "CAS"))]
   pub cas: InstanceInformationCAS,
-  
+
   #[serde(rename(deserialize = "nomEtab"))]
-  pub school_name: String
+  pub school_name: String,
 }

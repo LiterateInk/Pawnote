@@ -1,13 +1,5 @@
-use peak_alloc::PeakAlloc;
+use pawnote::{authenticate_with_credentials, Webspace};
 use uuid::Uuid;
-
-use pawnote::{
-  Webspace,
-  authenticate_with_credentials
-};
-
-#[global_allocator]
-static PEAK_ALLOC: PeakAlloc = PeakAlloc;
 
 #[tokio::main]
 async fn main() {
@@ -21,13 +13,10 @@ async fn main() {
     Webspace::Students,
     username,
     password,
-    device_uuid.to_string()
-  ).await.unwrap();
+    device_uuid.to_string(),
+  )
+  .await
+  .unwrap();
 
   println!("{}", serde_json::to_string_pretty(&session).unwrap());
-
-  // We do a lil' memory usage check at the end.
-  let peak_mem = PEAK_ALLOC.peak_usage_as_kb();
-  let current_mem = PEAK_ALLOC.current_usage_as_kb();
-	println!("This program currently uses {} KB of RAM, max was {} KB.", current_mem, peak_mem);
 }

@@ -1,24 +1,24 @@
-use std::future::Future;
 use literateink_utilities::{Request, Response};
 use models::Session;
+use std::future::Future;
 
 mod api;
-mod helpers;
 mod constants;
+mod helpers;
 
 pub mod models;
 pub mod services;
 
-pub use helpers::pronote_url::*;
 pub use constants::*;
+pub use helpers::pronote_url::*;
 
 async fn authenticate_with_credentials_base<F, Fut>(
-  pronote_url: String, 
+  pronote_url: String,
   webspace: Webspace,
-  username: String, 
-  password: String, 
-  device_uuid: String, 
-  fetcher: F
+  username: String,
+  password: String,
+  device_uuid: String,
+  fetcher: F,
 ) -> Result<Session, String>
 where
   F: Fn(Request) -> Fut,
@@ -36,7 +36,7 @@ where
   let pronote_session = api::create_pronote_session::parse_response(response);
 
   let session = Session::new(pronote_root_url, pronote_session);
-  
+
   _ = username;
   _ = password;
   _ = device_uuid;
@@ -50,37 +50,39 @@ use wasm_bindgen::prelude::*;
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub async fn authenticate_with_credentials(
-  pronote_url: String, 
+  pronote_url: String,
   webspace: Webspace,
-  username: String, 
-  password: String, 
-  device_uuid: String, 
-  fetcher: &js_sys::Function
+  username: String,
+  password: String,
+  device_uuid: String,
+  fetcher: &js_sys::Function,
 ) -> Result<Session, String> {
   authenticate_with_credentials_base(
     pronote_url,
     webspace,
-    username, 
-    password, 
+    username,
+    password,
     device_uuid,
-    literateink_utilities::wasm_wrap_fetcher(fetcher)
-  ).await
+    literateink_utilities::wasm_wrap_fetcher(fetcher),
+  )
+  .await
 }
 
 #[cfg(not(target_arch = "wasm32"))]
 pub async fn authenticate_with_credentials(
-  pronote_url: String, 
+  pronote_url: String,
   webspace: Webspace,
-  username: String, 
-  password: String, 
+  username: String,
+  password: String,
   device_uuid: String,
 ) -> Result<Session, String> {
   authenticate_with_credentials_base(
     pronote_url,
     webspace,
-    username, 
-    password, 
+    username,
+    password,
     device_uuid,
-    literateink_utilities::reqwest_fetcher
-  ).await
+    literateink_utilities::reqwest_fetcher,
+  )
+  .await
 }

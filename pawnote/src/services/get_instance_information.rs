@@ -1,11 +1,11 @@
-use crate::api::instance_information::{ build_request, parse_response };
+use crate::api::instance_information::{build_request, parse_response};
 use crate::models::InstanceInformation;
-use literateink_utilities::{ Request, Response };
+use literateink_utilities::{Request, Response};
 use std::future::Future;
 
 async fn get_instance_information_base<F, Fut>(
   pronote_root_url: String,
-  fetcher: F
+  fetcher: F,
 ) -> InstanceInformation
 where
   F: Fn(Request) -> Fut,
@@ -21,21 +21,17 @@ use wasm_bindgen::prelude::*;
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub async fn get_instance_information(
-  pronote_root_url: String, 
-  fetcher: &js_sys::Function
+  pronote_root_url: String,
+  fetcher: &js_sys::Function,
 ) -> InstanceInformation {
   get_instance_information_base(
     pronote_root_url,
-    literateink_utilities::wasm_wrap_fetcher(fetcher)
-  ).await
+    literateink_utilities::wasm_wrap_fetcher(fetcher),
+  )
+  .await
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-pub async fn get_instance_information(
-  pronote_root_url: String
-) -> InstanceInformation {
-  get_instance_information_base(
-    pronote_root_url,
-    literateink_utilities::reqwest_fetcher
-  ).await
+pub async fn get_instance_information(pronote_root_url: String) -> InstanceInformation {
+  get_instance_information_base(pronote_root_url, literateink_utilities::reqwest_fetcher).await
 }

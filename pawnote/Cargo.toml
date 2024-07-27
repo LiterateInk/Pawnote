@@ -1,7 +1,7 @@
 [package]
 name = "pawnote"
 version.workspace = true
-authors = ["Mikkel ALMONTE--RINGAUD <mikkel@milescode.dev> (https://github.com/Vexcited)"]
+authors = ["LiterateInk <contact@literate.ink>"]
 description = "A wrapper around Index-Education's PRONOTE internal API."
 documentation = "https://docs.literate.ink/pawnote"
 repository = "https://github.com/LiterateInk/Pawnote"

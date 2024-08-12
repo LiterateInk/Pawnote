@@ -4,7 +4,7 @@
 
 ## What is "PRONOTE" ?
 
-[PRONOTE](https://www.index-education.com/fr/logiciel-gestion-vie-scolaire.php) is a school management software developed by Index-Education. It is used by many schools in France and other countries.
+[PRONOTE](https://www.index-education.com/fr/logiciel-gestion-vie-scolaire.php) is a school management application used by educational establishments in France to centralize and facilitate communication between teachers, students and parents. It lets you manage and consult timetables, grades, absences and homework, as well as communicate via messages. PRONOTE aims to improve the transparency and efficiency of day-to-day school management.
 
 ## Implementations
 

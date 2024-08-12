@@ -1,5 +1,5 @@
 import { type Request, defaultFetcher, type Fetcher } from "@literate.ink/utilities";
-import { cleanURL } from "./clean-url";
+import { cleanURL } from "./helpers/clean-url";
 import { decodeInstance } from "~/decoders/instance";
 import type { Instance } from "~/models";
 

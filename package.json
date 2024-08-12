@@ -1,40 +1,41 @@
 {
   "name": "pawnote",
   "version": "0.22.1",
-  "description": "A simple wrapper around Index-Education's Pronote internal API.",
-  "repository": "github:LiterateInk/Pawnote",
+  "description": "A purrfect API wrapper for PRONOTE.",
+  "repository": "https://github.com/LiterateInk/Pawnote",
+  "sideEffects": false,
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
+    "import": {
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    },
+    "require": {
       "types": "./dist/index.d.ts",
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs"
+      "default": "./dist/index.js"
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --dts --minify terser --clean --format cjs,esm --sourcemap",
+    "build": "tsup",
     "release": "release-it",
-    "lint": "tsc && eslint .",
-    "tsx": "tsx"
+    "lint": "tsc && eslint ."
   },
   "files": [
     "dist"
   ],
   "keywords": [
     "pronote",
-    "api",
     "wrapper",
-    "student",
-    "France"
+    "api"
   ],
-  "author": "Mikkel RINGAUD <mikkel@milescode.dev> (https://github.com/Vexcited)",
-  "homepage": "https://literate.ink/pawnote",
+  "author": "LiterateInk <contact@literate.ink> (https://literate.ink)",
+  "homepage": "https://docs.literate.ink/pawnote",
   "bugs": {
     "url": "https://github.com/LiterateInk/Pawnote/issues"
   },
-  "license": "GPL-3.0",
+  "license": "GPL-3.0-or-later",
   "engines": {
     "node": ">=18"
   },
@@ -45,25 +46,26 @@
       "tagName": "js-v${version}"
     },
     "github": {
-      "release": true,
       "draft": false,
+      "release": true,
       "releaseName": "js v${version}"
     },
     "npm": {
-      "publish": true
+      "publish": false
     },
     "hooks": {
-      "before:init": "pnpm lint",
-      "after:bump": "pnpm build"
+      "before:init": "pnpm lint"
     }
   },
   "devDependencies": {
     "@inquirer/prompts": "^4.1.0",
     "@stylistic/eslint-plugin": "^1.5.3",
+    "@types/node": "^22.2.0",
     "@types/node-forge": "^1.3.10",
     "@types/pako": "^2.0.3",
     "@types/set-cookie-parser": "^2.4.7",
     "@typescript-eslint/parser": "^6.18.0",
+    "dotenv": "^16.4.5",
     "eslint": "^8.56.0",
     "release-it": "^17.0.1",
     "terser": "^5.26.0",

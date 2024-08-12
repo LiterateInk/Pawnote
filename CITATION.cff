@@ -5,17 +5,16 @@ message: >-
   metadata from this file.
 type: software
 authors:
-  - given-names: Mikkel
-    family-names: RINGAUD
-    email: mikkel@milescode.dev
+  - name: LiterateInk
+    website: "https://literate.ink"
+    email: contact@literate.ink
 repository-code: 'https://github.com/LiterateInk/Pawnote'
-url: 'https://pawnote.js.org'
+url: 'https://docs.literate.ink/pawnote'
 repository-artifact: 'https://www.npmjs.com/package/pawnote'
 abstract: >-
-  A simple wrapper around Index-Education's Pronote internal
-  API.
+  A purrfect API wrapper for PRONOTE.
 keywords:
   - pronote
   - wrapper
   - api
-license: GPL-3.0
+license: GPL-3.0-or-later

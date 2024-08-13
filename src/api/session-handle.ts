@@ -1,9 +1,12 @@
 import type { SessionHandle } from "~/models";
 import { defaultFetcher, type Fetcher } from "@literate.ink/utilities";
 import { Queue } from "~/core/queue";
+import { cleanURL } from "./helpers/clean-url";
 
-export const createSessionHandle = (fetcher: Fetcher = defaultFetcher): SessionHandle => {
+export const createSessionHandle = (url: string, fetcher: Fetcher = defaultFetcher): SessionHandle => {
   return {
+    serverURL: cleanURL(url),
+
     // @ts-expect-error : we want null as initializer
     information: null,
     instance: null,

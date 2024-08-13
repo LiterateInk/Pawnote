@@ -11,9 +11,6 @@ import { createPronoteAPICall } from "~/pronote/requestAPI";
 import forge from "node-forge";
 
 export const callApiLoginInformations = makeApiHandler<ApiLoginInformations>(async (fetcher, input) => {
-  const accountType = PRONOTE_ACCOUNT_TYPES.find((entry) => entry.id === input.accountTypeID);
-  if (!accountType) throw new Error(`Invalid account type ID: ${input.accountTypeID}`);
-
   const pronotePage = await downloadPronotePage(fetcher, {
     pronoteURL: input.pronoteURL,
     // Those cookies are very important since they're like the *initializer*.

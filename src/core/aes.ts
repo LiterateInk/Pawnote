@@ -1,7 +1,7 @@
 import forge from "node-forge";
 
-class AES {
-  static decrypt(data: string, key: forge.util.ByteBuffer, iv: forge.util.ByteBuffer) {
+export class AES {
+  public static decrypt (data: string, key: forge.util.ByteBuffer, iv: forge.util.ByteBuffer): string {
     key = forge.md.md5.create().update(key.bytes()).digest();
     iv = iv.length() ? forge.md.md5.create().update(iv.bytes()).digest() : forge.util.createBuffer().fillWithByte(0, 16);
 
@@ -15,7 +15,7 @@ class AES {
     return decipher.output.bytes();
   }
 
-  static encrypt(data: string | ArrayBuffer | forge.util.ArrayBufferView | forge.util.ByteStringBuffer, key: forge.util.ByteBuffer, iv: forge.util.ByteBuffer) {
+  public static encrypt (data: string | ArrayBuffer | forge.util.ArrayBufferView | forge.util.ByteStringBuffer, key: forge.util.ByteBuffer, iv: forge.util.ByteBuffer): string {
     key = forge.md.md5.create().update(key.bytes()).digest();
     iv = iv.length() ? forge.md.md5.create().update(iv.bytes()).digest() : forge.util.createBuffer().fillWithByte(0, 16);
 
@@ -29,5 +29,3 @@ class AES {
     return cipher.output.toHex();
   }
 }
-
-export default AES;

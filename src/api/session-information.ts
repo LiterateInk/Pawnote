@@ -34,7 +34,7 @@ export const sessionInformation = async (options: {
       .replace(/(['"])?([a-z0-9A-Z_]+)(['"])?:/gu, "\"$2\": ")
       .replace(/'/gu, "\"");
 
-    return decodeSessionInformation(JSON.parse(session_data_string));
+    return decodeSessionInformation(JSON.parse(session_data_string), options.base);
   }
   catch (error) {
     if (html.includes("Votre adresse IP est provisoirement suspendue")) {

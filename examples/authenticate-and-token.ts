@@ -4,9 +4,10 @@ import { credentials } from "./_credentials";
 void async function main () {
   console.log("------ CREDENTIALS:");
 
-  const handle = pronote.createSessionHandle(credentials.pronoteURL);
+  const handle = pronote.createSessionHandle();
 
   const refresh = await pronote.loginCredentials(handle, {
+    url: credentials.pronoteURL,
     kind: pronote.AccountKind.STUDENT,
     username: credentials.username,
     password: credentials.password,

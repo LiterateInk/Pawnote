@@ -1,16 +1,20 @@
 import type { AccountKind, RefreshInformation, SessionHandle } from "~/models";
 import { sessionInformation } from "./session-information";
 import { instanceParameters } from "./instance-parameters";
+import { cleanURL } from "./helpers/clean-url";
 
 export const loginCredentials = async (session: SessionHandle, auth: {
+  url: string
   username: string
   password: string
   kind: AccountKind
   deviceUUID: string
 }): Promise<RefreshInformation> => {
+  const base = cleanURL(auth.url);
+
   // Make the request.
   session.information = await sessionInformation({
-    base: session.serverURL,
+    base,
     kind: auth.kind,
     params: {
       fd: "1",

@@ -29,7 +29,7 @@ export class RequestFN {
   ) {
     session.information.order++;
     this.order = this.generateOrder();
-    this.url = new URL(`${session.serverURL}/appelfonction/${session.information.accountKind}/${session.information.id}/${this.order}`);
+    this.url = new URL(`${session.information.url}/appelfonction/${session.information.accountKind}/${session.information.id}/${this.order}`);
 
     if (!session.information.skipCompression) {
       this.compress();

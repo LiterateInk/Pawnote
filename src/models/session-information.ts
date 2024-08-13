@@ -8,6 +8,8 @@ export interface SessionInformation {
   /** Whether the instance is demo or not. */
   readonly demo: boolean
 
+  readonly url: string
+
   /**
    * How the session is accessed.
    * @default SessionAccessKind.ACCOUNT

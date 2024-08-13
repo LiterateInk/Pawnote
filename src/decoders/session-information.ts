@@ -9,7 +9,7 @@ export const decodeSessionInformation = (session: any): SessionInformation => {
 
   return {
     id: parseInt(session.h),
-    kind: session.a,
+    accountKind: session.a,
     demo: session.d ?? false,
     accessKind: session.g ?? SessionAccessKind.ACCOUNT,
 

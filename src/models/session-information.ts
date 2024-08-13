@@ -3,7 +3,7 @@ import type { SessionAccessKind } from "./session-access-kind";
 
 export interface SessionInformation {
   readonly id: number
-  readonly kind: AccountKind
+  readonly accountKind: AccountKind
 
   /** Whether the instance is demo or not. */
   readonly demo: boolean

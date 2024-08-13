@@ -52,59 +52,6 @@ export class Session {
     public instance: SessionInstance,
     public encryption: SessionEncryption
   ) {}
-
-  /** Takes a raw session extracted from the Pronote page and then parses it. */
-  public static importFromPage (pronoteURL: string, session_data: PronoteApiSession): Session {
-    let aes_iv = "";
-
-    // `a` parameter is not available in `Commun`.
-    if (typeof session_data.a !== "number") {
-      session_data.a = PronoteApiAccountId.Common;
-    }
-
-    // We have to setup IV for our session when we're not in `Commun`.
-    if (session_data.a !== PronoteApiAccountId.Common) {
-      aes_iv = forge.random.getBytesSync(16);
-    }
-
-    // Fallback to the latest version method.
-    let methodRSA: SessionEncryptionRSAMethod = SessionEncryptionRSAMethod.CONSTANTS;
-
-    // Before the 2023 update, we would have those two parameters for RSA.
-    if (typeof session_data.ER === "string" && typeof session_data.MR === "string") {
-      methodRSA = SessionEncryptionRSAMethod.FROM_SESSION_DATA;
-    }
-
-    return new Session({
-      session_id: parseInt(session_data.h),
-      account_type_id: session_data.a,
-
-      pronote_url: pronoteURL,
-
-      skip_compression: session_data.sCoA ?? false,
-      skip_encryption: session_data.sCrA ?? false,
-
-      poll: session_data.poll ?? false,
-      http: session_data.http ?? false,
-      demo: session_data.d ?? false,
-
-      order: 0,
-      // Empty since will be filled once the first request is done.
-      version: []
-    }, {
-      aes: {
-        iv: aes_iv,
-        key: ""
-      },
-
-      rsa: {
-        method: methodRSA,
-        exponent: session_data.ER ?? RSA_EXPONENT_1024,
-        modulus: session_data.MR ?? RSA_MODULO_1024
-      }
-    });
-  }
-
   /**
    * Check the `this.encryption.aes` object and
    * returns the buffers of `iv` and `key` for the AES encryption.

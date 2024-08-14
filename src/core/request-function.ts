@@ -1,14 +1,15 @@
-import type { Response } from "@literate.ink/utilities";
 import type { SessionHandle } from "~/models";
 import forge from "node-forge";
 import pako from "pako";
-import { AES } from "./aes";
+import { AES } from "../api/private/aes";
+import { ResponseFN } from "./response-function";
 
 /**
  * Abstraction to make requests to function API
  * of PRONOTE.
  */
 export class RequestFN {
+  private readonly order: string;
   public readonly url: URL;
 
   public constructor (
@@ -46,29 +47,27 @@ export class RequestFN {
     return { iv, key };
   }
 
-  private order: string;
   private generateOrder (): string {
     const { key, iv } = this.keys();
     return AES.encrypt(this.session.information.order.toString(), key, iv);
   }
 
   private stringify (): string {
-    return forge.util.encodeUtf8("" + JSON.stringify(this.data) || "");
+    return forge.util.encodeUtf8(JSON.stringify(this.data) || "");
   }
 
-  private compress () {
-    this.data = this.stringify();
-    this.data = forge.util.createBuffer(this.data).toHex();
+  private compress (): void {
+    const buffer = forge.util.createBuffer(this.stringify()).toHex();
 
     // We compress it using zlib, level 6, without headers.
-    const deflated = pako.deflateRaw(this.data, { level: 6 });
-    this.data = String.fromCharCode.apply(null, Array.from(deflated));
+    const deflated = pako.deflateRaw(buffer, { level: 6 });
+    const bytes = Array.from(deflated).map((byte) => String.fromCharCode(byte)).join("");
 
     // We output it to HEX.
-    this.data = forge.util.bytesToHex(this.data).toUpperCase();
+    this.data = forge.util.bytesToHex(bytes);
   }
 
-  private encrypt () {
+  private encrypt (): void {
     const { key, iv } = this.keys();
 
     const data = !this.session.information.skipCompression
@@ -79,7 +78,7 @@ export class RequestFN {
     this.data = AES.encrypt(data, key, iv);
   }
 
-  public async send (): Promise<Response> {
+  public async send (): Promise<ResponseFN> {
     const response = await this.session.fetcher({
       url: this.url,
       method: "POST",
@@ -94,6 +93,6 @@ export class RequestFN {
       })
     });
 
-    return response;
+    return new ResponseFN(this.session, response.content);
   }
 }

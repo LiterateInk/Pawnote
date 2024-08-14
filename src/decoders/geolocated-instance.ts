@@ -1,5 +1,5 @@
 import type { GeolocatedInstance } from "~/models";
-import { haversine } from "~/core/haversine";
+import { haversine } from "~/api/private/haversine";
 
 export const decodeGeolocatedInstance = (instance: any, position: [lat: number, lon: number]): GeolocatedInstance => {
   const latitude = parseFloat(instance.lat);

@@ -1,6 +1,6 @@
 import type { AccountKind, RefreshInformation, SessionHandle } from "~/models";
 import { sessionInformation } from "./session-information";
-import { instanceParameters } from "./instance-parameters";
+import { instanceParameters } from "./private/instance-parameters";
 import { cleanURL } from "./helpers/clean-url";
 
 export const loginCredentials = async (session: SessionHandle, auth: {

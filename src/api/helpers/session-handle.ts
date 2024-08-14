@@ -1,6 +1,6 @@
 import type { SessionHandle } from "~/models";
 import { defaultFetcher, type Fetcher } from "@literate.ink/utilities";
-import { Queue } from "~/core/queue";
+import { Queue } from "~/api/private/queue";
 
 export const createSessionHandle = (fetcher: Fetcher = defaultFetcher): SessionHandle => {
   return {

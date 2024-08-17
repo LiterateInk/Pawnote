@@ -16,28 +16,24 @@ void async function main () {
 
   console.info("Username:", refresh.username);
   console.info("Token:", refresh.token);
-  console.log(handle);
 
   // Demonstration instances can't use next-time tokens.
   if (!handle.information.demo) {
     // We login now using the token to prove the point.
     console.log("\n------ TOKEN:");
 
-    // const nextPronote = await authenticateToken(pronoteBaseURL, {
-    //   // We can use informations from last session.
-    //   accountTypeID: pronote.accountTypeID,
-    //   username: pronote.username,
-    //   // And here, we **must** use the token given.
-    //   token: pronote.nextTimeToken,
+    const next_handle = pronote.createSessionHandle();
 
-    //   // You MUST use the same device UUID as the one you used for the first authentication.
-    //   // The UUID used in the first request won't be stored in the class, so you must
-    //   // have a way to get it again.
-    //   deviceUUID: "my-device-uuid"
-    // });
+    const next_refresh = await pronote.loginToken(next_handle, {
+      url: refresh.url,
+      kind: refresh.kind,
+      username: refresh.username,
+      token: refresh.token,
+      deviceUUID: credentials.deviceUUID
+    });
 
-    // console.info("Username:", nextPronote.username);
-    // console.info("Next-Time Token:", nextPronote.nextTimeToken);
+    console.info("Username:", next_refresh.username);
+    console.info("Next-Time Token:", next_refresh.token);
   }
   else console.info("\nYou're connected to a demonstration instance, thus you're not able to use the next-time token.");
 }();

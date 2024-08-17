@@ -1,4 +1,4 @@
-import { defaultFetcher, Fetcher } from "@literate.ink/utilities";
+import { defaultFetcher, type Fetcher, type Request, setCookiesArrayToRequest } from "@literate.ink/utilities";
 import { decodeSessionInformation } from "~/decoders/session-information";
 import { encodeAccountKindToPath } from "~/encoders/account-kind";
 import type { AccountKind, SessionInformation } from "~/models";
@@ -6,15 +6,18 @@ import type { AccountKind, SessionInformation } from "~/models";
 export const sessionInformation = async (options: {
   base: string
   kind: AccountKind,
-  params: Record<string, string>
+  params: Record<string, any>,
+  cookies: string[]
 }, fetcher: Fetcher = defaultFetcher): Promise<SessionInformation> => {
   const url = new URL(options.base + "/" + encodeAccountKindToPath(options.kind));
   for (const [key, value] of Object.entries(options.params)) {
     url.searchParams.set(key, value);
   }
 
-  const response = await fetcher({ url, redirect: "manual" });
-  const html = response.content;
+  const request: Request = { url, redirect: "manual" };
+  setCookiesArrayToRequest(request, options.cookies);
+
+  const { content: html } = await fetcher(request);
 
   try {
     // Remove all spaces and line breaks.

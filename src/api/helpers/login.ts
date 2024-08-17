@@ -109,13 +109,8 @@ const solveChallenge = (session: SessionHandle, identity: any, key: forge.util.B
 
 const switchToAuthKey = (session: SessionHandle, authentication: any, key: forge.util.ByteStringBuffer): void => {
   const iv = forge.util.createBuffer(session.information.aesIV);
-  const decryptedAuthKey = AES.decrypt(authentication.cle, key, iv);
-
-  // Get the new AES key that will be used in our requests.
-  const authKeyBytesArray = new Uint8Array(decryptedAuthKey.split(",").map((a) => parseInt(a)));
-  const authKey = forge.util.createBuffer(authKeyBytesArray).bytes();
-
-  // TODO: check if we can't just call a string from char code to read the bytes directly.
+  const authKeyDecrypted = AES.decrypt(authentication.cle, key, iv);
+  const authKey = authKeyDecrypted.split(",").map((char) => String.fromCharCode(parseInt(char))).join("");
 
   session.information.aesKey = authKey;
 };

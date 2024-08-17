@@ -7,6 +7,7 @@ import forge from "node-forge";
 import { AES } from "../private/aes";
 import { authenticate } from "../private/authenticate";
 import { userParameters } from "../private/user-parameters";
+import { decodeAuthenticationQr } from "~/decoders/authentication-qr";
 
 /**
  * base parameters for `sessionInformation` call.
@@ -108,6 +109,57 @@ export const loginToken = async (session: SessionHandle, auth: {
     username: identity.login ?? auth.username,
     kind: auth.kind,
     url: base
+  };
+};
+
+export const loginQrCode = async (session: SessionHandle, info: {
+  deviceUUID: string
+  pin: string
+  qr: any
+}): Promise<RefreshInformation> => {
+  const qr = decodeAuthenticationQr(info.qr);
+  const pin = forge.util.createBuffer(info.pin);
+
+  const read = (prop: "token" | "username") => AES.decrypt(forge.util.encodeUtf8(qr[prop]), pin, forge.util.createBuffer());
+
+  const auth = {
+    username: read("username"),
+    token: read("token")
+  };
+
+  session.information = await sessionInformation({
+    base: qr.url,
+    kind: qr.kind,
+    cookies: ["appliMobile=1"],
+    params: BASE_PARAMS
+  }, session.fetcher);
+
+  session.instance = await instanceParameters(session);
+
+  const identity = await identify(session, {
+    username: auth.username,
+    deviceUUID: info.deviceUUID,
+
+    requestFirstMobileAuthentication: true,
+    reuseMobileAuthentication: false,
+    requestFromQRCode: true,
+    useCAS: false
+  });
+
+  transformCredentials(auth, "token", identity);
+  const key = createMiddlewareKey(identity, auth.username, auth.token);
+
+  const challenge = solveChallenge(session, identity, key);
+  const authentication = await authenticate(session, challenge);
+
+  switchToAuthKey(session, authentication, key);
+  session.user = await userParameters(session);
+
+  return {
+    token: authentication.jetonConnexionAppliMobile,
+    username: identity.login ?? auth.username,
+    kind: qr.kind,
+    url: qr.url
   };
 };
 

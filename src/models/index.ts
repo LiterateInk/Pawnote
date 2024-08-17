@@ -1,4 +1,5 @@
 export * from "./account-kind";
+export * from "./authentication-qr";
 export * from "./geolocated-instance";
 export * from "./instance";
 export * from "./refresh-information";

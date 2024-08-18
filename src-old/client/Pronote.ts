@@ -72,14 +72,6 @@ import { callApiUserGeneratePDF } from "~/api/user/generatePDF";
 import { Onglets } from "~/parser/onglets";
 
 export default class Pronote {
-  #onglets: Onglets;
-  public get onglets(): Onglets {
-    return this.#onglets;
-  }
-
-  public periods: Period[];
-  private periodsByOnglet: Map<PronoteApiOnglets, OngletPeriods>;
-
   private queue: Queue;
 
   constructor (
@@ -91,17 +83,6 @@ export default class Pronote {
     private user: ApiUserData["output"]["data"]["donnees"],
     public loginInformations: ApiLoginInformations["output"]["data"]
   ) {
-    this.#onglets = new Onglets(user);
-
-    this.periods = [];
-    for (const period of loginInformations.donnees.General.ListePeriodes) {
-      this.periods.push(new Period(this, period));
-    }
-
-    this.periodsByOnglet = new Map();
-    for (const ongletPeriods of user.ressource.listeOngletsPourPeriodes.V) {
-      this.periodsByOnglet.set(ongletPeriods.G, readOngletPeriods(this.periods, ongletPeriods));
-    }
   }
 
   public async getTimetableOverviewForInterval (start: Date, end?: Date): Promise<TimetableOverview> {

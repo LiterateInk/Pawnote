@@ -1,8 +1,10 @@
 import { RequestFN } from "~/core/request-function";
 import { SessionHandle } from "../../models/session-handle";
 import forge from "node-forge";
+import { InstanceParameters } from "~/models/instance-parameters";
+import { decodeInstanceParameters } from "~/decoders/instance-parameters";
 
-export const instanceParameters = async (session: SessionHandle): Promise<any> => {
+export const instanceParameters = async (session: SessionHandle): Promise<InstanceParameters> => {
   const rsaKey = forge.pki.rsa.setPublicKey(
     new forge.jsbn.BigInteger(session.information.rsaModulus, 16),
     new forge.jsbn.BigInteger(session.information.rsaExponent, 16)
@@ -26,5 +28,5 @@ export const instanceParameters = async (session: SessionHandle): Promise<any> =
   });
 
   const response = await request.send();
-  return response.data.donnees;
+  return decodeInstanceParameters(response.data.donnees);
 };

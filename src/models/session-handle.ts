@@ -1,31 +1,17 @@
 import type { Fetcher } from "@literate.ink/utilities";
 import type { Queue } from "~/api/private/queue";
 import type { SessionInformation } from "./session-information";
+import type { UserParameters } from "./user-parameters";
+import type { InstanceParameters } from "./instance-parameters";
 
 export interface SessionHandle {
   /**
-   * Initialized after a login.
-   *
-   * Parsed response for a PRONOTE session.
+   * Equivalent of a PRONOTE session.
    * Contains metadata, AES keys, RSA modulus, and more.
    */
   information: SessionInformation
-
-  /**
-   * Initialized after a login.
-   *
-   * Raw response for the instance parameters.
-   * Contains a lot of various data, very hard to predict.
-   */
-  instance: any
-
-  /**
-   * Initialized after a login.
-   *
-   * Raw response for the user parameters.
-   * Contains a lot of various data, very hard to predict.
-   */
-  user: any
+  instance: InstanceParameters
+  user: UserParameters
 
   readonly queue: Queue
   readonly fetcher: Fetcher

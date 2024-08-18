@@ -2,7 +2,7 @@ import type { PronoteValue } from "~/api/type";
 import type { PronoteApiResourceType } from "~/constants/resources";
 import type { PronoteApiUserResourceType } from "~/constants/users";
 import type { PronoteApiOnglets } from "~/constants/onglets";
-import type { PronoteApiAttachment } from "./attachments";
+import type { PronoteApiAttachment } from "../../src/models/attachment";
 import type { PronoteApiHTTPType } from "./http";
 import type { PronoteApiID } from "./id";
 

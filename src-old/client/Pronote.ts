@@ -72,91 +72,13 @@ import { callApiUserGeneratePDF } from "~/api/user/generatePDF";
 import { Onglets } from "~/parser/onglets";
 
 export default class Pronote {
-  /**
-   * First day of the entire timetable.
-   * Used to get week numbers relative to this date.
-   */
-  public firstMonday: Date;
-
-  #authorizations: Authorizations;
-  public get authorizations (): Authorizations {
-    return this.#authorizations;
-  }
-
   #onglets: Onglets;
   public get onglets(): Onglets {
     return this.#onglets;
   }
 
-  /**
-   * First day of the entire year.
-   */
-  public firstDate: Date;
-
-  /**
-   * Last day of the entire year.
-   * Used to get week numbers relative to this date.
-   */
-  public lastDate: Date;
-
-  /**
-   * Username that SHOULD be used for any further authentication.
-   */
-  public username: string;
-
-  /**
-   * Acts as a replacement for the password.
-   * Whenever you need to authenticate, you should use this token
-   * from now on if you want to avoid entering your password again.
-   *
-   * Note that this token is only valid for the `deviceUUID` you provided
-   * in the authentication options.
-   */
-  public nextTimeToken: string;
-
-  public nextOpenDate: Date;
-
-  /**
-   * Root URL of the Pronote instance.
-   */
-  public pronoteRootURL: string;
-
-  /**
-   * ID of this account type in the Pronote API.
-   */
-  public accountTypeID: PronoteApiAccountId;
-
-  /**
-   * ID of the currently running session on Pronote.
-   */
-  public sessionID: number;
-
-  /**
-   * Whether the Pronote instance you're connected to
-   * is a demonstration server or not.
-   *
-   * `authenticateToken` won't work against them since
-   * next-time tokens aren't saved, even though
-   * it's able to generate them.
-   */
-  public isDemo: boolean;
-
-  /** First name and family name of the logged in student. */
-  public studentName: string;
-
-  /** School name of the Pronote instance. */
-  public schoolName: string;
-
-  /** @example "3A" */
-  public studentClass: string;
-
-  /** An absolute URL giving the profile picture of the logged in student, if exists. */
-  public studentProfilePictureURL?: string;
   public periods: Period[];
   private periodsByOnglet: Map<PronoteApiOnglets, OngletPeriods>;
-
-  public isDelegate: boolean;
-  public isMemberCA: boolean;
 
   public holidays: Holiday[];
 
@@ -176,31 +98,7 @@ export default class Pronote {
     private user: ApiUserData["output"]["data"]["donnees"],
     public loginInformations: ApiLoginInformations["output"]["data"]
   ) {
-    this.firstMonday = readPronoteApiDate(loginInformations.donnees.General.PremierLundi.V);
-    this.firstDate = readPronoteApiDate(loginInformations.donnees.General.PremiereDate.V);
-    this.lastDate = readPronoteApiDate(loginInformations.donnees.General.DerniereDate.V);
-
-    this.#authorizations = new Authorizations(user.autorisations);
     this.#onglets = new Onglets(user);
-
-    this.username = credentials.username;
-    this.nextTimeToken = credentials.token;
-    this.nextOpenDate = readPronoteApiDate(loginInformations.donnees.General.JourOuvre.V);
-    this.pronoteRootURL = session.instance.pronote_url;
-    this.accountTypeID = session.instance.account_type_id;
-    this.sessionID = session.instance.session_id;
-    this.isDemo = session.instance.demo;
-    this.studentName = user.ressource.L;
-    this.schoolName = user.ressource.Etablissement.V.L;
-    this.studentClass = user.ressource.classeDEleve.L;
-
-    if (user.ressource.avecPhoto) {
-      this.studentProfilePictureURL = new StudentAttachment(this, {
-        G: 1,
-        N: user.ressource.N,
-        L: "photo.jpg"
-      }).url;
-    }
 
     this.periods = [];
     for (const period of loginInformations.donnees.General.ListePeriodes) {
@@ -211,13 +109,6 @@ export default class Pronote {
     for (const ongletPeriods of user.ressource.listeOngletsPourPeriodes.V) {
       this.periodsByOnglet.set(ongletPeriods.G, readOngletPeriods(this.periods, ongletPeriods));
     }
-
-    this.isDelegate = user.ressource.estDelegue ?? false;
-    this.isMemberCA = user.ressource.estMembreCA ?? false;
-    // TODO: user.ressource.avecDiscussionResponsables;
-    // TODO: user.ressource.listeClassesDelegue;
-    // TODO: user.ressource.nbMaxJoursDeclarationAbsence;
-    // TODO: user.ressource.listeGroupes
 
     this.holidays = loginInformations.donnees.General.listeJoursFeries.V.map((holiday) => new Holiday(holiday));
 
@@ -235,18 +126,6 @@ export default class Pronote {
         }
       }
     }
-
-    // For further requests, we implement a queue.
-    this.queue = new Queue();
-  }
-
-  /**
-   * You shouldn't have to use this usually,
-   * but it's exported here in case of need
-   * to do some operations required.
-   */
-  public getAESEncryptionKeys () {
-    return this.session.getAESEncryptionKeys();
   }
 
   public async getTimetableOverviewForInterval (start: Date, end?: Date): Promise<TimetableOverview> {

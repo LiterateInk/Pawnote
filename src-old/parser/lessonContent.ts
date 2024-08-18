@@ -2,7 +2,7 @@ import type Pronote from "~/client/Pronote";
 import type { PronoteApiUserResources } from "~/api/user/resources/types";
 import type { PronoteApiLessonContentCategory } from "~/constants/lessonCategory";
 
-import { StudentAttachment } from "./attachment";
+import { StudentAttachment } from "../../src/decoders/attachment";
 import { StudentTheme } from "./theme";
 
 export class StudentLessonContent {

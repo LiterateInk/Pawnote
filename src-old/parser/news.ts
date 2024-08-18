@@ -1,7 +1,7 @@
 import type { PronoteApiUserNews } from "~/api/user/news/types";
 import { PronoteApiNewsPublicSelf, PronoteApiNewsQuestionType } from "~/constants/news";
 import { readPronoteApiDate } from "~/pronote/dates";
-import { StudentAttachment } from "./attachment";
+import { StudentAttachment } from "../../src/decoders/attachment";
 import type Pronote from "~/client/Pronote";
 import { parseSelection } from "~/pronote/select";
 type RawData = PronoteApiUserNews["response"]["donnees"];

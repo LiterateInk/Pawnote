@@ -1,5 +1,5 @@
-import * as pronote from "../src";
-import { credentials } from "./_credentials";
+import * as pronote from "../../src";
+import { credentials } from "../_credentials";
 
 void async function main () {
   console.log("------ CREDENTIALS:");

@@ -24,5 +24,8 @@ export const credentials = {
   parent_username: process.env.PARENT_USERNAME!,
   parent_password: process.env.PARENT_PASSWORD!,
 
+  teacher_username: process.env.TEACHER_USERNAME!,
+  teacher_password: process.env.TEACHER_PASSWORD!,
+
   deviceUUID: "my-device-uuid" // Make this a random unique string for security reasons.
 };

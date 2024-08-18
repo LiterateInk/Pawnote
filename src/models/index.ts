@@ -12,3 +12,4 @@ export * from "./session-information";
 export * from "./tab";
 export * from "./user-authorizations";
 export * from "./user-parameters";
+export * from "./week-frequency";

@@ -6,10 +6,14 @@ export const createSessionHandle = (fetcher: Fetcher = defaultFetcher): SessionH
   return {
     // @ts-expect-error : we want null as initializer
     information: null,
+    // @ts-expect-error : we want null as initializer
     instance: null,
+    // @ts-expect-error : we want null as initializer
     user: null,
 
     queue: new Queue(),
-    fetcher
+    fetcher,
+
+    presence: null
   };
 };

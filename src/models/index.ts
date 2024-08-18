@@ -4,6 +4,8 @@ export * from "./attachment";
 export * from "./authentication-qr";
 export * from "./geolocated-instance";
 export * from "./holiday";
+export * from "./homepage-link";
+export * from "./homepage";
 export * from "./instance-parameters";
 export * from "./instance";
 export * from "./period";

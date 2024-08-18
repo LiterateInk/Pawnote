@@ -7,13 +7,12 @@ export const decodeUserParameters = (parameters: any, session: SessionHandle): U
 
   switch (session.information.accountKind) {
     case AccountKind.STUDENT:
+    case AccountKind.TEACHER:
       resources = [parameters.ressource];
       break;
     case AccountKind.PARENT:
       resources = parameters.ressource.listeRessources;
       break;
-    default:
-      throw new Error("account kind not supported for now");
   }
 
   return {

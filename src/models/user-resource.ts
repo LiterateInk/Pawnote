@@ -5,9 +5,10 @@ export type UserResource = Readonly<{
   id: string
   kind: number
   name: string
-  className: string
+  className?: string
   establishmentName: string
   profilePicture: Attachment | null
+  isDirector: boolean
   isDelegate: boolean
   isMemberCA: boolean
   tabs: Map<number, Tab>

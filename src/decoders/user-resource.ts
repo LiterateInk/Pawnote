@@ -14,7 +14,8 @@ export const decodeUserResource = (resource: any, session: SessionHandle): UserR
   }
 
   const tabs: Map<number, Tab> = new Map();
-  for (const tab of resource.listeOngletsPourPeriodes.V) {
+
+  for (const tab of resource.listeOngletsPourPeriodes?.V ?? []) {
     tabs.set(tab.G, decodeTab(tab, session.instance.periods));
   }
 
@@ -22,10 +23,11 @@ export const decodeUserResource = (resource: any, session: SessionHandle): UserR
     id: resource.N,
     kind: resource.G,
     name: resource.L,
-    className: resource.Etablissement.V.L,
-    establishmentName: resource.classeDEleve.L,
+    establishmentName: resource.Etablissement.V.L,
+    className: resource.classeDEleve?.L,
     profilePicture,
     tabs,
+    isDirector: resource.estDirecteur ?? false,
     isDelegate: resource.estDelegue ?? false,
     isMemberCA: resource.estMembreCA ?? false
   };

@@ -80,8 +80,6 @@ export default class Pronote {
   public periods: Period[];
   private periodsByOnglet: Map<PronoteApiOnglets, OngletPeriods>;
 
-  public holidays: Holiday[];
-
   private queue: Queue;
 
   constructor (
@@ -104,8 +102,6 @@ export default class Pronote {
     for (const ongletPeriods of user.ressource.listeOngletsPourPeriodes.V) {
       this.periodsByOnglet.set(ongletPeriods.G, readOngletPeriods(this.periods, ongletPeriods));
     }
-
-    this.holidays = loginInformations.donnees.General.listeJoursFeries.V.map((holiday) => new Holiday(holiday));
   }
 
   public async getTimetableOverviewForInterval (start: Date, end?: Date): Promise<TimetableOverview> {

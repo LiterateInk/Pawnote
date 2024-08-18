@@ -1,4 +1,4 @@
-import type { Period } from "~/models/period";
+import type { Period } from "~/models";
 import { decodePronoteDate } from "./pronote-date";
 
 export const decodePeriod = (period: any): Period => {

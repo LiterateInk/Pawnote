@@ -2,6 +2,7 @@ import type { InstanceParameters, WeekFrequency } from "~/models";
 import { decodePronoteDate } from "./pronote-date";
 import { decodeDomain } from "./domain";
 import { decodeHoliday } from "./holiday";
+import { decodePeriod } from "./period";
 
 export const decodeInstanceParameters = (parameters: any): InstanceParameters => {
   const weekFrequencies = new Map<number, WeekFrequency>();
@@ -26,7 +27,7 @@ export const decodeInstanceParameters = (parameters: any): InstanceParameters =>
     firstDate: decodePronoteDate(parameters.General.PremiereDate.V),
     lastDate: decodePronoteDate(parameters.General.DerniereDate.V),
 
-    periods: [],
+    periods: parameters.General.ListePeriodes.map(decodePeriod),
     holidays: parameters.General.listeJoursFeries.V.map(decodeHoliday),
     weekFrequencies
   };

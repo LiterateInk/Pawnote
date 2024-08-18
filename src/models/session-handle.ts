@@ -15,4 +15,6 @@ export interface SessionHandle {
 
   readonly queue: Queue
   readonly fetcher: Fetcher
+
+  presence: null | ReturnType<typeof setInterval>
 }

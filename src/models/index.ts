@@ -3,6 +3,7 @@ export * from "./attachment-kind";
 export * from "./attachment";
 export * from "./authentication-qr";
 export * from "./geolocated-instance";
+export * from "./holiday";
 export * from "./instance-parameters";
 export * from "./instance";
 export * from "./refresh-information";

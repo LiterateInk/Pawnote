@@ -84,11 +84,6 @@ export default class Pronote {
 
   private queue: Queue;
 
-  #weekFrequencies: Array<{
-    type: PronoteApiDomainFrequencyType
-    name: string
-  } | null>;
-
   constructor (
     public fetcher: PawnoteFetcher,
     private session: Session,
@@ -111,21 +106,6 @@ export default class Pronote {
     }
 
     this.holidays = loginInformations.donnees.General.listeJoursFeries.V.map((holiday) => new Holiday(holiday));
-
-    this.#weekFrequencies = [];
-    for (let weekNumber = 1; weekNumber <= PronoteApiMaxDomainCycle; weekNumber++) {
-      this.#weekFrequencies[weekNumber] = null;
-
-      for (const genre of [PronoteApiDomainFrequencyType.Fortnight1, PronoteApiDomainFrequencyType.Fortnight2]) {
-        const frequency = parseSelection(loginInformations.donnees.General.DomainesFrequences[genre].V);
-        if (frequency.includes(weekNumber)) {
-          this.#weekFrequencies[weekNumber] = {
-            name: loginInformations.donnees.General.LibellesFrequences[genre],
-            type: genre
-          };
-        }
-      }
-    }
   }
 
   public async getTimetableOverviewForInterval (start: Date, end?: Date): Promise<TimetableOverview> {

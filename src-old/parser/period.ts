@@ -25,27 +25,6 @@ export class OngletPeriod {
   }
 }
 
-export class Period {
-  public id: PronoteApiID<112> | "0";
-  public name: string;
-  public genre: number;
-
-  public start: Date;
-  public end: Date;
-
-  constructor (
-    public client: Pronote,
-    period: PronoteApiLoginInformations["response"]["donnees"]["General"]["ListePeriodes"][number]
-  ) {
-    this.id = period.N;
-    this.name = period.L;
-    this.genre = period.G;
-
-    this.start = readPronoteApiDate(period.dateDebut.V);
-    this.end = readPronoteApiDate(period.dateFin.V);
-  }
-}
-
 export interface OngletPeriods {
   /**
    * Default selected period for this onglet.

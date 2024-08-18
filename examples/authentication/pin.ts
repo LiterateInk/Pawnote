@@ -1,5 +1,5 @@
-import { loginQrCode, loginToken, createSessionHandle } from "../src";
-import { credentials } from "./_credentials";
+import { loginQrCode, loginToken, createSessionHandle } from "../../src";
+import { credentials } from "../_credentials";
 (async () => {
   console.log("------ PIN:");
 

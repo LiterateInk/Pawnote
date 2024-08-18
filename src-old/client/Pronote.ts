@@ -634,58 +634,6 @@ export default class Pronote {
     });
   }
 
-  public async getHomePage (nextOpenDate = this.nextOpenDate) {
-    return this.queue.push(async () => {
-      const response = await callApiUserHomepage(this.fetcher, {
-        session: this.session,
-        nextDateOpened: nextOpenDate,
-        weekNumber: translateToPronoteWeekNumber(nextOpenDate, this.firstMonday)
-      });
-
-      let ardPartner: Partner | null = null;
-      // Is contained in the "lienUtile.listeLiens" array, we need to iterate over it.
-      let turboselfPartner: Partner | null = null;
-
-      if (response.data.donnees.partenaireARD) {
-        ardPartner = new Partner(this, response.data.donnees.partenaireARD.SSO);
-      }
-
-      const usefulLinks: Array<{ name: string, description: string, url: string }> = [];
-
-      for (const link of response.data.donnees.lienUtile.listeLiens.V) {
-        if ("SSO" in link) {
-          if (link.SSO.codePartenaire === "TURBOSELF") {
-            turboselfPartner = new Partner(this, link.SSO);
-          }
-        }
-        else {
-          usefulLinks.push({
-            name: link.L,
-            description: link.commentaire,
-            url: link.url
-          });
-        }
-      }
-
-      return {
-        usefulLinks,
-        ard: ardPartner,
-        turboself: turboselfPartner
-      };
-    });
-  }
-
-  public async getPartnerURL (partner: Partner): Promise<string> {
-    return this.queue.push(async () => {
-      const response = await callApiUserPartnerURL(this.fetcher, {
-        session: this.session,
-        sso: partner.sso
-      });
-
-      return response.url;
-    });
-  }
-
   public getFrequencyForWeek (weekNumber: number): { type: PronoteApiDomainFrequencyType, name: string } | null {
     if (weekNumber < 1) throw new Error("Week number must be at least 1.");
     else if (weekNumber > PronoteApiMaxDomainCycle) throw new Error(`Week number can't be more than maximum value which is ${PronoteApiMaxDomainCycle}.`);

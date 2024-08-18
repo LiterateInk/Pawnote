@@ -3,6 +3,7 @@ import forge from "node-forge";
 import pako from "pako";
 import { AES } from "../api/private/aes";
 import { ResponseFN } from "./response-function";
+import { aesKeys } from "../api/private/keys";
 
 /**
  * Abstraction to make requests to function API
@@ -42,9 +43,7 @@ export class RequestFN {
   }
 
   private keys () {
-    const iv = forge.util.createBuffer(this.session.information.order === 1 ? "" : this.session.information.aesIV);
-    const key = forge.util.createBuffer(this.session.information.aesKey);
-    return { iv, key };
+    return aesKeys(this.session, this.session.information.order === 1);
   }
 
   private generateOrder (): string {

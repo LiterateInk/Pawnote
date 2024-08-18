@@ -2,6 +2,7 @@ import type { SessionHandle } from "~/models";
 import forge from "node-forge";
 import { AES } from "../api/private/aes";
 import pako from "pako";
+import { aesKeys } from "../api/private/keys";
 
 export class ResponseFN {
   public constructor (
@@ -52,8 +53,7 @@ export class ResponseFN {
   }
 
   private decrypt (): void {
-    const iv = forge.util.createBuffer(this.session.information.aesIV);
-    const key = forge.util.createBuffer(this.session.information.aesKey);
+    const { iv, key } = aesKeys(this.session);
 
     this.data = AES.decrypt(this.data, key, iv);
 

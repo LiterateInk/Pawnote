@@ -1,6 +1,7 @@
 import type { SessionHandle } from "~/models";
 import forge from "node-forge";
 import { AES } from "../api/private/aes";
+import { aesKeys } from "../api/private/keys";
 
 type SupportedFile =
   | Blob | File | Buffer | ArrayBuffer | Uint8Array
@@ -17,14 +18,10 @@ export class RequestUpload {
   public fileID = `selecfile_1_${Date.now()}`;
   public md5 = "";
 
-  public constructor (
-    private session: SessionHandle,
-    public file: SupportedFile
-  ) {
+  public constructor (session: SessionHandle, public file: SupportedFile) {
     session.information.order++;
 
-    const iv = forge.util.createBuffer(this.session.information.aesIV);
-    const key = forge.util.createBuffer(this.session.information.aesKey);
+    const { iv, key } = aesKeys(session);
 
     this.order = AES.encrypt(session.information.order.toString(), key, iv);
   }

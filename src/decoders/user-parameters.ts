@@ -1,6 +1,7 @@
-import type { Attachment, SessionHandle, UserParameters } from "~/models";
+import type { Attachment, SessionHandle, Tab, UserParameters } from "~/models";
 import { decodeAttachment } from "./attachment";
 import { decodeUserAuthorizations } from "./user-authorizations";
+import { decodeTab } from "./tab";
 
 export const decodeUserParameters = (parameters: any, session: SessionHandle): UserParameters => {
   let profilePicture: Attachment | null = null;
@@ -12,6 +13,11 @@ export const decodeUserParameters = (parameters: any, session: SessionHandle): U
     }, session);
   }
 
+  const tabs: Map<number, Tab> = new Map();
+  for (const tab of parameters.ressource.listeOngletsPourPeriodes.V) {
+    tabs.set(tab.G, decodeTab(tab, session.instance.periods));
+  }
+
   return {
     id: parameters.ressource.N,
     kind: parameters.ressource.G,
@@ -19,9 +25,9 @@ export const decodeUserParameters = (parameters: any, session: SessionHandle): U
     className: parameters.ressource.Etablissement.V.L,
     establishmentName: parameters.ressource.classeDEleve.L,
     profilePicture,
+    tabs,
     isDelegate: parameters.ressource.estDelegue ?? false,
     isMemberCA: parameters.ressource.estMembreCA ?? false,
-    authorizations: decodeUserAuthorizations(parameters.autorisations)
-
+    authorizations: decodeUserAuthorizations(parameters.autorisations, parameters.listeOnglets)
   };
 };

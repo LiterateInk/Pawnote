@@ -33,4 +33,5 @@ export type UserAuthorizations = Readonly<{
    * @example 4194304 // for 4MB.
    */
   maxHomeworkFileUploadSize: boolean
+  allowedTabs: number[] // TODO: export an object for aliasing the kind of tabs with their labels
 }>;

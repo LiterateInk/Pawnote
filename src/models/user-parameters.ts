@@ -1,5 +1,6 @@
-import type { Attachment } from "./attachment";
 import type { UserAuthorizations } from "./user-authorizations";
+import type { Attachment } from "./attachment";
+import { Tab } from "./tab";
 
 export type UserParameters = Readonly<{
   id: string
@@ -8,11 +9,7 @@ export type UserParameters = Readonly<{
 
   authorizations: UserAuthorizations
 
-  /**
-  * @remark Was named `onglets` in previous versions.
-  */
-  tabs: Tab[]
-  periodsByTab: any // TODO
+  tabs: Map<number, Tab>
 
   profilePicture: Attachment | null
 

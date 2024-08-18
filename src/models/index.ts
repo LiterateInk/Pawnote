@@ -6,6 +6,7 @@ export * from "./geolocated-instance";
 export * from "./holiday";
 export * from "./instance-parameters";
 export * from "./instance";
+export * from "./period";
 export * from "./refresh-information";
 export * from "./session-access-kind";
 export * from "./session-handle";

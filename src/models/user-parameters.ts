@@ -1,6 +1,5 @@
 import type { UserAuthorizations } from "./user-authorizations";
-import type { Attachment } from "./attachment";
-import { Tab } from "./tab";
+import type { UserResource } from "./user-resource";
 
 export type UserParameters = Readonly<{
   id: string
@@ -8,14 +7,5 @@ export type UserParameters = Readonly<{
   name: string
 
   authorizations: UserAuthorizations
-
-  tabs: Map<number, Tab>
-
-  profilePicture: Attachment | null
-
-  establishmentName: string
-  className: string
-
-  isDelegate: boolean
-  isMemberCA: boolean
+  resources: Array<UserResource>
 }>;

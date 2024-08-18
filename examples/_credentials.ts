@@ -10,14 +10,19 @@ class ExampleCredentialsError extends Error {
   }
 }
 
-if (!process.env.PRONOTE_URL || !process.env.USERNAME || !process.env.PASSWORD) {
+if (!process.env.PRONOTE_URL) {
   throw new ExampleCredentialsError();
 }
 
 // Export the credentials.
 export const credentials = {
   pronoteURL: process.env.PRONOTE_URL,
-  username: process.env.USERNAME,
-  password: process.env.PASSWORD,
+
+  username: process.env.USERNAME!,
+  password: process.env.PASSWORD!,
+
+  parent_username: process.env.PARENT_USERNAME!,
+  parent_password: process.env.PARENT_PASSWORD!,
+
   deviceUUID: "my-device-uuid" // Make this a random unique string for security reasons.
 };

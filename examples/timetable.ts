@@ -18,18 +18,40 @@ void async function main () {
     withPlannedClasses: true
   });
 
-  const prefix = (lesson: pronote.TimetableClass): string => lesson.startDate.toLocaleString("fr-FR") + " |";
   for (const lesson of timetable.classes) {
-    switch (lesson.is) {
-      case "activity":
-        console.log(prefix(lesson), "ACTIVITY:", lesson.title);
-        break;
-      case "detention":
-        console.log(prefix(lesson), "DETENTION:", lesson.title);
-        break;
-      case "lesson":
-        console.log(prefix(lesson), "LESSON:", lesson.subject?.name || "(unknown subject)");
+    if (lesson.is === "activity") {
+      console.log(lesson.title, "activity starts the", lesson.startDate.toLocaleString(), "ends the", lesson.endDate.toLocaleString());
+      console.log("(attendants) =>", lesson.attendants.join(", ") || "none");
+      console.log(`(resourceType->${lesson.resourceTypeName}) => ${lesson.resourceValue}`);
     }
+    else if (lesson.is === "detention") {
+      console.log(lesson.title ?? "???", "detention starts the", lesson.startDate.toLocaleString(), "ends the", lesson.endDate.toLocaleString());
+    }
+    else if (lesson.is === "lesson") {
+      // Let's use "???" as a placeholder when there's no subject on a lesson.
+      const subjectName = lesson.subject?.name ?? "???";
+      console.log(subjectName, "lesson starts the", lesson.startDate.toLocaleString(), "ends the", lesson.endDate.toLocaleString());
+
+      console.log("(teachers) =>", lesson.teacherNames.join(", ") || "none");
+      console.log("(classrooms) =>", lesson.classrooms.join(", ") || "none");
+      console.log("(groups) =>", lesson.groupNames.join(", ") || "none");
+      console.log("(personal) =>", lesson.personalNames.join(", ") || "none");
+
+      if (lesson.lessonResourceID) {
+        console.log("(info) => has lesson resource/content");
+      }
+
+      if (lesson.status) {
+        console.log("(status) =>", lesson.status);
+      }
+
+      console.log("(exempted) =>", lesson.exempted);
+    }
+
+    console.info("(notes) =>", lesson.notes || "none");
+
+    // Break line.
+    console.log();
   }
 }();
 

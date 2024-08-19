@@ -8,7 +8,9 @@ export type InstanceParameters = Readonly<{
   firstDate: Date
   lastDate: Date
 
+  endings: string[]
   periods: Period[]
   holidays: Holiday[]
   weekFrequencies: Map<number, WeekFrequency>
+  blocksPerDay: number
 }>;

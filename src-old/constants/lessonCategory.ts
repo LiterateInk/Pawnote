@@ -21,11 +21,3 @@ export enum PronoteApiLessonContentCategory {
   /** Corresponds to "Visio" */
   VISIO = 12
 }
-
-export enum PronoteApiLessonStatusType {
-  EnseignementNormal = 0,
-  ConseilDeClasse = 1,
-  EnseignementRemplacement = 2,
-  EnseignementHistorique = 3,
-  EnseignementSuppleant = 4
-}

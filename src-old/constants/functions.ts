@@ -3,7 +3,7 @@ export enum PronoteApiFunctions {
   // Identify = "Identification",
   // Authenticate = "Authentification",
   // UserData = "ParametresUtilisateur",
-  Timetable = "PageEmploiDuTemps",
+  // Timetable = "PageEmploiDuTemps",
   Homework = "PageCahierDeTexte",
   Resources = "PageCahierDeTexte",
   Grades = "DernieresNotes",

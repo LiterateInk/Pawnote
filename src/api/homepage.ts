@@ -1,7 +1,7 @@
 import { RequestFN } from "~/core/request-function";
 import { encodePronoteDate } from "~/encoders/pronote-date";
 import { type SessionHandle } from "~/models";
-import { translateToPronoteWeekNumber } from "./helpers/week-number";
+import { translateToWeekNumber } from "./helpers/week-number";
 import { decodeHomepage } from "~/decoders/homepage";
 import type { Homepage } from "~/models/homepage";
 
@@ -9,7 +9,7 @@ import type { Homepage } from "~/models/homepage";
  * Retrieve data from the homepage for the given session.
  */
 export const homepage = async (session: SessionHandle, day = session.instance.nextBusinessDay): Promise<Homepage> => {
-  const weekNumber = translateToPronoteWeekNumber(day, session.instance.firstMonday);
+  const weekNumber = translateToWeekNumber(day, session.instance.firstMonday);
   const next = encodePronoteDate(day);
 
   const request = new RequestFN(session, "PageAccueil", {

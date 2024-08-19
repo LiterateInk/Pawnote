@@ -1,39 +1,36 @@
-import { authenticatePronoteCredentials, PronoteApiAccountId, TimetableDetention, TimetableLesson, TimetableOverview } from "../src";
+import * as pronote from "../src";
+import { credentials } from "./_credentials";
 
-(async () => {
-  const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev", {
-    accountTypeID: PronoteApiAccountId.Student,
-    username: "lisa.boulanger",
-    password: "12345678",
-
-    // Because this is just an example, don't forget to change this.
-    deviceUUID: "my-device-uuid"
+void async function main () {
+  const handle = pronote.createSessionHandle();
+  await pronote.loginCredentials(handle, {
+    url: credentials.pronoteURL,
+    kind: pronote.AccountKind.STUDENT,
+    username: credentials.username,
+    password: credentials.password,
+    deviceUUID: credentials.deviceUUID
   });
 
-  const overview = await pronote.getTimetableOverviewForWeek(1);
-
-  // const overview = await pronote.getTimetableOverviewForInterval(
-  //   new Date("2024-09-02"),
-  //   new Date("2024-09-06")
-  // );
-
-  const timetable = overview.parse({
+  const timetable = await pronote.timetableFromWeek(handle, 3);
+  pronote.parseTimetable(handle, timetable, {
     withSuperposedCanceledClasses: false,
     withCanceledClasses: true,
     withPlannedClasses: true
   });
 
-  for (const lesson of timetable) {
-    if (lesson.isActivity()) {
-      console.log("Activity:", lesson.title);
-    }
-    else if (lesson.isDetention()) {
-      console.log("Detention:", lesson.title);
-    }
-    else if (lesson.isLesson()) {
-      console.log("Lesson:", lesson.subject?.name || "(unknown subject)");
+  const prefix = (lesson: pronote.TimetableClass): string => lesson.startDate.toLocaleString("fr-FR") + " |";
+  for (const lesson of timetable.classes) {
+    switch (lesson.is) {
+      case "activity":
+        console.log(prefix(lesson), "ACTIVITY:", lesson.title);
+        break;
+      case "detention":
+        console.log(prefix(lesson), "DETENTION:", lesson.title);
+        break;
+      case "lesson":
+        console.log(prefix(lesson), "LESSON:", lesson.subject?.name || "(unknown subject)");
     }
   }
-})();
+}();
 
 

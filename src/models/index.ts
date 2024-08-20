@@ -1,6 +1,7 @@
 export * from "./account-kind";
 export * from "./attachment-kind";
 export * from "./attachment";
+export * from "./attendance";
 export * from "./authentication-qr";
 export * from "./geolocated-instance";
 export * from "./holiday";
@@ -14,6 +15,7 @@ export * from "./session-access-kind";
 export * from "./session-handle";
 export * from "./session-information";
 export * from "./subject";
+export * from "./tab-location";
 export * from "./tab";
 export * from "./timetable-class-activity";
 export * from "./timetable-class-detention";

@@ -1,4 +1,4 @@
-import type { SessionHandle, Timetable } from "~/models";
+import { TabLocation, type SessionHandle, type Timetable } from "~/models";
 import { propertyCaseInsensitive } from "./private/property-case-insensitive";
 import { RequestFN } from "~/core/request-function";
 import { encodeUserResource } from "~/encoders/user-resource";
@@ -6,6 +6,8 @@ import { decodeTimetable } from "~/decoders/timetable";
 
 const timetable = async (session: SessionHandle, index: number, additional = {}): Promise<Timetable> => {
   const request = new RequestFN(session, "PageEmploiDuTemps", {
+    _Signature_: { onglet: TabLocation.Timetable },
+
     donnees: {
       estEDTAnnuel: false,
       estEDTPermanence: false,
@@ -24,9 +26,6 @@ const timetable = async (session: SessionHandle, index: number, additional = {})
 
       ...propertyCaseInsensitive("ressource", encodeUserResource(session.user.resources[index])),
       ...additional
-    },
-    _Signature_: {
-      onglet: 16 // = Timetable
     }
   });
 

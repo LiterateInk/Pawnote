@@ -1,6 +1,6 @@
 import { RequestFN } from "~/core/request-function";
 import { encodePronoteDate } from "~/encoders/pronote-date";
-import { type SessionHandle } from "~/models";
+import { TabLocation, type SessionHandle } from "~/models";
 import { translateToWeekNumber } from "./helpers/week-number";
 import { decodeHomepage } from "~/decoders/homepage";
 import type { Homepage } from "~/models/homepage";
@@ -13,9 +13,7 @@ export const homepage = async (session: SessionHandle, day = session.instance.ne
   const next = encodePronoteDate(day);
 
   const request = new RequestFN(session, "PageAccueil", {
-    _Signature_: {
-      onglet: 7 // = Presence
-    },
+    _Signature_: { onglet: TabLocation.Presence },
 
     donnees: {
       avecConseilDeClasse: true,

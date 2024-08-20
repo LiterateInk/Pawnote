@@ -355,63 +355,6 @@ export default class Pronote {
     });
   }
 
-  public readDefaultPeriodForAttendance (): Period {
-    return this.periodsByOnglet.get(PronoteApiOnglets.Attendance)!.default;
-  }
-
-  public readPeriodsForAttendance (): Period[] {
-    return this.periodsByOnglet.get(PronoteApiOnglets.Attendance)!.values.map((period) => {
-      if (period.linkedPeriod) return period.linkedPeriod;
-
-      // When the period doesn't exist globally, we need
-      // to create one that goes from beginning of the year
-      // until the end !
-      return new Period(this, {
-        N: "0", // Not needed.
-        periodeNotation: 0, // Unused.
-
-        G: period.genre,
-        L: period.name,
-
-        dateDebut: this.loginInformations.donnees.General.PremiereDate,
-        dateFin: this.loginInformations.donnees.General.DerniereDate
-      });
-    });
-  }
-
-  public async getAttendance (period = this.readDefaultPeriodForAttendance()) {
-    return this.queue.push(async () => {
-      const { data } = await callApiUserAttendance(this.fetcher, {
-        session: this.session,
-        period
-      });
-
-      return data.donnees.listeAbsences.V.map((item) => {
-        let instance: StudentAbsence | StudentDelay | StudentPunishment | StudentObservation | StudentPrecautionaryMeasure;
-
-        switch (item.G) {
-          case PronoteApiResourceType.Absence:
-            instance = new StudentAbsence(item);
-            break;
-          case PronoteApiResourceType.Delay:
-            instance = new StudentDelay(item);
-            break;
-          case PronoteApiResourceType.Punishment:
-            instance = new StudentPunishment(this, item);
-            break;
-          case PronoteApiResourceType.ObservationProfesseurEleve:
-            instance = new StudentObservation(item);
-            break;
-          case PronoteApiResourceType.PrecautionaryMeasure:
-            instance = new StudentPrecautionaryMeasure(this, item);
-            break;
-        }
-
-        return instance;
-      }).filter(Boolean) as Array<StudentAbsence | StudentDelay | StudentPunishment | StudentObservation | StudentPrecautionaryMeasure>;
-    });
-  }
-
   /**
    * Updates the status of a news item.
    * Could be a read, or answer to a survey.

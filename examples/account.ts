@@ -26,12 +26,14 @@ void async function main () {
   console.log(`Can be called at ${account.phone} and emailed at ${account.email}.`);
   console.log(); // Break line.
 
+  // We can also grab the INE if the user is a student.
   console.log("-> INE:", account.INE);
+  console.log(); // Break line.
 
   // This is the token that we can use to grab an iCal for the timetable.
   if (account.iCalToken) {
     console.log("-> Token iCal:", account.iCalToken);
     // Here's how we can grab the timetable URL from the token.
-    // console.log("-> Timetable .ics URL:", pronote.getTimetableICalURL(account.iCalToken));
+    console.log("-> Timetable .ics URL:", pronote.timetableICalURL(session, account.iCalToken));
   }
 }();

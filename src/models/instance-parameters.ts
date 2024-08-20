@@ -8,6 +8,7 @@ export type InstanceParameters = Readonly<{
   firstDate: Date
   lastDate: Date
 
+  version: number[]
   endings: string[]
   periods: Period[]
   holidays: Holiday[]

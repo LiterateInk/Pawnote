@@ -22,6 +22,7 @@ export const decodeInstanceParameters = (parameters: any): InstanceParameters =>
   }
 
   return {
+    version: parameters.General.versionPN.split(".").map(Number),
     nextBusinessDay: decodePronoteDate(parameters.General.JourOuvre.V),
     firstMonday: decodePronoteDate(parameters.General.PremierLundi.V),
     firstDate: decodePronoteDate(parameters.General.PremiereDate.V),

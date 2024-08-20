@@ -34,7 +34,7 @@ export type UserAuthorizations = Readonly<{
    * The maximum file size allowed for homework uploads.
    * @example 4194304 // for 4MB.
    */
-  maxHomeworkFileUploadSize: boolean
+  maxHomeworkFileUploadSize: number
   /**
    * Allowed tabs for the user.
    *

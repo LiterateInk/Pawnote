@@ -1,12 +1,12 @@
 import { RequestFN } from "~/core/request-function";
-import { SessionHandle, TabLocation } from "~/models";
+import { type Partner, type SessionHandle, TabLocation } from "~/models";
 
-export const partnerURL = async (session: SessionHandle, sso: any): Promise<string> => {
+export const partnerURL = async (session: SessionHandle, partner: Partner): Promise<string> => {
   const request = new RequestFN(session, "SaisieURLPartenaire", {
     _Signature_: { onglet: TabLocation.Presence },
 
     donnees: {
-      SSO: sso
+      SSO: partner.sso
     }
   });
 

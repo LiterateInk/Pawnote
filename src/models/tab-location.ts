@@ -7,7 +7,7 @@ export const TabLocation = {
   Account: 49,
   Presence: 7,
   News: 8,
-  Attendance: 19,
+  Notebook: 19,
   Discussions: 131,
   GradesReport: 13
 } as const;

@@ -195,26 +195,6 @@ export default class Pronote {
     });
   }
 
-  /**
-   * Allows to get more information such as student's INE, email, phone and address.
-   * @param forceUpdate - Forces the API request, even if a cache for this request was made.
-   */
-  public async getPersonalInformation (forceUpdate = false): Promise<StudentPersonalInformation> {
-    return this.queue.push(async () => {
-      // Use cache when exists and allowed.
-      if (this.personalInformationCache && !forceUpdate) return this.personalInformationCache;
-
-      // Otherwise, let's renew the data.
-      const { data: { donnees: data } } = await callApiUserPersonalInformation(this.fetcher, {
-        session: this.session,
-        userID: this.user.ressource.N
-      });
-
-      this.personalInformationCache = new StudentPersonalInformation(this.session, data);
-      return this.personalInformationCache;
-    });
-  }
-
   public async getLessonResource (lessonId: string): Promise<StudentLessonResource> {
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserLessonResource(this.fetcher, {
@@ -420,33 +400,6 @@ export default class Pronote {
           isHTML: this.authorizations.hasAdvancedDiscussionEditor,
           value: content
         }
-      });
-    });
-  }
-
-  public async uploadHomeworkFile (homeworkID: string, file: PawnoteSupportedFormDataFile, fileName: string): Promise<void> {
-    return this.queue.push(async () => {
-      // Check if the homework can be uploaded.
-      // Otherwise we'll get an error during the upload.
-      // @ts-expect-error : trust the process.
-      const fileSize: number | undefined = file.size || file.byteLength;
-      if (typeof fileSize === "number" && fileSize > this.#authorizations.maxHomeworkFileUploadSize) {
-        throw new Error(`File size is too big, maximum allowed is ${this.#authorizations.maxHomeworkFileUploadSize} bytes.`);
-      }
-
-      // Ask to the server to store the file for us.
-      const payload = this.session.writePronoteFileUploadPayload(file);
-      await createPronoteUploadCall(this.fetcher, PronoteApiFunctions.HomeworkUpload, {
-        session_instance: this.session.instance,
-        fileName: fileName,
-        payload
-      });
-
-      await callApiUserHomeworkUpload(this.fetcher, {
-        fileID: payload.fileID,
-        fileName,
-        homeworkID,
-        session: this.session
       });
     });
   }

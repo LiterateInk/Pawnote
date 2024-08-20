@@ -5,6 +5,7 @@ export * from "./helpers/presence-interval";
 export * from "./helpers/session-handle";
 export * from "./helpers/week-number";
 
+export * from "./account";
 export * from "./geolocation";
 export * from "./homepage";
 export * from "./instance";

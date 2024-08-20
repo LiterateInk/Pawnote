@@ -1,4 +1,5 @@
 export * from "./account-kind";
+export * from "./account";
 export * from "./attachment-kind";
 export * from "./attachment";
 export * from "./authentication-qr";

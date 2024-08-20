@@ -85,31 +85,6 @@ export default class Pronote {
   ) {
   }
 
-  public async getTimetableOverviewForInterval (start: Date, end?: Date): Promise<TimetableOverview> {
-    return this.queue.push(async () => {
-      const { data: { donnees: data } } = await callApiUserTimetable(this.fetcher, {
-        resource: this.user.ressource,
-        session: this.session,
-        startPronoteDate: transformDateToPronoteString(start),
-        endPronoteDate: end && transformDateToPronoteString(end)
-      });
-
-      return new TimetableOverview(this, data);
-    });
-  }
-
-  public async getTimetableOverviewForWeek (weekNumber: number): Promise<TimetableOverview> {
-    return this.queue.push(async () => {
-      const { data: { donnees: data } } = await callApiUserTimetable(this.fetcher, {
-        resource: this.user.ressource,
-        session: this.session,
-        weekNumber
-      });
-
-      return new TimetableOverview(this, data);
-    });
-  }
-
   /**
    * When `to` is not given, it'll default to the end of the year.
    */
@@ -205,15 +180,6 @@ export default class Pronote {
     });
   }
 
-  public readPeriodsForGradesOverview (): Period[] {
-    return this.periodsByOnglet.get(PronoteApiOnglets.Grades)!.values.map((period) => period.linkedPeriod)
-      .filter(Boolean) as Period[];
-  }
-
-  public readDefaultPeriodForGradesOverview (): Period {
-    return this.periodsByOnglet.get(PronoteApiOnglets.Grades)!.default;
-  }
-
   /**
    * Get grades overview for a specific period.
    * Including student's grades with averages and the global averages.
@@ -241,15 +207,6 @@ export default class Pronote {
     });
   }
 
-  public readPeriodsForGradesReport (): Period[] {
-    return this.periodsByOnglet.get(PronoteApiOnglets.GradesReport)!.values.map((period) => period.linkedPeriod)
-      .filter(Boolean) as Period[];
-  }
-
-  public readDefaultPeriodForGradesReport (): Period {
-    return this.periodsByOnglet.get(PronoteApiOnglets.GradesReport)!.default;
-  }
-
   /**
    * @param period - Period the grades report will be from.
    * @returns an URL to download the PDF file.
@@ -263,15 +220,6 @@ export default class Pronote {
 
       return this.pronoteRootURL + "/" + data.url;
     });
-  }
-
-  public readPeriodsForEvaluations (): Period[] {
-    return this.periodsByOnglet.get(PronoteApiOnglets.Evaluations)!.values.map((period) => period.linkedPeriod)
-      .filter(Boolean) as Period[];
-  }
-
-  public readDefaultPeriodForEvaluations (): Period {
-    return this.periodsByOnglet.get(PronoteApiOnglets.Evaluations)!.default;
   }
 
   public async getEvaluations (period = this.readDefaultPeriodForEvaluations()): Promise<StudentEvaluation[]> {
@@ -312,24 +260,6 @@ export default class Pronote {
   public getTimetableICalURL (iCalToken: string, fileName = "timetable"): string {
     const version = this.session.instance.version.join(".");
     return `${this.pronoteRootURL}/ical/${fileName}.ics?icalsecurise=${iCalToken}&version=${version}&param=266f3d32`;
-  }
-
-  private presenceRequestsInterval?: ReturnType<typeof setInterval>;
-
-  /**
-   * @param interval Custom interval (in ms) for `Presence` requests.
-   * Defaults to 2 minutes: same value as from Pronote.
-   */
-  public startPresenceRequests (interval = 2 * 60 * 1000): void {
-    if (this.presenceRequestsInterval) this.stopPresenceRequests();
-    this.presenceRequestsInterval = setInterval(() => (
-      this.queue.push(() => callApiUserPresence(this.fetcher, { session: this.session }))
-    ), interval);
-  }
-
-  public stopPresenceRequests (): void {
-    if (!this.presenceRequestsInterval) return;
-    clearInterval(this.presenceRequestsInterval);
   }
 
   public async getLessonResource (lessonId: string): Promise<StudentLessonResource> {

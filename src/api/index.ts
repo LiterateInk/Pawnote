@@ -8,6 +8,7 @@ export * from "./helpers/week-number";
 export * from "./account";
 export * from "./geolocation";
 export * from "./homepage";
+export * from "./ical";
 export * from "./instance";
 export * from "./notebook";
 export * from "./partner-url";

@@ -234,9 +234,6 @@ export default class Pronote {
     });
   }
 
-  /** Since content inside of it can't change that often, we use a cache to prevent calling the API every time. */
-  private personalInformationCache?: StudentPersonalInformation;
-
   /**
    * Allows to get more information such as student's INE, email, phone and address.
    * @param forceUpdate - Forces the API request, even if a cache for this request was made.

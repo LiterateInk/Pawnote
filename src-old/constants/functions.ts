@@ -10,7 +10,7 @@ export enum PronoteApiFunctions {
   HomeworkDone = "SaisieTAFFaitEleve",
   HomeworkUpload = "SaisieTAFARendreEleve",
   Evaluations = "DernieresEvaluations",
-  PersonalInformation = "PageInfosPerso",
+  // PersonalInformation = "PageInfosPerso",
   // Presence = "Presence",
   LessonContentInResources = "donneesContenusCDT",
   News = "PageActualites",

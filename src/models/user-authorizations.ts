@@ -1,3 +1,5 @@
+import type { TabLocation } from "./tab-location";
+
 export type UserAuthorizations = Readonly<{
   /**
    * Whether the user is allowed to read discussions.
@@ -33,5 +35,11 @@ export type UserAuthorizations = Readonly<{
    * @example 4194304 // for 4MB.
    */
   maxHomeworkFileUploadSize: boolean
-  allowedTabs: number[] // TODO: export an object for aliasing the kind of tabs with their labels
+  /**
+   * Allowed tabs for the user.
+   *
+   * You should use this to know if a user have access
+   * to a tab before requesting the data for it.
+   */
+  tabs: TabLocation[]
 }>;

@@ -1,28 +1,28 @@
-import type { UserAuthorizations } from "~/models";
+import type { TabLocation, UserAuthorizations } from "~/models";
 
-function explore(data: Array<any>): number[] {
-  let list: number[] = [];
-  function traverse(obj: any): void {
-    if ("G" in obj) {
-      list.push(obj.G);
-    }
-    if (obj.Onglet) {
-      obj.Onglet.forEach((child: any) => traverse(child));
-    }
-  }
-  data.forEach((item) => {
-    traverse(item);
-  });
-  return list;
-}
-
-export const decodeUserAuthorizations = (data: any, tabs: any): UserAuthorizations => {
+export const decodeUserAuthorizations = (data: any, tabs: any[]): UserAuthorizations => {
   const canReadDiscussions = data.AvecDiscussion ?? false;
   const canDiscuss = canReadDiscussions && !(data.discussionInterdit ?? false);
   const canDiscussWithStaff = canDiscuss && (data.AvecDiscussionPersonnels ?? false);
   const canDiscussWithParents = canDiscuss && (data.AvecDiscussionParents ?? false);
   const canDiscussWithStudents = canDiscuss && (data.AvecDiscussionEleves ?? false);
   const canDiscussWithTeachers = canDiscuss && (data.AvecDiscussionProfesseurs ?? false);
+
+  const locations: TabLocation[] = [];
+
+  if (tabs.length > 0) {
+    const traverse = (obj: any): void => {
+      if ("G" in obj) {
+        locations.push(obj.G);
+      }
+
+      if ("Onglet" in obj) {
+        obj.Onglet.forEach(traverse);
+      }
+    };
+
+    tabs.forEach(traverse);
+  }
 
   return {
     canReadDiscussions,
@@ -35,6 +35,6 @@ export const decodeUserAuthorizations = (data: any, tabs: any): UserAuthorizatio
     hasAdvancedDiscussionEditor: data.AvecDiscussionAvancee ?? false,
     maxHomeworkFileUploadSize: data.tailleMaxRenduTafEleve,
 
-    allowedTabs: explore(tabs)
+    tabs: locations
   };
 };

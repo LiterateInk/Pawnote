@@ -1,24 +1,18 @@
-import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiHomeworkReturnType } from "../src";
+import * as pronote from "../src";
+import { credentials } from "./_credentials";
 
-(async () => {
-  const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev/pronote", {
-    accountTypeID: PronoteApiAccountId.Student,
-    username: "lisa.boulanger",
-    password: "12345678",
-
-    // Because this is just an example, don't forget to change this.
-    deviceUUID: "my-device-uuid"
+void async function main () {
+  const handle = pronote.createSessionHandle();
+  await pronote.loginCredentials(handle, {
+    url: credentials.pronoteURL,
+    kind: pronote.AccountKind.STUDENT,
+    username: credentials.username,
+    password: credentials.password,
+    deviceUUID: credentials.deviceUUID
   });
 
-  // const from = new Date("2023-10-16");
-  // const to = new Date("2023-10-18");
-  // const homework = await pronote.getHomeworkForInterval(from, to);
-
-  // From today until the end of the year.
-  const homework = await pronote.getHomeworkForInterval(new Date());
-
-  // Little separator.
-  console.log("---");
+  // Grab all the homework for week 1 through week 4.
+  const homework = await pronote.homeworkFromWeek(handle, 1, 4);
 
   homework
     // We can filter by homeworks not done.
@@ -37,19 +31,29 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiHomework
       }
 
       if (homework.return) {
-        if (homework.return.type === PronoteApiHomeworkReturnType.PAPER) {
-          console.log("(return) => on paper ; should be returned to teacher manually");
-        }
-        else if (homework.return.type === PronoteApiHomeworkReturnType.FILE_UPLOAD) {
-          console.log("(return) => file upload", homework.return.uploaded ? `(uploaded: ${homework.return.uploaded.url})` : "(not uploaded)");
+        switch (homework.return.kind) {
+          case pronote.HomeworkReturnKind.None:
+            console.log("(return) => no return required");
+            break;
+          case pronote.HomeworkReturnKind.Paper:
+            console.log("(return) => on paper ; should be returned to teacher manually");
+            break;
+          case pronote.HomeworkReturnKind.FileUpload:
+            console.log("(return) => file upload", homework.return.uploaded ? `(uploaded: ${homework.return.uploaded.url})` : "(not uploaded)");
+            break;
+          case pronote.HomeworkReturnKind.Kiosk:
+            console.log("(return) => kiosk (not implemented)");
+            break;
+          case pronote.HomeworkReturnKind.AudioRecording:
+            console.log("(return) => audio recording (not implemented)");
+            break;
         }
       }
 
       if (homework.lessonResourceID) {
-        console.log("(info) => lesson content is available, see :", homework.lessonResourceID);
+        console.log("(info) => lesson content is available, see ID @", homework.lessonResourceID);
       }
 
-      // Little separator.
-      console.log("---");
+      console.log(); // Linebreak.
     });
-})();
+}();

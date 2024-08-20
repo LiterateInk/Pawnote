@@ -8,6 +8,7 @@ export const decodeTab = (tab: any, instancePeriods: Period[]): Tab => {
 
   return {
     defaultPeriod,
+    location: tab.G,
     periods
   };
 };

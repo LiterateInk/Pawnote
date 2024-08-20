@@ -254,11 +254,6 @@ export default class Pronote {
     });
   }
 
-  public getTimetableICalURL (iCalToken: string, fileName = "timetable"): string {
-    const version = this.session.instance.version.join(".");
-    return `${this.pronoteRootURL}/ical/${fileName}.ics?icalsecurise=${iCalToken}&version=${version}&param=266f3d32`;
-  }
-
   public async getLessonResource (lessonId: string): Promise<StudentLessonResource> {
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserLessonResource(this.fetcher, {

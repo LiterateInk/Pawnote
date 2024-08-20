@@ -1,5 +1,6 @@
 import type { Attachment } from "./attachment";
 import type { Tab } from "./tab";
+import type { TabLocation } from "./tab-location";
 
 export type UserResource = Readonly<{
   id: string
@@ -11,5 +12,5 @@ export type UserResource = Readonly<{
   isDirector: boolean
   isDelegate: boolean
   isMemberCA: boolean
-  tabs: Map<number, Tab>
+  tabs: Map<TabLocation, Tab>
 }>;

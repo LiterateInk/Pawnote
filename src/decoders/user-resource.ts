@@ -1,4 +1,4 @@
-import type { Attachment, SessionHandle, Tab, UserResource } from "~/models";
+import type { Attachment, SessionHandle, Tab, TabLocation, UserResource } from "~/models";
 import { decodeAttachment } from "./attachment";
 import { decodeTab } from "./tab";
 
@@ -13,7 +13,7 @@ export const decodeUserResource = (resource: any, session: SessionHandle): UserR
     }, session);
   }
 
-  const tabs: Map<number, Tab> = new Map();
+  const tabs: Map<TabLocation, Tab> = new Map();
 
   for (const tab of resource.listeOngletsPourPeriodes?.V ?? []) {
     tabs.set(tab.G, decodeTab(tab, session.instance.periods));

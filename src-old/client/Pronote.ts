@@ -85,45 +85,6 @@ export default class Pronote {
   ) {
   }
 
-  /**
-   * When `to` is not given, it'll default to the end of the year.
-   */
-  public async getHomeworkForInterval (from: Date, to = this.lastDate): Promise<StudentHomework[]> {
-    from = getUTCDate(from);
-    to   = getUTCDate(to);
-
-    let fromWeekNumber = translateToPronoteWeekNumber(from, this.firstMonday);
-    let toWeekNumber   = translateToPronoteWeekNumber(to, this.firstMonday);
-
-    // Make sure to set the default to 1.
-    if (fromWeekNumber <= 0) fromWeekNumber = 1;
-    if (toWeekNumber <= 0) toWeekNumber = 1;
-
-    return this.queue.push(async () => {
-      const { data: { donnees: data } } = await callApiUserHomework(this.fetcher, {
-        session: this.session,
-        fromWeekNumber,
-        toWeekNumber
-      });
-
-      return data.ListeTravauxAFaire.V
-        .map((homework) => new StudentHomework(this, homework))
-        .filter((homework) => <Date>from <= homework.deadline && homework.deadline <= <Date>to);
-    });
-  }
-
-  public async getHomeworkForWeek (weekNumber: number): Promise<StudentHomework[]> {
-    return this.queue.push(async () => {
-      const { data: { donnees: data } } = await callApiUserHomework(this.fetcher, {
-        session: this.session,
-        fromWeekNumber: weekNumber
-      });
-
-      return data.ListeTravauxAFaire.V
-        .map((homework) => new StudentHomework(this, homework));
-    });
-  }
-
   public async getResourcesForWeek (weekNumber: number) {
     return this.queue.push(async () => {
       const { data: { donnees: data } } = await callApiUserResources(this.fetcher, {

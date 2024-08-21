@@ -21,6 +21,6 @@ export const decodeAssignment = (assignment: any, session: SessionHandle): Assig
       canUpload: assignment.peuRendre ?? false,
       uploaded: assignment.documentRendu && decodeAttachment(assignment.documentRendu.V, session)
     },
-    lessonResourceID: assignment.cahierDeTextes?.V.N
+    resourceID: assignment.cahierDeTextes?.V.N
   };
 };

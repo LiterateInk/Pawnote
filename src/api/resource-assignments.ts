@@ -5,16 +5,13 @@ import { TabLocation, type Assignment, type Resource, type SessionHandle } from 
 /**
  * Retrieve assignments from a resource.
  */
-export const resourceAssignments = async (session: SessionHandle, resource: Resource): Promise<Array<Assignment>> => {
-  // prevent doing an unnecessary request.
-  if (!resource.haveAssignment) return [];
-
+export const resourceAssignments = async (session: SessionHandle, resourceID: string): Promise<Array<Assignment>> => {
   const request = new RequestFN(session, "donneesContenusCDT", {
     _Signature_: { onglet: TabLocation.Resources },
 
     donnees: {
       pourTAF: true,
-      cahierDeTextes: { N: resource.id }
+      cahierDeTextes: { N: resourceID }
     }
   });
 

@@ -22,5 +22,5 @@ export type Assignment = Readonly<{
    * If defined, can be used to retrieve
    * the lesson contents from the resources tab.
    */
-  lessonResourceID?: string;
+  resourceID?: string;
 }>;

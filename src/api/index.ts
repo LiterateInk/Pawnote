@@ -18,6 +18,7 @@ export * from "./notebook";
 export * from "./partner-url";
 export * from "./presence";
 export * from "./resource-assignments";
+export * from "./resource";
 export * from "./resources";
 export * from "./session-information";
 export * from "./timetable";

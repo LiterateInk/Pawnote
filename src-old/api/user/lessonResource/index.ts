@@ -13,7 +13,7 @@ export const callApiUserLessonResource = makeApiHandler<ApiUserLessonResource>(a
       }
     },
 
-    _Signature_: { onglet: PronoteApiOnglets.Resources }
+    _Signature_: { onglet: TabLocation.Resources }
   });
 
   const response = await createPronoteAPICall(fetcher, PronoteApiFunctions.LessonContentInResources, {

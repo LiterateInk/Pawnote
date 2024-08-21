@@ -23,7 +23,7 @@ void async function main () {
       continue;
     }
 
-    const assignments = await pronote.resourceAssignments(handle, resource);
+    const assignments = await pronote.resourceAssignments(handle, resource.id);
     console.log("Assignments for", resource.id, `(${assignments.length} found)`);
     console.log(`=> ${assignments.map((assignment) => assignment.description).join("\n=> ")}`);
   }

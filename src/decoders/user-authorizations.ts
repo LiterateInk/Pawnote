@@ -33,7 +33,7 @@ export const decodeUserAuthorizations = (data: any, tabs: any[]): UserAuthorizat
     canDiscussWithTeachers,
 
     hasAdvancedDiscussionEditor: data.AvecDiscussionAvancee ?? false,
-    maxHomeworkFileUploadSize: data.tailleMaxRenduTafEleve,
+    maxAssignmentFileUploadSize: data.tailleMaxRenduTafEleve,
 
     tabs: locations
   };

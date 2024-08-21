@@ -1,8 +1,8 @@
 import type { Attachment } from "./attachment";
-import type { HomeworkReturnKind } from "./homework-return-kind";
+import type { AssignmentReturnKind } from "./assignment-return-kind";
 
-export type HomeworkReturn = {
-  readonly kind: HomeworkReturnKind
+export type AssignmentReturn = {
+  readonly kind: AssignmentReturnKind
   /**
    * File that the user uploaded.
    */

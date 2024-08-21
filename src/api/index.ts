@@ -7,13 +7,14 @@ export * from "./helpers/session-handle";
 export * from "./helpers/week-number";
 
 export * from "./account";
+export * from "./assignment-upload-file";
+export * from "./assignments";
 export * from "./geolocation";
 export * from "./homepage";
-export * from "./homework-upload-file";
-export * from "./homework";
 export * from "./instance";
 export * from "./notebook";
 export * from "./partner-url";
 export * from "./presence";
+export * from "./resources";
 export * from "./session-information";
 export * from "./timetable";

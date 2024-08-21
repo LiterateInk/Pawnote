@@ -5,7 +5,7 @@ export enum PronoteApiFunctions {
   // UserData = "ParametresUtilisateur",
   // Timetable = "PageEmploiDuTemps",
   // Homework = "PageCahierDeTexte",
-  Resources = "PageCahierDeTexte",
+  // Resources = "PageCahierDeTexte",
   Grades = "DernieresNotes",
   HomeworkDone = "SaisieTAFFaitEleve",
   HomeworkUpload = "SaisieTAFARendreEleve",

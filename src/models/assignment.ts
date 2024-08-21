@@ -1,10 +1,10 @@
 import type { Attachment } from "./attachment";
-import type { HomeworkDifficulty } from "./homework-difficulty";
-import type { HomeworkReturn } from "./homework-return";
-import type { HomeworkTheme } from "./homework-theme";
+import type { AssignmentDifficulty } from "./assignment-difficulty";
+import type { AssignmentReturn } from "./assignment-return";
+import type { AssignmentTheme } from "./assignment-theme";
 import type { Subject } from "./subject";
 
-export type Homework = Readonly<{
+export type Assignment = Readonly<{
   id: string;
   subject: Subject;
   description: string;
@@ -12,12 +12,12 @@ export type Homework = Readonly<{
   done: boolean;
   deadline: Date;
   attachments: Array<Attachment>;
-  difficulty: HomeworkDifficulty;
+  difficulty: AssignmentDifficulty;
   /** Time that should take, in minutes, to do the homework. */
   length?: number;
   /** Themes associated with this homework. */
-  themes: HomeworkTheme[];
-  return: HomeworkReturn
+  themes: AssignmentTheme[];
+  return: AssignmentReturn
   /**
    * If defined, can be used to retrieve
    * the lesson contents from the resources tab.

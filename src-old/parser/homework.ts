@@ -10,30 +10,6 @@ import { PronoteApiHomeworkDifficulty, PronoteApiHomeworkReturnType } from "~/co
 import { StudentTheme } from "./theme";
 
 export class StudentHomework {
-  public id: string;
-  public subject: StudentSubject;
-  public description: string;
-  public backgroundColor: string;
-  public done: boolean;
-  public deadline: Date;
-  public attachments: Array<StudentAttachment>;
-  public difficulty: PronoteApiHomeworkDifficulty;
-  /** Time that should take, in minutes, to do the homework. */
-  public lengthInMinutes?: number;
-  /** Themes associated with this homework. */
-  public themes: StudentTheme[];
-
-  /**
-   * Available only if the homework should be returned.
-   */
-  public return?: {
-    type: PronoteApiHomeworkReturnType.PAPER
-  } | {
-    type: PronoteApiHomeworkReturnType.FILE_UPLOAD
-    uploaded: StudentAttachment | null
-    canUpload: boolean
-  };
-
   /**
    * If defined, can be used to retrieve
    * the lesson contents from the resources tab.
@@ -41,49 +17,6 @@ export class StudentHomework {
    * You can directly fetch the contents using `getContent()`.
    */
   public lessonResourceID?: string;
-
-  constructor (
-    private client: Pronote,
-    homework: PronoteApiUserHomework["response"]["donnees"]["ListeTravauxAFaire"]["V"][number]
-  ) {
-    this.id = homework.N;
-    this.description = homework.descriptif.V;
-    this.done = homework.TAFFait;
-    this.subject = new StudentSubject(homework.Matiere.V);
-    this.deadline = readPronoteApiDate(homework.PourLe.V);
-    this.backgroundColor = homework.CouleurFond;
-    this.attachments = homework.ListePieceJointe.V.map((raw) => new StudentAttachment(client, raw));
-    this.difficulty = homework.niveauDifficulte;
-    this.lengthInMinutes = homework.duree;
-    this.themes = homework.ListeThemes.V.map((theme) => new StudentTheme(theme));
-
-    if (homework.avecRendu) {
-      if (homework.genreRendu === PronoteApiHomeworkReturnType.PAPER) {
-        this.return = {
-          type: PronoteApiHomeworkReturnType.PAPER
-        };
-      }
-      else if (homework.genreRendu === PronoteApiHomeworkReturnType.FILE_UPLOAD) {
-        this.return = {
-          type: PronoteApiHomeworkReturnType.FILE_UPLOAD,
-          uploaded: homework.documentRendu ? new StudentAttachment(client, homework.documentRendu.V) : null,
-          canUpload: homework.peuRendre ?? false
-        };
-      }
-    }
-
-    if (homework.cahierDeTextes) {
-      this.lessonResourceID = homework.cahierDeTextes.V.N;
-    }
-  }
-
-  public async uploadFile (file: PawnoteSupportedFormDataFile, fileName: string): Promise<void> {
-    if (!this.return || this.return.type !== PronoteApiHomeworkReturnType.FILE_UPLOAD) {
-      throw new Error("This homework cannot be uploaded.");
-    }
-
-    await this.client.uploadHomeworkFile(this.id, file, fileName);
-  }
 
   public async removeUploadedFile (): Promise<void> {
     if (!this.return || this.return.type !== PronoteApiHomeworkReturnType.FILE_UPLOAD) {

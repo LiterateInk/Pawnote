@@ -85,49 +85,6 @@ export default class Pronote {
   ) {
   }
 
-  public async getResourcesForWeek (weekNumber: number) {
-    return this.queue.push(async () => {
-      const { data: { donnees: data } } = await callApiUserResources(this.fetcher, {
-        session: this.session,
-        fromWeekNumber: weekNumber
-      });
-
-      return {
-        lessons: data.ListeCahierDeTextes.V
-          .map((lesson) => new StudentLessonResource(this, lesson))
-      };
-    });
-  }
-
-  public async getResourcesForInterval (from: Date, to?: Date) {
-    if (!(to instanceof Date)) {
-      to = this.lastDate;
-    }
-
-    from = getUTCDate(from);
-    to   = getUTCDate(to);
-
-    let fromWeekNumber = translateToPronoteWeekNumber(from, this.firstMonday);
-    let toWeekNumber   = translateToPronoteWeekNumber(to, this.firstMonday);
-
-    // Make sure to set the default to 1.
-    if (fromWeekNumber <= 0) fromWeekNumber = 1;
-    if (toWeekNumber <= 0) toWeekNumber = 1;
-
-    return this.queue.push(async () => {
-      const { data: { donnees: data } } = await callApiUserResources(this.fetcher, {
-        session: this.session,
-        fromWeekNumber,
-        toWeekNumber
-      });
-
-      return {
-        lessons: data.ListeCahierDeTextes.V
-          .map((lesson) => new StudentLessonResource(this, lesson))
-          .filter((lesson) => <Date>from <= lesson.end && lesson.end <= <Date>to)
-      };
-    });
-  }
 
   public async patchHomeworkStatus (homeworkID: string, done: boolean): Promise<void> {
     return this.queue.push(async () => {

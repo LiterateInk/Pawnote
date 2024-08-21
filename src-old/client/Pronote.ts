@@ -139,13 +139,6 @@ export default class Pronote {
     });
   }
 
-  public async getNews (): Promise<StudentNews> {
-    return this.queue.push(async () => {
-      const { data: { donnees: data }} = await callApiUserNews(this.fetcher, { session: this.session });
-      return new StudentNews(this, data);
-    });
-  }
-
   #throwIfNotAllowedReadMessages (): void {
     if (!this.authorizations.canReadDiscussions) throw new Error("You can't read messages in this instance.");
   }
@@ -205,38 +198,6 @@ export default class Pronote {
       });
 
       return data.donnees.listeDest.V.map((dest) => new FetchedMessageRecipient(dest));
-    });
-  }
-
-  /**
-   * Updates the status of a news item.
-   * Could be a read, or answer to a survey.
-   *
-   * Should only be used internally, but if you know
-   * what you're doing, you can use it.
-   */
-  public async patchNewsState (information: {
-    id: string
-    title: string
-    public: PronoteApiNewsPublicSelf
-  }, answers: StudentNewsItemQuestion[], extra = {
-    delete: false,
-    markAsRead: true,
-    onlyMarkAsRead: false
-  }) {
-    return this.queue.push(async () => {
-      await callApiUserNewsStatus(this.fetcher, {
-        session: this.session,
-        id: information.id,
-        name: information.title,
-        publicSelfData: information.public,
-        markAsRead: !extra.delete && extra.markAsRead,
-        onlyMarkAsRead: !extra.delete && extra.onlyMarkAsRead,
-        delete: !extra.onlyMarkAsRead && extra.delete,
-        answers: (extra.onlyMarkAsRead || extra.delete) ? [] : answers
-      });
-
-      return void 0;
     });
   }
 

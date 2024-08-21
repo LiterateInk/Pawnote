@@ -157,30 +157,6 @@ export default class Pronote {
     });
   }
 
-  /**
-   * Creates a discussion.
-   *
-   * Sadly, we can't get the ID of the created discussion
-   * or anything else related to it, you need to request the
-   * discussions list once again using `getDiscussionsOverview()`.
-  */
-  public async createDiscussion (subject: string, content: string, recipients: DiscussionCreationRecipient[]): Promise<void> {
-    return this.queue.push(async () => {
-      this.#throwIfNotAllowedCreateMessages();
-      if (recipients.length <= 0) throw new Error("You need to select at least one recipient to create a discussion.");
-
-      await callApiUserCreateDiscussion(this.fetcher, {
-        session: this.session,
-        recipients,
-        subject,
-        content: {
-          isHTML: this.authorizations.hasAdvancedDiscussionEditor,
-          value: content
-        }
-      });
-    });
-  }
-
   public async replyToDiscussionMessage (replyMessageID: string, content: string, button: PronoteApiMessagesButtonType, includeParentsAndStudents = false): Promise<void> {
     return this.queue.push(async () => {
       this.#throwIfNotAllowedCreateMessages();

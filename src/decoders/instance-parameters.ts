@@ -7,17 +7,13 @@ import { decodePeriod } from "./period";
 export const decodeInstanceParameters = (parameters: any): InstanceParameters => {
   const weekFrequencies = new Map<number, WeekFrequency>();
 
-  // 62 is the PRONOTE API max domain cycle.
-  for (let weekNumber = 1; weekNumber <= 62; weekNumber++) {
-    for (const fortnight of [1, 2]) {
-      const frequency = decodeDomain(parameters.General.DomainesFrequences[fortnight].V);
-
-      if (frequency.includes(weekNumber)) {
-        weekFrequencies.set(weekNumber, {
-          label: parameters.General.LibellesFrequences[fortnight],
-          fortnight
-        });
-      }
+  for (const fortnight of [1, 2]) {
+    const frequency = decodeDomain(parameters.General.DomainesFrequences[fortnight].V);
+    for (const week of frequency) {
+      weekFrequencies.set(week, {
+        label: parameters.General.LibellesFrequences[fortnight],
+        fortnight
+      });
     }
   }
 

@@ -1,4 +1,5 @@
 export * from "./helpers/clean-url";
+export * from "./helpers/frequency";
 export * from "./helpers/ical";
 export * from "./helpers/login";
 export * from "./helpers/parse-timetable";

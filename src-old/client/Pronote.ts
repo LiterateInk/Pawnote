@@ -357,11 +357,4 @@ export default class Pronote {
       });
     });
   }
-
-  public getFrequencyForWeek (weekNumber: number): { type: PronoteApiDomainFrequencyType, name: string } | null {
-    if (weekNumber < 1) throw new Error("Week number must be at least 1.");
-    else if (weekNumber > PronoteApiMaxDomainCycle) throw new Error(`Week number can't be more than maximum value which is ${PronoteApiMaxDomainCycle}.`);
-
-    return this.#weekFrequencies[weekNumber];
-  }
 }

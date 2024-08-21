@@ -348,13 +348,4 @@ export default class Pronote {
       });
     });
   }
-
-  public async removeHomeworkFile (homeworkID: string): Promise<void> {
-    return this.queue.push(async () => {
-      await callApiUserHomeworkRemoveUpload(this.fetcher, {
-        session: this.session,
-        homeworkID
-      });
-    });
-  }
 }

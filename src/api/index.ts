@@ -8,6 +8,7 @@ export * from "./helpers/session-handle";
 export * from "./helpers/week-number";
 
 export * from "./account";
+export * from "./assignment-remove-file";
 export * from "./assignment-upload-file";
 export * from "./assignments";
 export * from "./geolocation";

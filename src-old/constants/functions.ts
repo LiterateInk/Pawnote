@@ -1,7 +1,6 @@
 export enum PronoteApiFunctions {
   Grades = "DernieresNotes",
   HomeworkDone = "SaisieTAFFaitEleve",
-  HomeworkUpload = "SaisieTAFARendreEleve",
   Evaluations = "DernieresEvaluations",
   News = "PageActualites",
   Discussions = "ListeMessagerie",

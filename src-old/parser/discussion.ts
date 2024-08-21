@@ -12,114 +12,9 @@ type UserDiscussionsOverview = PronoteApiUserDiscussions["response"]["donnees"];
 type UserDiscussionMessages = UserDiscussionsOverview["listeMessagerie"]["V"][number];
 type UserFolder = UserDiscussionsOverview["listeEtiquettes"]["V"][number];
 
-export class StudentDiscussionsOverview {
-  readonly #folders: StudentDiscussionFolder[];
-
-  #rawDiscussions: Record<string, UserDiscussionMessages> = {};
-  #discussions: StudentDiscussion[];
-
-  readonly #client: Pronote;
-  readonly #clientQueue: Queue;
-  readonly #clientSession: Session;
-
-  constructor (
-    client: Pronote, clientQueue: Queue, clientSession: Session,
-    data: UserDiscussionsOverview
-  ) {
-    this.#client = client;
-    this.#clientQueue = clientQueue;
-    this.#clientSession = clientSession;
-
-    this.#folders = data.listeEtiquettes.V.map((folder) => new StudentDiscussionFolder(folder));
-
-    this.#discussions = [];
-    this.#parseAndAssignDiscussions(data.listeMessagerie.V);
-  }
-
-  #parseAndAssignDiscussions (data: UserDiscussionsOverview["listeMessagerie"]["V"]): void {
-    const discussions = data.filter((discussion) => discussion.estUneDiscussion && (discussion.profondeur || 0) === 0);
-
-    const assignedIDs: string[] = [];
-    for (const discussion of discussions) {
-      // Get the root message of the discussion, this one is used as an identifier.
-      const participantsMessageID = discussion.messagePourParticipants?.V.N;
-      if (!participantsMessageID) continue;
-
-      // Update the raw data of the discussion.
-      this.#rawDiscussions[participantsMessageID] = discussion;
-      assignedIDs.push(participantsMessageID);
-
-      if (!this.#discussions.find((currentDiscussion) => currentDiscussion.participantsMessageID === participantsMessageID)) {
-        const instance = new StudentDiscussion(
-          this.#client,
-          () => this.#rawDiscussions[participantsMessageID],
-          this
-        );
-
-        this.#discussions.push(instance);
-      }
-    }
-
-    // Remove deleted discussions.
-    for (const oldID of Object.keys(this.#rawDiscussions)) {
-      if (!assignedIDs.includes(oldID)) {
-        delete this.#rawDiscussions[oldID];
-      }
-    }
-
-    this.#discussions = this.#discussions.filter((discussion) => discussion.participantsMessageID in this.#rawDiscussions);
-  }
-
-  public async refetch (): Promise<void> {
-    const { listeMessagerie } = await this.#clientQueue.push(async () => {
-      const { data } = await callApiUserDiscussions(this.#client.fetcher, { session: this.#clientSession });
-      return data.donnees;
-    });
-
-    this.#parseAndAssignDiscussions(listeMessagerie.V);
-  }
-
-  public get folders (): StudentDiscussionFolder[] {
-    return this.#folders;
-  }
-
-  public get discussions (): StudentDiscussion[] {
-    return this.#discussions;
-  }
-}
-
-export class StudentDiscussionFolder {
-  readonly #id: string;
-  readonly #name: string;
-  readonly #type: PronoteApiDiscussionFolderType;
-
-  constructor (data: UserFolder) {
-    this.#id = data.N;
-    this.#name = data.L;
-    this.#type = data.G;
-  }
-
-  get id (): string {
-    return this.#id;
-  }
-
-  get name (): string {
-    return this.#name;
-  }
-
-  get type (): PronoteApiDiscussionFolderType {
-    return this.#type;
-  }
-}
-
 export class StudentDiscussion {
   readonly #client: Pronote;
   readonly #discussionsOverview: StudentDiscussionsOverview;
-
-  readonly #readData: () => UserDiscussionMessages;
-  readonly #dateAsFrenchText: string;
-  readonly #recipientName?: string;
-  readonly #creator: string;
 
   readonly #participantsMessageID: string;
 
@@ -192,113 +87,23 @@ export class StudentDiscussion {
   }
 
   public async moveToTrash (): Promise<void> {
-    this.#assertNotDeleted();
-
     await this.#client.postDiscussionCommand({
       command: PronoteApiDiscussionCommandType.corbeille,
       possessions: this.possessions
     });
-
-    await this.refetch();
   }
 
   public async restoreFromTrash (): Promise<void> {
-    this.#assertNotDeleted();
-
     await this.#client.postDiscussionCommand({
       command: PronoteApiDiscussionCommandType.restauration,
       possessions: this.possessions
     });
-
-    await this.refetch();
   }
 
   public async deletePermanently (): Promise<void> {
-    this.#assertNotDeleted();
-
     await this.#client.postDiscussionCommand({
       command: PronoteApiDiscussionCommandType.suppression,
       possessions: this.possessions
     });
-
-    await this.refetch();
-    this.#permanentlyDeleted = true;
-  }
-
-  /**
-   * When `true`, you won't be able to access
-   * any other property (except `participantsMessageID`) of this instance anymore.
-   */
-  public get deleted (): boolean {
-    return this.#permanentlyDeleted;
-  }
-
-  /**
-   * Property used internally to make the messages in
-   * discussion request.
-   */
-  public get possessions (): PronoteApiMessagesPossessionsList {
-    return this.#readData().listePossessionsMessages.V;
-  }
-
-  public get numberOfDrafts (): number {
-    return this.#readData().nbBrouillons ?? 0;
-  }
-
-  /**
-   * Output is very variable, see example below.
-   * Because of this behavior, we can't transform this into a date.
-   * Maybe, we could parse this manually, but it's not a priority.
-   * TODO: Parse this manually.
-   *
-   * @example
-   * "lundi 08h53"
-   * // or can just be the hour
-   * "07h26"
-   */
-  public get dateAsFrenchText (): string {
-    this.#assertNotDeleted();
-    return this.#dateAsFrenchText;
-  }
-
-  /**
-   * Title of the discussion.
-   */
-  public get subject (): string {
-    return this.#readData().objet ?? "";
-  }
-
-  public get recipientName (): string | undefined {
-    this.#assertNotDeleted();
-    return this.#recipientName;
-  }
-
-  public get numberOfMessages (): number {
-    return this.#readData().nombreMessages ?? 0;
-  }
-
-  public get numberOfMessagesUnread (): number {
-    return this.#readData().nbNonLus ?? 0;
-  }
-
-  public get creator (): string {
-    this.#assertNotDeleted();
-    return this.#creator;
-  }
-
-  public get closed (): boolean {
-    return this.#readData().ferme ?? false;
-  }
-
-  public get folders (): StudentDiscussionFolder[] {
-    return this.#readData().listeEtiquettes?.V.map((folder) => this.#discussionsOverview.folders.find((f) => f.id === folder.N)!) ?? [];
-  }
-
-  /**
-   * Internal string containing the ID of the message
-   * needed to fetch the participants of the discussion.
-   */
-  public get participantsMessageID (): string {
-    return this.#participantsMessageID;
   }
 }

@@ -13,6 +13,7 @@ export * from "./assignment-remove-file";
 export * from "./assignment-status";
 export * from "./assignment-upload-file";
 export * from "./assignments";
+export * from "./discussions";
 export * from "./geolocation";
 export * from "./homepage";
 export * from "./instance";

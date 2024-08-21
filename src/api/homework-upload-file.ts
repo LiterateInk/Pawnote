@@ -35,4 +35,6 @@ export const homeworkUploadFile = async (session: SessionHandle, homeworkID: str
       }]
     }
   });
+
+  await request.send();
 };

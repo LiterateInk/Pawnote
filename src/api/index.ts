@@ -9,6 +9,7 @@ export * from "./helpers/week-number";
 export * from "./account";
 export * from "./geolocation";
 export * from "./homepage";
+export * from "./homework-upload-file";
 export * from "./homework";
 export * from "./instance";
 export * from "./notebook";

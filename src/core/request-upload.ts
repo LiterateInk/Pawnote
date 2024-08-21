@@ -37,13 +37,20 @@ export class RequestUpload {
   }
 
   public async send (): Promise<void> {
+    // Please, see the following comment to understand.
+    // https://github.com/oven-sh/bun/issues/7917#issuecomment-1872454367
+    const textBody = await new Response(this.form).text();
+    this.headers["Content-Type"] = `multipart/form-data; boundary=${textBody
+      .split("\n")[0]
+      .slice(2)}`;
+
     let state = 3; // Set to UPLOADING by default.
 
     while (state === 3) { // UPLOADING
       const response = await this.session.fetcher({
         url: new URL(this.url),
         method: "POST",
-        content: this.form, // TODO ?
+        content: textBody,
         headers: this.headers
       });
 

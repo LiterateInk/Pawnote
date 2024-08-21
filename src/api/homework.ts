@@ -16,7 +16,7 @@ export const homeworkFromWeek = async (session: SessionHandle, weekNumber: numbe
   });
 
   const response = await request.send();
-  return response.data.donnees.ListeTravauxAFaire.V.map(decodeHomework);
+  return response.data.donnees.ListeTravauxAFaire.V.map((homework: any) => decodeHomework(homework, session));
 };
 
 export const homeworkFromIntervals = async (session: SessionHandle, startDate: Date, endDate: Date): Promise<Array<Homework>> => {

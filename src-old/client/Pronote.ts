@@ -85,19 +85,6 @@ export default class Pronote {
   ) {
   }
 
-
-  public async patchHomeworkStatus (homeworkID: string, done: boolean): Promise<void> {
-    return this.queue.push(async () => {
-      await callApiUserHomeworkStatus(this.fetcher, {
-        session: this.session,
-        id: homeworkID,
-        status: done
-      });
-
-      return void 0;
-    });
-  }
-
   /**
    * Get grades overview for a specific period.
    * Including student's grades with averages and the global averages.

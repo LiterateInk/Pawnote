@@ -13,5 +13,5 @@ void async function main () {
 
   // Grab all the resources for week 1 through week 4.
   const resources = await pronote.resourcesFromWeek(handle, 1, 4);
-  console.log(resources.ListeCahierDeTextes.V);
+  console.log(resources);
 }();

@@ -95,23 +95,6 @@ export default class Pronote {
     });
   }
 
-  #throwIfNotAllowedReadMessages (): void {
-    if (!this.authorizations.canReadDiscussions) throw new Error("You can't read messages in this instance.");
-  }
-
-  #throwIfNotAllowedCreateMessages (): void {
-    if (!this.authorizations.canDiscuss) throw new Error("You can't create messages in this instance.");
-  }
-
-  public async getDiscussionsOverview (): Promise<StudentDiscussionsOverview> {
-    return this.queue.push(async () => {
-      this.#throwIfNotAllowedReadMessages();
-
-      const { data } = await callApiUserDiscussions(this.fetcher, { session: this.session });
-      return new StudentDiscussionsOverview(this, this.queue, this.session, data.donnees);
-    });
-  }
-
   public async getMessagesOverviewFromDiscussion (discussion: StudentDiscussion, markAsRead = false, limit = 0): Promise<MessagesOverview> {
     return this.queue.push(async () => {
       this.#throwIfNotAllowedReadMessages();

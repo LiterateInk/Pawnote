@@ -6,7 +6,10 @@ export type Resource = Readonly<{
   startDate: Date;
   endDate: Date;
   subject: Subject;
-  assignmentDate?: Date;
+
+  haveAssignment: boolean;
+  assignmentDeadline?: Date;
+
   /** Color of the resource in HEX. */
   backgroundColor: string;
   contents: Array<ResourceContent>;

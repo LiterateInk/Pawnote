@@ -9,7 +9,9 @@ export const decodeResource = (resource: any, session: SessionHandle): Resource 
     startDate: decodePronoteDate(resource.Date.V),
     endDate: decodePronoteDate(resource.DateFin.V),
     subject: decodeSubject(resource.Matiere.V),
-    assignmentDate: resource.dateTAF?.V && decodePronoteDate(resource.dateTAF.V),
+
+    haveAssignment: typeof resource.dateTAF !== "undefined",
+    assignmentDeadline: resource.dateTAF?.V && decodePronoteDate(resource.dateTAF.V),
 
     teachers: resource.listeProfesseurs.V.map((teacher: any) => teacher.L),
     groups: resource.listeGroupes.V.map((group: any) => group.L),

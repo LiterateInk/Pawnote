@@ -164,18 +164,6 @@ export default class Pronote {
     });
   }
 
-  public async getLessonHomework (lessonId: string): Promise<StudentHomework[]> {
-    return this.queue.push(async () => {
-      const { data: { donnees: data } } = await callApiUserLessonHomework(this.fetcher, {
-        session: this.session,
-        lessonId
-      });
-
-      return data.ListeCahierDeTextes.V[0].ListeTravailAFaire.V
-        .map((homework) => new StudentHomework(this, homework));
-    });
-  }
-
   public async getNews (): Promise<StudentNews> {
     return this.queue.push(async () => {
       const { data: { donnees: data }} = await callApiUserNews(this.fetcher, { session: this.session });

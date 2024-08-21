@@ -13,5 +13,18 @@ void async function main () {
 
   // Grab all the resources for week 1 through week 4.
   const resources = await pronote.resourcesFromWeek(handle, 1, 4);
-  console.log(resources);
+  console.log(resources.length, "resources found");
+
+  for (const resource of resources) {
+    console.log(); // New line
+
+    if (!resource.haveAssignment) {
+      console.info("No assignment for", resource.id);
+      continue;
+    }
+
+    const assignments = await pronote.resourceAssignments(handle, resource);
+    console.log("Assignments for", resource.id, `(${assignments.length} found)`);
+    console.log(`=> ${assignments.map((assignment) => assignment.description).join("\n=> ")}`);
+  }
 }();

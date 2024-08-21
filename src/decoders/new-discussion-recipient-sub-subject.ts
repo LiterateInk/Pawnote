@@ -1,4 +1,4 @@
-import { NewDiscussionRecipientSubSubject } from "~/models";
+import type { NewDiscussionRecipientSubSubject } from "~/models";
 
 export const decodeNewDiscussionRecipientSubSubject = (sub: any): NewDiscussionRecipientSubSubject => {
   return {

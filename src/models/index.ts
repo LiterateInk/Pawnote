@@ -29,6 +29,7 @@ export * from "./news-question-choice";
 export * from "./news-question-kind";
 export * from "./news-question";
 export * from "./news-survey";
+export * from "./news-view";
 export * from "./news";
 export * from "./notebook-absence";
 export * from "./notebook-delay";

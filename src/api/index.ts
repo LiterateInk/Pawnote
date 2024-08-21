@@ -17,6 +17,7 @@ export * from "./geolocation";
 export * from "./homepage";
 export * from "./instance";
 export * from "./new-discussion-recipients";
+export * from "./new-discussion";
 export * from "./news-delete";
 export * from "./news-information-acknowledge";
 export * from "./news-read";

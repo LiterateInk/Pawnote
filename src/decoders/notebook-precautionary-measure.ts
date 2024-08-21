@@ -1,7 +1,7 @@
-import { NotebookPrecautionaryMeasure, SessionHandle } from "~/models";
-import { decodeDomain } from "./domain";
+import type { NotebookPrecautionaryMeasure, SessionHandle } from "~/models";
 import { decodePronoteDate } from "./pronote-date";
 import { decodeAttachment } from "./attachment";
+import { decodeDomain } from "./domain";
 
 export const decodeNotebookPrecautionaryMeasure = (item: any, session: SessionHandle): NotebookPrecautionaryMeasure => {
   return {

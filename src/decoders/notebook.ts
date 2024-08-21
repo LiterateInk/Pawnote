@@ -1,4 +1,4 @@
-import { Notebook, NotebookAbsence, NotebookDelay, NotebookObservation, NotebookPrecautionaryMeasure, NotebookPunishment, SessionHandle } from "~/models";
+import type { Notebook, NotebookAbsence, NotebookDelay, NotebookObservation, NotebookPrecautionaryMeasure, NotebookPunishment, SessionHandle } from "~/models";
 import { decodeNotebookAbsence } from "./notebook-absence";
 import { decodeNotebookDelay } from "./notebook-delay";
 import { decodeNotebookPunishment } from "./notebook-punishment";

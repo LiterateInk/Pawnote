@@ -1,6 +1,6 @@
 import type { News, NewsCategory, SessionHandle } from "~/models";
-import { decodeNewsCategory } from "./news-category";
 import { decodeNewsInformation } from "./news-information";
+import { decodeNewsCategory } from "./news-category";
 import { decodeNewsSurvey } from "./news-survey";
 
 export const decodeNews = (news: any, session: SessionHandle): News => {

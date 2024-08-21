@@ -1,4 +1,4 @@
-import type { Instance } from "~/models/instance";
+import type { Instance } from "~/models";
 
 export const decodeInstance = (instance: any): Instance => {
   let casURL: string | undefined;

@@ -1,4 +1,4 @@
-import type { NewsQuestionChoice } from "~/models/news-question-choice";
+import type { NewsQuestionChoice } from "~/models";
 
 export const decodeNewsQuestionChoice = (choice: any): NewsQuestionChoice => {
   return {

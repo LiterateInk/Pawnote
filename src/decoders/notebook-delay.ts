@@ -1,4 +1,4 @@
-import type { NotebookDelay } from "~/models/notebook-delay";
+import type { NotebookDelay } from "~/models";
 import { decodePronoteDate } from "./pronote-date";
 
 export const decodeNotebookDelay = (delay: any): NotebookDelay => {

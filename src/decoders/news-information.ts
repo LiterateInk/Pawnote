@@ -1,5 +1,4 @@
-import type { NewsCategory, SessionHandle } from "~/models";
-import type { NewsInformation } from "~/models/news-information";
+import type { NewsCategory, SessionHandle, NewsInformation } from "~/models";
 import { decodeNewsItem } from "./news-item";
 import { decodeNewsQuestion } from "./news-question";
 

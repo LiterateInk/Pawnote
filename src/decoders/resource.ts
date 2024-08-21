@@ -1,7 +1,7 @@
 import type { SessionHandle, Resource } from "~/models";
+import { decodeResourceContent } from "./resource-content";
 import { decodePronoteDate } from "./pronote-date";
 import { decodeSubject } from "./subject";
-import { decodeResourceContent } from "./resource-content";
 
 export const decodeResource = (resource: any, session: SessionHandle): Resource => {
   return {

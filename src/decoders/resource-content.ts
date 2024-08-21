@@ -1,6 +1,6 @@
 import type { ResourceContent, SessionHandle } from "~/models";
-import { decodeAttachment } from "./attachment";
 import { decodeAssignmentTheme } from "./assignment-theme";
+import { decodeAttachment } from "./attachment";
 
 export const decodeResourceContent = (content: any, session: SessionHandle): ResourceContent => {
   return {

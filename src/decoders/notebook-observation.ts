@@ -1,6 +1,6 @@
 import type { NotebookObservation, Subject } from "~/models";
-import { decodeSubject } from "./subject";
 import { decodePronoteDate } from "./pronote-date";
+import { decodeSubject } from "./subject";
 
 export const decodeNotebookObservation = (observation: any): NotebookObservation => {
   let subject: Subject | undefined;

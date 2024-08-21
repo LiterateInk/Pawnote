@@ -4,7 +4,6 @@ export enum PronoteApiFunctions {
   Discussions = "ListeMessagerie",
   Messages = "ListeMessages",
   MessageRecipients = "SaisiePublicMessage",
-  CreateDiscussionRecipients = "ListeRessourcesPourCommunication",
   CreateMessage = "SaisieMessage",
   PartnerURL = "SaisieURLPartenaire",
   GeneratePDF = "GenerationPDF"

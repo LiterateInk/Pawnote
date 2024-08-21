@@ -1,9 +1,7 @@
-import type { SessionHandle } from "~/models";
-import type { NewsQuestion } from "~/models/news-question";
-import { decodeAttachment } from "./attachment";
-import { decodePronoteDate } from "./pronote-date";
-import { NewsQuestionKind } from "~/models/news-question-kind";
+import { type SessionHandle, type NewsQuestion, NewsQuestionKind } from "~/models";
 import { decodeNewsQuestionChoice } from "./news-question-choice";
+import { decodePronoteDate } from "./pronote-date";
+import { decodeAttachment } from "./attachment";
 import { decodeDomain } from "./domain";
 
 export const decodeNewsQuestion = (question: any, session: SessionHandle): NewsQuestion => {

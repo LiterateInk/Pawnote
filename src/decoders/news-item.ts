@@ -1,6 +1,5 @@
-import { NewsItem } from "~/models/news-item";
+import type { NewsCategory, NewsItem } from "~/models";
 import { decodePronoteDate } from "./pronote-date";
-import { NewsCategory } from "~/models";
 
 export const decodeNewsItem = (item: any, categories: NewsCategory[]): NewsItem => {
   return {

@@ -1,6 +1,6 @@
 import type { PartnerARD } from "~/models";
-import { decodePartner } from "./partner";
 import { decodePartnerARDWallet } from "./partner-ard-wallet";
+import { decodePartner } from "./partner";
 
 export const decodePartnerARD = (partner: any): PartnerARD => {
   return {

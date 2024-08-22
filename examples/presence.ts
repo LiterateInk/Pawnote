@@ -1,17 +1,20 @@
-import { authenticatePronoteCredentials, PronoteApiAccountId } from "../src";
+import * as pronote from "../src";
+import { credentials } from "./_credentials";
 
-(async () => {
-  const pronote = await authenticatePronoteCredentials("https://demo.index-education.net/pronote", {
-    accountTypeID: PronoteApiAccountId.Student,
-    username: "demonstration",
-    password: "pronotevs",
-
-    // Because this is just an example, don't forget to change this.
-    deviceUUID: "my-device-uuid"
+void async function main () {
+  const session = pronote.createSessionHandle();
+  await pronote.loginCredentials(session, {
+    url: credentials.pronoteURL,
+    kind: pronote.AccountKind.STUDENT,
+    username: credentials.username,
+    password: credentials.password,
+    deviceUUID: credentials.deviceUUID
   });
 
   // Start presence requests every 2 minutes.
-  pronote.startPresenceRequests();
+  pronote.startPresenceInterval(session);
+  // `setInterval` return value will be stored under `session.presence`.
+
   // Stop presence after 5 minutes.
-  setTimeout(() => pronote.stopPresenceRequests(), 5 * 60 * 1000);
-})();
+  setTimeout(() => pronote.clearPresenceInterval(session), 5 * 60 * 1000);
+}();

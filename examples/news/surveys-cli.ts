@@ -1,18 +1,19 @@
-import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiNewsQuestionType, StudentNewsSurvey } from "../../src";
+import * as pronote from "../../src";
+import { credentials } from "../_credentials";
 import { select, input, checkbox } from "@inquirer/prompts";
 
-(async () => {
-  const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev/pronote", {
-    accountTypeID: PronoteApiAccountId.Student,
-    username: "lisa.boulanger", // using my VM credentials here because the demo instance don't have any news.
-    password: "12345678",
-
-    // Because this is just an example, don't forget to change this.
-    deviceUUID: "my-device-uuid"
+void async function main () {
+  const session = pronote.createSessionHandle();
+  await pronote.loginCredentials(session, {
+    url: credentials.pronoteURL,
+    kind: pronote.AccountKind.STUDENT,
+    username: credentials.username,
+    password: credentials.password,
+    deviceUUID: credentials.deviceUUID
   });
 
-  const news = await pronote.getNews();
-  const surveys = news.items.filter((item) => item instanceof StudentNewsSurvey) as StudentNewsSurvey[] ?? [];
+  const news = await pronote.news(session);
+  const surveys = news.items.filter((item) => item.is === "survey") as pronote.NewsSurvey[] ?? [];
 
   const survey = await select({
     message: "Which one do you want to answer?",
@@ -37,7 +38,7 @@ import { select, input, checkbox } from "@inquirer/prompts";
   );
 
   for (const question of survey.questions) {
-    if (question.type === PronoteApiNewsQuestionType.SurveyText) {
+    if (question.kind === pronote.NewsQuestionKind.SurveyText) {
       console.info(question.content);
       continue;
     }
@@ -45,15 +46,15 @@ import { select, input, checkbox } from "@inquirer/prompts";
     // Display the title before anything.
     console.info("\n" + question.fullTitle);
 
-    if (question.type === PronoteApiNewsQuestionType.TextInput) {
+    if (question.kind === pronote.NewsQuestionKind.TextInput) {
       const answer = await input({
         default: question.answered ? question.textInputAnswer : undefined,
         message: question.content
       });
 
-      question.patch(answer);
+      pronote.newsQuestionLocalMutate(question, answer);
     }
-    else if (question.type === PronoteApiNewsQuestionType.UniqueChoice) {
+    else if (question.kind === pronote.NewsQuestionKind.UniqueChoice) {
       const selected = await select({
         message: question.content,
         default: question.answered ? question.selectedAnswers?.[0] : undefined,
@@ -73,12 +74,12 @@ import { select, input, checkbox } from "@inquirer/prompts";
           message: selectedChoice.value
         });
 
-        question.patch([selected], textInputAnswer);
+        pronote.newsQuestionLocalMutate(question, [selected], textInputAnswer);
       }
       // Otherwise, just push it as is.
-      else question.patch([selected]);
+      else pronote.newsQuestionLocalMutate(question, [selected]);
     }
-    else if (question.type === PronoteApiNewsQuestionType.MultipleChoice) {
+    else if (question.kind === pronote.NewsQuestionKind.MultipleChoice) {
       const answers = await checkbox({
         message: question.content,
         validate (items) {
@@ -108,11 +109,11 @@ import { select, input, checkbox } from "@inquirer/prompts";
           message: "Please provide a text input for the selected choices."
         });
 
-        question.patch(answers, textInputAnswer);
+        pronote.newsQuestionLocalMutate(question, answers, textInputAnswer);
       }
-      else question.patch(answers);
+      else pronote.newsQuestionLocalMutate(question, answers);
     }
   }
 
-  await survey.answer();
-})();
+  await pronote.newsSurveySend(session, survey);
+}();

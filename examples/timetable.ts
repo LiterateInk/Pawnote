@@ -1,39 +1,58 @@
-import { authenticatePronoteCredentials, PronoteApiAccountId, TimetableDetention, TimetableLesson, TimetableOverview } from "../src";
+import * as pronote from "../src";
+import { credentials } from "./_credentials";
 
-(async () => {
-  const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev", {
-    accountTypeID: PronoteApiAccountId.Student,
-    username: "lisa.boulanger",
-    password: "12345678",
-
-    // Because this is just an example, don't forget to change this.
-    deviceUUID: "my-device-uuid"
+void async function main () {
+  const handle = pronote.createSessionHandle();
+  await pronote.loginCredentials(handle, {
+    url: credentials.pronoteURL,
+    kind: pronote.AccountKind.STUDENT,
+    username: credentials.username,
+    password: credentials.password,
+    deviceUUID: credentials.deviceUUID
   });
 
-  const overview = await pronote.getTimetableOverviewForWeek(1);
-
-  // const overview = await pronote.getTimetableOverviewForInterval(
-  //   new Date("2024-09-02"),
-  //   new Date("2024-09-06")
-  // );
-
-  const timetable = overview.parse({
+  const timetable = await pronote.timetableFromWeek(handle, 3);
+  pronote.parseTimetable(handle, timetable, {
     withSuperposedCanceledClasses: false,
     withCanceledClasses: true,
     withPlannedClasses: true
   });
 
-  for (const lesson of timetable) {
-    if (lesson.isActivity()) {
-      console.log("Activity:", lesson.title);
+  for (const lesson of timetable.classes) {
+    if (lesson.is === "activity") {
+      console.log(lesson.title, "activity starts the", lesson.startDate.toLocaleString(), "ends the", lesson.endDate.toLocaleString());
+      console.log("(attendants) =>", lesson.attendants.join(", ") || "none");
+      console.log(`(resourceType->${lesson.resourceTypeName}) => ${lesson.resourceValue}`);
     }
-    else if (lesson.isDetention()) {
-      console.log("Detention:", lesson.title);
+    else if (lesson.is === "detention") {
+      console.log(lesson.title ?? "???", "detention starts the", lesson.startDate.toLocaleString(), "ends the", lesson.endDate.toLocaleString());
     }
-    else if (lesson.isLesson()) {
-      console.log("Lesson:", lesson.subject?.name || "(unknown subject)");
+    else if (lesson.is === "lesson") {
+      // Let's use "???" as a placeholder when there's no subject on a lesson.
+      const subjectName = lesson.subject?.name ?? "???";
+      console.log(subjectName, "lesson starts the", lesson.startDate.toLocaleString(), "ends the", lesson.endDate.toLocaleString());
+
+      console.log("(teachers) =>", lesson.teacherNames.join(", ") || "none");
+      console.log("(classrooms) =>", lesson.classrooms.join(", ") || "none");
+      console.log("(groups) =>", lesson.groupNames.join(", ") || "none");
+      console.log("(personal) =>", lesson.personalNames.join(", ") || "none");
+
+      if (lesson.lessonResourceID) {
+        console.log("(info) => has lesson resource/content");
+      }
+
+      if (lesson.status) {
+        console.log("(status) =>", lesson.status);
+      }
+
+      console.log("(exempted) =>", lesson.exempted);
     }
+
+    console.info("(notes) =>", lesson.notes || "none");
+
+    // Break line.
+    console.log();
   }
-})();
+}();
 
 

@@ -1,24 +1,27 @@
-import { authenticatePronoteCredentials, PronoteApiAccountId } from "../../src";
+import * as pronote from "../../src";
+import { credentials } from "../_credentials";
 
-(async () => {
-  const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev/pronote", {
-    accountTypeID: PronoteApiAccountId.Student,
-    username: "lisa.boulanger", // using my VM credentials here because the demo instance doesn't have any messages.
-    password: "12345678",
-
-    // Because this is just an example, don't forget to change this.
-    deviceUUID: "my-device-uuid"
+void async function main () {
+  const session = pronote.createSessionHandle();
+  await pronote.loginCredentials(session, {
+    url: credentials.pronoteURL,
+    kind: pronote.AccountKind.STUDENT,
+    username: credentials.username,
+    password: credentials.password,
+    deviceUUID: credentials.deviceUUID
   });
 
-  // Get an overview of available discussions.
-  const discussionsOverview = await pronote.getDiscussionsOverview();
+  const discussions = await pronote.discussions(session);
+
   // Select the first discussion available.
-  const firstDiscussion = discussionsOverview.discussions[0];
+  const discussion = discussions.items[0];
+  console.log("Selected discussion:", discussion.subject);
 
   // Fetch the messages overview from the discussion.
-  // You need to fetch the overview in order to send a message.
-  const messagesOverview = await firstDiscussion.fetchMessagesOverview();
-  console.info(firstDiscussion.subject);
-  console.log("Currently containing", messagesOverview.messages.length, "message(s)...");
-})();
+  const messages = await pronote.discussionMessages(session, discussion);
+  console.log("Currently containing", messages.sents.length, "message(s)...");
+
+  const recipients = await pronote.discussionRecipients(session, discussion);
+  console.log("Recipients:", recipients.map((r) => r.name).join(", "));
+}();
 

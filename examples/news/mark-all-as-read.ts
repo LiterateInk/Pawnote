@@ -1,16 +1,17 @@
-import { authenticatePronoteCredentials, PronoteApiAccountId } from "../../src";
+import * as pronote from "../../src";
+import { credentials } from "../_credentials";
 
-(async () => {
-  const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev/pronote", {
-    accountTypeID: PronoteApiAccountId.Student,
-    username: "lisa.boulanger", // using my VM credentials here because the demo instance don't have any news.
-    password: "12345678",
-
-    // Because this is just an example, don't forget to change this.
-    deviceUUID: "my-device-uuid"
+void async function main () {
+  const session = pronote.createSessionHandle();
+  await pronote.loginCredentials(session, {
+    url: credentials.pronoteURL,
+    kind: pronote.AccountKind.STUDENT,
+    username: credentials.username,
+    password: credentials.password,
+    deviceUUID: credentials.deviceUUID
   });
 
-  const news = await pronote.getNews();
+  const news = await pronote.news(session);
 
   for (const item of news.items) {
     console.info(item.title ?? "(no title)", "by", item.author);
@@ -19,7 +20,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId } from "../../src";
       continue;
     }
 
-    await item.markAsRead();
+    await pronote.newsRead(session, item, true);
     console.info("=> Marked as read !\n");
   }
-})();
+}();

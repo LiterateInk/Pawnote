@@ -1,16 +1,17 @@
-import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiAttachmentType, PronoteApiNewsQuestionType, StudentNewsInformation, StudentNewsSurvey } from "../../src";
+import * as pronote from "../../src";
+import { credentials } from "../_credentials";
 
-(async () => {
-  const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev/pronote", {
-    accountTypeID: PronoteApiAccountId.Student,
-    username: "lisa.boulanger", // using my VM credentials here because the demo instance don't have any news.
-    password: "12345678",
-
-    // Because this is just an example, don't forget to change this.
-    deviceUUID: "my-device-uuid"
+void async function main () {
+  const session = pronote.createSessionHandle();
+  await pronote.loginCredentials(session, {
+    url: credentials.pronoteURL,
+    kind: pronote.AccountKind.STUDENT,
+    username: credentials.username,
+    password: credentials.password,
+    deviceUUID: credentials.deviceUUID
   });
 
-  const news = await pronote.getNews();
+  const news = await pronote.news(session);
 
   console.group("--- Available categories :");
   news.categories.forEach((category) => {
@@ -20,7 +21,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiAttachme
 
   console.log("\n--- Items :");
   news.items.forEach((item) => {
-    if (item instanceof StudentNewsSurvey) {
+    if (item.is === "survey") {
       console.log("Survey", ":", item.title ?? "(no title)", "by", item.author);
       console.log("Category:", item.category.name);
       console.log("Read:", item.read);
@@ -34,12 +35,12 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiAttachme
           console.group((question.title || question.fullTitle) + ":");
 
           let type: string;
-          switch (question.type) {
-            case PronoteApiNewsQuestionType.InformationText:
-            case PronoteApiNewsQuestionType.SurveyText: type = "Text"; break;
-            case PronoteApiNewsQuestionType.TextInput: type = "Text input"; break;
-            case PronoteApiNewsQuestionType.MultipleChoice: type = "Multiple choice"; break;
-            case PronoteApiNewsQuestionType.UniqueChoice: type = "Unique choice"; break;
+          switch (question.kind) {
+            case pronote.NewsQuestionKind.InformationText:
+            case pronote.NewsQuestionKind.SurveyText: type = "Text"; break;
+            case pronote.NewsQuestionKind.TextInput: type = "Text input"; break;
+            case pronote.NewsQuestionKind.MultipleChoice: type = "Multiple choice"; break;
+            case pronote.NewsQuestionKind.UniqueChoice: type = "Unique choice"; break;
           }
 
           console.log("Type:", type);
@@ -50,7 +51,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiAttachme
 
             for (const attachment of question.attachments) {
               console.log(
-                attachment.type === PronoteApiAttachmentType.File ? "File:" : "Link:",
+                attachment.kind === pronote.AttachmentKind.File ? "File:" : "Link:",
                 attachment.name, "=>", attachment.url
               );
             }
@@ -58,7 +59,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiAttachme
             console.groupEnd();
           }
 
-          if (question.type === PronoteApiNewsQuestionType.TextInput) {
+          if (question.kind === pronote.NewsQuestionKind.TextInput) {
             console.log("Answer:", question.textInputAnswer ?? "(no answer)");
           }
           else {
@@ -90,7 +91,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiAttachme
         console.groupEnd();
       }
     }
-    else if (item instanceof StudentNewsInformation) {
+    else if (item.is === "information") {
       console.log("Information:", item.title ?? "(no title)", "by", item.author);
       console.log("Category:", item.category.name);
       console.log("Read:", item.read);
@@ -104,7 +105,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiAttachme
 
         for (const attachment of item.attachments) {
           console.log(
-            attachment.type === PronoteApiAttachmentType.File ? "File:" : "Link:",
+            attachment.kind === pronote.AttachmentKind.File ? "File:" : "Link:",
             attachment.name, "=>", attachment.url
           );
         }
@@ -115,4 +116,4 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiAttachme
 
     console.log("---"); // Line break.
   });
-})();
+}();

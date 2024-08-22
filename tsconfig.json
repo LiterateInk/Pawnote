@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2016",
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
 
     "baseUrl": ".",
     "paths": {
@@ -15,8 +15,7 @@
 
     "isolatedModules": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true
+    "allowSyntheticDefaultImports": true
   },
 
   "include": ["src", "examples", "eslint.config.js"],

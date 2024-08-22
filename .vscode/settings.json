@@ -1,17 +1,11 @@
 {
-  "editor.insertSpaces": true,
   "editor.detectIndentation": false,
+  "editor.insertSpaces": true,
   "editor.tabSize": 2,
 
-  "cSpell.language": "en,fr",
-
-  "eslint.experimental.useFlatConfig": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
 
-  "markdownlint.config": {
-    "$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint/main/schema/markdownlint-config-schema.json",
-    "no-inline-html": false
-  }
+  "eslint.useFlatConfig": true
 }

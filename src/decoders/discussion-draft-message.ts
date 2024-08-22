@@ -4,7 +4,7 @@ export const decodeDiscussionDraftMessage = (draft: any): DiscussionDraftMessage
   const isHTML: boolean = draft.estHTML ?? false;
 
   return {
-    posessionID: draft.possessionMessage.V.N,
+    possessionID: draft.possessionMessage.V.N,
     replyMessageID: draft.messageSource.V.N,
     content: isHTML ? draft.contenu.V : draft.contenu,
     isHTML

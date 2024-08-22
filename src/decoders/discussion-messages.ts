@@ -21,7 +21,7 @@ export const decodeDiscussionMessages = (messages: any, session: SessionHandle):
     drafts.push({
       isHTML,
       content: isHTML ? draft.V.contenu : draft.V.contenu.V,
-      posessionID: draft.V.N,
+      possessionID: draft.V.N,
       replyMessageID: defaultReplyMessageID
     });
   }

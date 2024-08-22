@@ -1,6 +1,6 @@
 export type DiscussionDraftMessage = Readonly<{
   isHTML: boolean
-  posessionID: string
+  possessionID: string
   replyMessageID: string
 }> & {
   content: string

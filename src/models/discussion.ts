@@ -1,7 +1,8 @@
 import { DiscussionFolder } from "./discussion-folder";
+import { DiscussionMessages } from "./discussion-messages";
 
 export type Discussion = Readonly<{
-  creator: string
+  creator?: string
   recipientName?: string
 
   /**
@@ -41,4 +42,13 @@ export type Discussion = Readonly<{
   numberOfMessagesUnread: number
   folders: DiscussionFolder[]
   closed: boolean
-}>;
+
+  /** Internal use only. */
+  cache: Record<string, Discussion>
+}> & {
+  /**
+   * Only available after requesting them.
+   * The handle will automatically add them here.
+   */
+  messages?: DiscussionMessages
+};

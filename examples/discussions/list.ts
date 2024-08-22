@@ -15,13 +15,12 @@ void async function main () {
   const discussions = await pronote.discussions(session);
 
   // Select the first discussion available.
-  const firstDiscussion = discussions.items[0];
-  console.log("Selected discussion:", firstDiscussion.subject);
+  const discussion = discussions.items[0];
+  console.log("Selected discussion:", discussion.subject);
 
   // Fetch the messages overview from the discussion.
   // You need to fetch the overview in order to send a message.
-  const messagesOverview = await firstDiscussion.fetchMessagesOverview();
-  console.info(firstDiscussion.subject);
-  console.log("Currently containing", messagesOverview.messages.length, "message(s)...");
+  const messages = await pronote.discussionMessages(session, discussion);
+  console.log("Currently containing", messages.sents.length, "message(s)...");
 }();
 

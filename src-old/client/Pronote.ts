@@ -95,19 +95,6 @@ export default class Pronote {
     });
   }
 
-  public async getMessagesOverviewFromDiscussion (discussion: StudentDiscussion, markAsRead = false, limit = 0): Promise<MessagesOverview> {
-    return this.queue.push(async () => {
-      this.#throwIfNotAllowedReadMessages();
-
-      const { data } = await callApiUserMessages(this.fetcher, { possessions: discussion.possessions, session: this.session, markAsRead, limit });
-      return new MessagesOverview(
-        this, this.queue, this.session,
-        discussion,
-        data
-      );
-    });
-  }
-
   public async postDiscussionCommand (payload: ApiUserDiscussionAvailableCommands): Promise<void> {
     await this.queue.push(async () => {
       this.#throwIfNotAllowedCreateMessages();

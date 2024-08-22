@@ -1,6 +1,6 @@
 import type { Discussion, DiscussionFolder, SessionHandle } from "~/models";
 
-export const decodeDiscussion = (discussion: any, session: SessionHandle, folders: DiscussionFolder[]): Discussion => {
+export const decodeDiscussion = (discussion: any, folders: DiscussionFolder[]): Discussion => {
   return {
     creator: discussion.initiateur,
     dateAsFrenchText: discussion.libelleDate,

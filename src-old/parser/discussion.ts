@@ -55,20 +55,6 @@ export class StudentDiscussion {
   }
 
   /**
-   * Fetches the messages from the discussion.
-   * By default it won't mark the messages as read even after fetching them.
-   *
-   * You can change this behavior by setting `markAsRead` to `true`.
-   * There's no other way to mark the messages as read.
-   *
-   * @param markAsRead Whether to mark the messages as read after fetching them.
-   * @param limit - 0 = no limit, fetch all messages.
-   */
-  public fetchMessagesOverview (markAsRead = false, limit = 0): Promise<MessagesOverview> {
-    return this.#client.getMessagesOverviewFromDiscussion(this, markAsRead, limit);
-  }
-
-  /**
    * Marks the discussion as read.
    * @remark This function is a shortcut to `fetchMessages(true)` but here we don't return anything.
    */

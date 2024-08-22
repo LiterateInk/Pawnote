@@ -14,5 +14,5 @@ export const discussions = async (session: SessionHandle): Promise<Discussions> 
   });
 
   const response = await request.send();
-  return decodeDiscussions(response.data.donnees, session);
+  return decodeDiscussions(response.data.donnees);
 };

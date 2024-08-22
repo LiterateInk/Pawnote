@@ -16,132 +16,6 @@ import { PronoteApiDiscussionCommandType } from "~/constants/discussion";
 import { generateCreationID } from "~/constants/id";
 import { getPronoteMessageButtonType } from "~/pronote/messages";
 export class MessagesOverview {
-  readonly #client: Pronote;
-  readonly #clientQueue: Queue;
-  readonly #clientSession: Session;
-  readonly #discussion: StudentDiscussion;
-
-  #defaultReplyMessageID: string;
-  #messages: SentMessage[] = [];
-  #savedDrafts: DraftMessage[] = [];
-  // Needed to create a new message...
-  #sendButtonGenre?: PronoteApiMessagesButtonType;
-  #fetchLimit: number;
-
-  public async refetch (limit = this.#fetchLimit) {
-    // Update the discussions overview -> updates possessions.
-    await this.#discussion.refetch();
-
-    // Fetch the new messages.
-    const { messagePourReponse, listeMessages, listeBoutons, brouillon } = await this.#clientQueue.push(async () => {
-      const { data } = await callApiUserMessages(this.#client.fetcher, {
-        possessions: this.#discussion.possessions,
-        session: this.#clientSession,
-        markAsRead: false,
-        limit
-      });
-
-      return data.donnees;
-    });
-
-    this.#defaultReplyMessageID = messagePourReponse.V.N;
-
-    this.#parseMessages(listeMessages.V);
-    this.#parseCurrentDraft(brouillon);
-
-    this.#sendButtonGenre = this.#readSendButton(listeBoutons.V);
-    this.#fetchLimit = limit;
-  }
-
-  #readSendButton (listeBoutons: PronoteApiUserMessages["response"]["donnees"]["listeBoutons"]["V"]): PronoteApiMessagesButtonType | undefined {
-    const button = listeBoutons.find((button) => button.L.startsWith("Envoyer"));
-    return button?.G;
-  }
-
-  #parseMessages (listeMessages: PronoteApiUserMessages["response"]["donnees"]["listeMessages"]["V"]): void {
-    this.#savedDrafts = [];
-    this.#messages = [];
-
-    for (const message of listeMessages) {
-      if (message.brouillon) {
-        const instance = new DraftMessage(this, message);
-        this.#savedDrafts.push(instance);
-      }
-      else {
-        const instance = new SentMessage(this.#client, this, message);
-        this.#messages.push(instance);
-      }
-    }
-
-    this.#messages.sort((a, b) => b.created.getTime() - a.created.getTime());
-  }
-
-  #parseCurrentDraft (draft: PronoteApiUserMessages["response"]["donnees"]["brouillon"]) {
-    if (!draft) return;
-
-    const possessionMessage = {
-      _T: 24,
-      V: { N: draft.V.N }
-    } as const;
-
-    const messageSource = {
-      _T: 24,
-      V: { N: this.#defaultReplyMessageID }
-    } as const;
-
-    if (draft.V.estHTML) {
-      this.#savedDrafts.push(new DraftMessage(this, {
-        estHTML: true,
-        contenu: draft.V.contenu,
-        possessionMessage,
-        messageSource
-      }));
-    }
-    else {
-      this.#savedDrafts.push(new DraftMessage(this, {
-        estHTML: false,
-        contenu: draft.V.contenu.V,
-        possessionMessage,
-        messageSource
-      }));
-    }
-  }
-
-  public constructor (
-    // Those are very private properties, that's why we drill them down.
-    client: Pronote, clientQueue: Queue, clientSession: Session,
-    // Parameter needed to fetch the discussion.
-    discussion: StudentDiscussion,
-    // Current data of the discussion.
-    data: PronoteApiUserMessages["response"],
-    fetchLimit = 0
-  ) {
-    this.#client = client;
-    this.#clientQueue = clientQueue;
-    this.#clientSession = clientSession;
-    this.#discussion = discussion;
-
-    this.#defaultReplyMessageID = data.donnees.messagePourReponse.V.N;
-
-    this.#parseMessages(data.donnees.listeMessages.V);
-    this.#parseCurrentDraft(data.donnees.brouillon);
-
-    this.#sendButtonGenre = this.#readSendButton(data.donnees.listeBoutons.V);
-    this.#fetchLimit = fetchLimit;
-  }
-
-  public get defaultReplyMessageID (): string {
-    return this.#defaultReplyMessageID;
-  }
-
-  public get messages (): SentMessage[] {
-    return this.#messages;
-  }
-
-  public get savedDrafts (): DraftMessage[] {
-    return this.#savedDrafts;
-  }
-
   /**
    * Will send a message to the discussion and refetch the messages
    * internally so properties are automatically updated.
@@ -197,15 +71,6 @@ export class MessagesOverview {
     });
 
     await this.refetch();
-  }
-
-  /**
-   * Whether the button "include students and parents"
-   * appears on the UI or not.
-   */
-  public get canIncludeStudentsAndParents (): boolean {
-    return this.#sendButtonGenre === PronoteApiMessagesButtonType.ReplyEveryoneExceptParentsAndStudents
-        || this.#sendButtonGenre === PronoteApiMessagesButtonType.SendEveryoneExceptParentsAndStudents;
   }
 }
 
@@ -338,11 +203,6 @@ export abstract class Message {
   }
 }
 
-export class TransferredMessage extends Message {
-  public constructor (client: Pronote, data: PronoteApiTransferredMessage) {
-    super(client, data);
-  }
-}
 
 export class SentMessage extends Message {
   readonly #messagesOverview: MessagesOverview;

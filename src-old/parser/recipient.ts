@@ -2,15 +2,6 @@ import type { PronoteApiUserCreateDiscussionRecipients } from "~/api/user/create
 import type { PronoteApiUserMessageRecipient } from "~/constants/recipients";
 import type { PronoteApiUserResourceType } from "~/constants/users";
 
-export class MessageRecipient {
-  public readonly name: string;
-  public readonly type: PronoteApiUserResourceType;
-
-  public constructor (data: Omit<PronoteApiUserMessageRecipient, "N" | "P" | "refusMess">) {
-    this.name = data.L;
-    this.type = data.G;
-  }
-}
 
 export class FetchedMessageRecipient extends MessageRecipient {
   public readonly id: string;

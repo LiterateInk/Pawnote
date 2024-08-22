@@ -2,8 +2,9 @@ import { RequestFN } from "~/core/request-function";
 import { decodeDiscussion } from "~/decoders/discussion";
 import { decodeDiscussionFolder } from "~/decoders/discussion-folder";
 import { type Discussion, type Discussions, TabLocation, type SessionHandle } from "~/models";
+import type { _DiscussionsCache } from "./private/discussions-cache";
 
-export const discussions = async (session: SessionHandle, cache: Record<string, any> = {}): Promise<Discussions> => {
+export const discussions = async (session: SessionHandle, cache: _DiscussionsCache = {_:[]}): Promise<Discussions> => {
   const request = new RequestFN(session, "ListeMessagerie", {
     _Signature_: { onglet: TabLocation.Discussions },
 
@@ -27,22 +28,12 @@ export const discussions = async (session: SessionHandle, cache: Record<string, 
     })
     .map((discussion: any) => decodeDiscussion(discussion, folders, cache));
 
-  // This allows us to mutate the reference directly
-  // and make sure all the variables using the cache
-  // are updated.
-  let itemsReference: Discussion[] = cache["__"];
+  // This is a trick to keep the reference to the items
+  // in the cache, while updating the items.
+  cache._.length = 0;
+  cache._.push(...items);
 
-  if (itemsReference) {
-    // This is a trick to keep the reference to the items
-    // in the cache, while updating the items.
-    itemsReference.length = 0;
-    itemsReference.push(...items);
-  }
-  else {
-    itemsReference = cache["__"] = items;
-  }
-
-  for (const item of itemsReference) {
+  for (const item of cache._) {
     if (item.participantsMessageID in cache) {
       // Mutate the reference directly in cache.
       Object.assign(cache[item.participantsMessageID], item);
@@ -55,7 +46,8 @@ export const discussions = async (session: SessionHandle, cache: Record<string, 
 
   // Delete outdated keys, in case there are any.
   for (const key in cache) {
-    if (!itemsReference.find((item) => item.participantsMessageID === key)) {
+    if (key === "_") continue;
+    if (!cache._.find((item) => item.participantsMessageID === key)) {
       delete cache[key];
     }
   }
@@ -64,6 +56,6 @@ export const discussions = async (session: SessionHandle, cache: Record<string, 
     folders,
     // Instead of returning the items, we return
     // the reference to the items in the cache.
-    items: itemsReference
+    items: cache._
   };
 };

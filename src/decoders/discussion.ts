@@ -1,6 +1,7 @@
+import type { _DiscussionsCache } from "~/api/private/discussions-cache";
 import type { Discussion, DiscussionFolder } from "~/models";
 
-export const decodeDiscussion = (discussion: any, folders: DiscussionFolder[], cache: Record<string, Discussion>): Discussion => {
+export const decodeDiscussion = (discussion: any, folders: DiscussionFolder[], cache: _DiscussionsCache): Discussion => {
   return {
     cache,
     creator: discussion.initiateur,

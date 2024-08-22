@@ -1,5 +1,6 @@
-import { DiscussionFolder } from "./discussion-folder";
-import { DiscussionMessages } from "./discussion-messages";
+import type { _DiscussionsCache } from "~/api/private/discussions-cache";
+import type { DiscussionFolder } from "./discussion-folder";
+import type { DiscussionMessages } from "./discussion-messages";
 
 export type Discussion = Readonly<{
   creator?: string
@@ -43,8 +44,12 @@ export type Discussion = Readonly<{
   folders: DiscussionFolder[]
   closed: boolean
 
-  /** Internal use only. */
-  cache: Record<string, Discussion>
+  /**
+   * Internal use only,
+   * please never use this manually as it
+   * could break internal references.
+   */
+  cache: _DiscussionsCache
 }> & {
   /**
    * Only available after requesting them.

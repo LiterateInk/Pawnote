@@ -19,6 +19,10 @@ void async function main () {
   const discussions = await pronote.discussions(session);
 
   while (true) {
+    // We have to delay the deletion because
+    // it updates the array and breaks the iterations.
+    let discussionsToDelete: pronote.Discussion[] = [];
+
     for (const discussion of discussions.items) {
       console.log(discussion.subject);
 
@@ -51,8 +55,8 @@ void async function main () {
             break;
           }
           case "delete": {
-            await pronote.discussionDelete(session, discussion);
-            console.info("|> Discussion deleted permanently.");
+            discussionsToDelete.push(discussion);
+            console.info("|> Discussion will be deleted permanently at the end of this cycle.");
             break;
           }
           case "nothing":
@@ -88,14 +92,19 @@ void async function main () {
             break;
           }
           case "delete": {
-            await pronote.discussionDelete(session, discussion);
-            console.info("|> Discussion deleted permanently.");
+            discussionsToDelete.push(discussion);
+            console.info("|> Discussion will be deleted permanently at the end of this cycle.");
           }
           case "nothing":
             break;
         }
-
       }
+    }
+
+    // Delete selected discussions.
+    if (discussionsToDelete.length > 0) {
+      await Promise.all(discussionsToDelete.map((discussion) => pronote.discussionDelete(session, discussion)));
+      console.log(`|> ${discussionsToDelete.length} discussions deleted permanently.`);
     }
 
     const shouldContinue = await select({

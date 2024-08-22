@@ -13,6 +13,7 @@ export const decodeDiscussion = (discussion: any, folders: DiscussionFolder[], c
     numberOfMessages: discussion.nombreMessages ?? 0,
     numberOfMessagesUnread: discussion.nbNonLus ?? 0,
     closed: discussion.ferme ?? false,
+    permanentlyDeleted: false,
     folders: discussion.listeEtiquettes?.V
       .map((current: any) =>
         folders.find((decoded) => decoded.id === current.N)

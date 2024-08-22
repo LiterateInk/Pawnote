@@ -42,6 +42,7 @@ export type Discussion = Readonly<{
   numberOfMessagesUnread: number
   folders: DiscussionFolder[]
   closed: boolean
+  permanentlyDeleted: boolean
 
   /** Internal use only. */
   cache: Record<string, Discussion>

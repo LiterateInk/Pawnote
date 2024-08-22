@@ -1,4 +1,3 @@
 export enum PronoteApiFunctions {
-  Evaluations = "DernieresEvaluations",
-  GeneratePDF = "GenerationPDF"
+  Evaluations = "DernieresEvaluations"
 }

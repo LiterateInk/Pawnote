@@ -26,6 +26,7 @@ export * from "./discussion-send-message";
 export * from "./discussion-trash";
 export * from "./discussions";
 export * from "./geolocation";
+export * from "./gradebook-pdf";
 export * from "./grades-overview";
 export * from "./homepage";
 export * from "./instance";

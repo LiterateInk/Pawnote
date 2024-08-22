@@ -11,7 +11,6 @@ void async function main () {
     deviceUUID: credentials.deviceUUID
   });
 
-  // Get an overview of available discussions.
   const discussions = await pronote.discussions(session);
 
   // Select the first discussion available.
@@ -20,7 +19,7 @@ void async function main () {
 
   // Fetch the messages overview from the discussion.
   // You need to fetch the overview in order to send a message.
-  const messages = await pronote.discussionMessages(session, discussion);
-  console.log("Currently containing", messages.sents.length, "message(s)...");
+  await pronote.discussionMessages(session, discussion);
+  console.log("Currently containing", discussion.messages!.sents.length, "message(s)...");
 }();
 

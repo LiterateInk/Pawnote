@@ -11,7 +11,8 @@ void async function main () {
     deviceUUID: credentials.deviceUUID
   });
 
-  if (!session.user.authorizations.canDiscuss) throw new Error("This account can't discuss, review the permissions.");
+  if (!session.user.authorizations.canDiscuss)
+    throw new Error("This account can't discuss, review the permissions.");
 
   type Kinds = (
     | typeof pronote.EntityKind.Teacher
@@ -54,7 +55,5 @@ void async function main () {
 
     if (person.function) console.info("=>", person.function.name);
     if (person.subjects.length > 0) console.info("=>", person.subjects.map((subject) => subject.name).join(", "));
-
-    // Break.
   }
 }();

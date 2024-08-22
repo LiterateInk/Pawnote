@@ -27,7 +27,11 @@ export class RequestFN {
     public data: any
   ) {}
 
-  private generate () {
+  /**
+   * Make the order generation, encryption and compression.
+   * @returns The order and the URL to send the request to.
+   */
+  public process () {
     this.session.information.order++;
 
     const order = this.generateOrder();
@@ -81,7 +85,7 @@ export class RequestFN {
 
   public async send (): Promise<ResponseFN> {
     return this.session.queue.push(async () => {
-      const payload = this.generate();
+      const payload = this.process();
 
       const response = await this.session.fetcher({
         url: payload.url,

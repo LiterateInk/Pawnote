@@ -1,6 +1,6 @@
 {
   "name": "pawnote",
-  "version": "0.22.1",
+  "version": "1.0.0",
   "description": "A purrfect API wrapper for PRONOTE.",
   "repository": "https://github.com/LiterateInk/Pawnote",
   "sideEffects": false,

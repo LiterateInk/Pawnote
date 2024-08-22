@@ -15,6 +15,7 @@ export * from "./assignment-upload-file";
 export * from "./assignments";
 export * from "./discussion-create-draft";
 export * from "./discussion-messages";
+export * from "./discussion-read";
 export * from "./discussion-remote-mutate-draft";
 export * from "./discussion-remove-draft";
 export * from "./discussion-send-draft";

@@ -95,14 +95,6 @@ export default class Pronote {
     });
   }
 
-  /**
-   * Mark a discussion as read.
-   * @remark Shortcut for `getMessagesFromDiscussion` but here we don't return anything.
-   */
-  public async markDiscussionAsRead (discussion: StudentDiscussion): Promise<void> {
-    await this.getMessagesOverviewFromDiscussion(discussion, true, 0);
-  }
-
   public async getRecipientsForMessage (messageID: string): Promise<FetchedMessageRecipient[]> {
     return this.queue.push(async () => {
       this.#throwIfNotAllowedReadMessages();

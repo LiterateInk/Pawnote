@@ -14,6 +14,7 @@ export * from "./discussion-folder-kind";
 export * from "./discussion-folder";
 export * from "./discussion-message";
 export * from "./discussion-messages";
+export * from "./discussion-recipient";
 export * from "./discussion-send-action";
 export * from "./discussion-sent-message";
 export * from "./discussion";

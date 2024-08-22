@@ -18,8 +18,10 @@ void async function main () {
   console.log("Selected discussion:", discussion.subject);
 
   // Fetch the messages overview from the discussion.
-  // You need to fetch the overview in order to send a message.
-  await pronote.discussionMessages(session, discussion);
-  console.log("Currently containing", discussion.messages!.sents.length, "message(s)...");
+  const messages = await pronote.discussionMessages(session, discussion);
+  console.log("Currently containing", messages.sents.length, "message(s)...");
+
+  const recipients = await pronote.discussionRecipients(session, discussion);
+  console.log("Recipients:", recipients.map((r) => r.name).join(", "));
 }();
 

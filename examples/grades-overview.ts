@@ -1,53 +1,60 @@
-import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeType } from "../src";
+import * as pronote from "../src";
+import { credentials } from "./_credentials";
 
-(async () => {
-  const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev/pronote", {
-    accountTypeID: PronoteApiAccountId.Student,
-    username: "lisa.boulanger", // using my VM credentials here because the demo instance doesn't have any messages.
-    password: "12345678",
+const handleGradeValue = (grade: pronote.GradeValue, outOf: number, coefficient: number): string => {
+  // Handle custom grades.
+  if (isNaN(grade.points)) {
+    let message: string;
+    switch (grade.kind) {
+      case pronote.GradeKind.Absent:
+        message = "Absent during this test.";
+        break;
+      case pronote.GradeKind.Unreturned:
+        message = "Work not returned.";
+        break;
+      case pronote.GradeKind.Error:
+        message = "Grade is not available.";
+        break;
+      default:
+        throw new Error("Grade type not handled.");
+    }
 
-    // Because this is just an example, don't forget to change this.
-    deviceUUID: "my-device-uuid"
+    return message;
+  }
+  // Otherwise, just print as is.
+  else {
+    return `${grade}/${outOf} (x${coefficient})`;
+  }
+};
+
+void async function main () {
+  const session = pronote.createSessionHandle();
+  await pronote.loginCredentials(session, {
+    url: credentials.pronoteURL,
+    kind: pronote.AccountKind.STUDENT,
+    username: credentials.username,
+    password: credentials.password,
+    deviceUUID: credentials.deviceUUID
   });
 
-  const period = pronote.readDefaultPeriodForGradesOverview();
-  console.log("Fetching for period:", period.name, "\n");
+  // Read the user resources to find the tab's periods.
+  const user = session.user.resources[0];
 
-  const gradesOverview = await pronote.getGradesOverview(period);
+  const tab = user.tabs.get(pronote.TabLocation.Grades);
+  if (!tab) throw new Error("Cannot retrieve periods for the grades tab, you maybe don't have access to it.");
+  const selectedPeriod = tab.defaultPeriod!;
 
-  const handleGradeValue = (value: number | PronoteApiGradeType, outOf: number, coefficient: number): string => {
-    // Handle custom grades.
-    if (typeof value !== "number") {
-      let message: string;
-      switch (value) {
-        case PronoteApiGradeType.Absent:
-          message = "Absent during this test.";
-          break;
-        case PronoteApiGradeType.Unreturned:
-          message = "Work not returned.";
-          break;
-        case PronoteApiGradeType.Error:
-          message = "Grade is not available.";
-          break;
-        default:
-          throw new Error("Grade type not handled.");
-      }
+  console.log("Available periods for this tab ->", tab.periods.map((period) => period.name).join(", "));
+  console.log("We selected the default period,", selectedPeriod.name, "!\n");
 
-      return message;
-    }
-    // Otherwise, just print as is.
-    else {
-      return `${value}/${outOf} (x${coefficient})`;
-    }
-  };
+  const overview = await pronote.gradesOverview(session, selectedPeriod);
 
   console.group("--- GRADES ---\n");
 
-  gradesOverview.grades.forEach((grade) => {
+  overview.grades.forEach((grade) => {
     console.log(grade.subject.name, ":", grade.comment || "(no description)");
-    console.log("Registered the", grade.date.toLocaleString(), "//", period.name);
+    console.log("Registered the", grade.date.toLocaleString(), "//", selectedPeriod.name);
 
-    // If there
     if (typeof grade.outOf === "number") {
       if (grade.isOutOf20)
         console.log("-> Grade was transformed to be out of 20.");
@@ -75,7 +82,7 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeTyp
 
   console.group("--- AVERAGES ---\n");
 
-  gradesOverview.averages.forEach((average) => {
+  overview.subjectsAverages.forEach((average) => {
     console.log("->", average.subject.name);
     console.log("Student:", average.student);
     console.log("Class:", average.class_average);
@@ -90,8 +97,8 @@ import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiGradeTyp
 
   console.group("--- GLOBAL AVERAGE ---\n");
 
-  console.log("Student:", gradesOverview.overallAverage ?? "(not available)");
-  console.log("Class:", gradesOverview.classAverage ?? "(not available)");
+  console.log("Student:", overview.overallAverage ?? "(not available)");
+  console.log("Class:", overview.classAverage ?? "(not available)");
 
   console.groupEnd();
-})();
+}();

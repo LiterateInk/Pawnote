@@ -24,5 +24,5 @@ export const notebook = async (session: SessionHandle, period: Period): Promise<
   });
 
   const response = await request.send();
-  return decodeNotebook(response.data.donnees);
+  return decodeNotebook(response.data.donnees, session);
 };

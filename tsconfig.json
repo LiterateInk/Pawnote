@@ -18,6 +18,6 @@
     "allowSyntheticDefaultImports": true
   },
 
-  "include": ["src", "src-old", "examples", "eslint.config.js"],
+  "include": ["src", "examples", "eslint.config.js"],
   "exclude": ["node_modules", "dist"]
 }

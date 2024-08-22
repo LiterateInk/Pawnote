@@ -95,17 +95,6 @@ export default class Pronote {
     });
   }
 
-  public async postDiscussionCommand (payload: ApiUserDiscussionAvailableCommands): Promise<void> {
-    await this.queue.push(async () => {
-      this.#throwIfNotAllowedCreateMessages();
-
-      await callApiUserDiscussionCommand(this.fetcher, {
-        session: this.session,
-        ...payload
-      });
-    });
-  }
-
   /**
    * Mark a discussion as read.
    * @remark Shortcut for `getMessagesFromDiscussion` but here we don't return anything.
@@ -124,23 +113,6 @@ export default class Pronote {
       });
 
       return data.donnees.listeDest.V.map((dest) => new FetchedMessageRecipient(dest));
-    });
-  }
-
-  public async replyToDiscussionMessage (replyMessageID: string, content: string, button: PronoteApiMessagesButtonType, includeParentsAndStudents = false): Promise<void> {
-    return this.queue.push(async () => {
-      this.#throwIfNotAllowedCreateMessages();
-      const buttonType = getPronoteMessageButtonType(button, includeParentsAndStudents);
-
-      await callApiUserCreateDiscussionMessage(this.fetcher, {
-        session: this.session,
-        replyMessageID,
-        button: buttonType,
-        content: {
-          isHTML: this.authorizations.hasAdvancedDiscussionEditor,
-          value: content
-        }
-      });
     });
   }
 }

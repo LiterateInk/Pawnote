@@ -10,9 +10,6 @@ import { aesKeys } from "../api/private/keys";
  * of PRONOTE.
  */
 export class RequestFN {
-  private readonly order: string;
-  public readonly url: URL;
-
   public constructor (
     private session: SessionHandle,
 
@@ -28,18 +25,23 @@ export class RequestFN {
      * Data given to the "secure" property.
      */
     public data: any
-  ) {
-    session.information.order++;
-    this.order = this.generateOrder();
-    this.url = new URL(`${session.information.url}/appelfonction/${session.information.accountKind}/${session.information.id}/${this.order}`);
+  ) {}
 
-    if (!session.information.skipCompression) {
+  private generate () {
+    this.session.information.order++;
+
+    const order = this.generateOrder();
+    const url = new URL(`${this.session.information.url}/appelfonction/${this.session.information.accountKind}/${this.session.information.id}/${order}`);
+
+    if (!this.session.information.skipCompression) {
       this.compress();
     }
 
-    if (!session.information.skipEncryption) {
+    if (!this.session.information.skipEncryption) {
       this.encrypt();
     }
+
+    return { order, url };
   }
 
   private keys () {
@@ -78,20 +80,24 @@ export class RequestFN {
   }
 
   public async send (): Promise<ResponseFN> {
-    const response = await this.session.fetcher({
-      url: this.url,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      content: JSON.stringify({
-        session: this.session.information.id,
-        numeroOrdre: this.order,
-        nom: this.name,
-        donneesSec: this.data
-      })
-    });
+    return this.session.queue.push(async () => {
+      const payload = this.generate();
 
-    return new ResponseFN(this.session, response.content);
+      const response = await this.session.fetcher({
+        url: payload.url,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        content: JSON.stringify({
+          session: this.session.information.id,
+          numeroOrdre: payload.order,
+          nom: this.name,
+          donneesSec: this.data
+        })
+      });
+
+      return new ResponseFN(this.session, response.content);
+    });
   }
 }

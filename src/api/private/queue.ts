@@ -6,9 +6,9 @@ interface QueueItem {
 
 export class Queue {
   private queue: QueueItem[] = [];
-  private pending = false;
+  private pendingPromise: boolean = false;
 
-  public push<T extends unknown>(promise: () => Promise<T>) {
+  public push<T extends unknown>(promise: () => Promise<T>): Promise<T> {
     return new Promise<T>((resolve, reject) => {
       this.queue.push({
         promise,
@@ -16,28 +16,33 @@ export class Queue {
         reject
       });
 
-      this.dequeue();
+      // Attempt to dequeue only if nothing is pending
+      if (!this.pendingPromise) {
+        this.dequeue();
+      }
     });
   }
 
-  private dequeue(): void {
-    if (this.pending) return;
+  private dequeue() {
+    if (this.pendingPromise) return false; // Ensure only one pending promise
 
     const item = this.queue.shift();
-    if (!item) return;
+    if (!item) return false;
 
-    this.pending = true;
+    this.pendingPromise = true; // Mark that a promise is now pending
 
     item.promise()
       .then((value) => {
         item.resolve(value);
+        this.pendingPromise = false; // Clear pending state after resolve
+        this.dequeue(); // Start the next item in the queue
       })
       .catch((err) => {
         item.reject(err);
-      })
-      .finally(() => {
-        this.pending = false;
-        this.dequeue();
+        this.pendingPromise = false; // Clear pending state after reject
+        this.dequeue(); // Start the next item in the queue
       });
+
+    return true;
   }
 }

@@ -1,13 +1,9 @@
 import { RequestFN } from "~/core/request-function";
 import { decodeDiscussion } from "~/decoders/discussion";
 import { decodeDiscussionFolder } from "~/decoders/discussion-folder";
-import { Discussion, Discussions, TabLocation, type SessionHandle } from "~/models";
+import { type Discussion, type Discussions, TabLocation, type SessionHandle } from "~/models";
 
-/**
- * We use an handle to keep data in sync
- * when a new discussion or message is created etc...
- */
-export const discussions = async (session: SessionHandle, cache: Record<string, Discussion> = {}): Promise<Discussions> => {
+export const discussions = async (session: SessionHandle, cache: Record<string, any> = {}): Promise<Discussions> => {
   const request = new RequestFN(session, "ListeMessagerie", {
     _Signature_: { onglet: TabLocation.Discussions },
 
@@ -31,21 +27,43 @@ export const discussions = async (session: SessionHandle, cache: Record<string, 
     })
     .map((discussion: any) => decodeDiscussion(discussion, folders, cache));
 
-  for (const item of items) { // set up our handle cache !
+  // This allows us to mutate the reference directly
+  // and make sure all the variables using the cache
+  // are updated.
+  let itemsReference: Discussion[] = cache["__"];
+
+  if (itemsReference) {
+    // This is a trick to keep the reference to the items
+    // in the cache, while updating the items.
+    itemsReference.length = 0;
+    itemsReference.push(...items);
+  }
+  else {
+    itemsReference = cache["__"] = items;
+  }
+
+  for (const item of itemsReference) {
     if (item.participantsMessageID in cache) {
-      // update the reference directly
+      // Mutate the reference directly in cache.
       Object.assign(cache[item.participantsMessageID], item);
     }
     else {
-      // setup the reference
+      // Create the reference in cache.
       cache[item.participantsMessageID] = item;
     }
   }
 
-  // TODO: remove outdated keys
+  // Delete outdated keys, in case there are any.
+  for (const key in cache) {
+    if (!itemsReference.find((item) => item.participantsMessageID === key)) {
+      delete cache[key];
+    }
+  }
 
   return {
     folders,
-    items
+    // Instead of returning the items, we return
+    // the reference to the items in the cache.
+    items: itemsReference
   };
 };

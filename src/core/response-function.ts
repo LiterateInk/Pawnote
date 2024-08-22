@@ -26,6 +26,8 @@ export class ResponseFN {
       if (typeof this.data === "string") {
         this.data = JSON.parse(this.data);
       }
+
+      this.check();
     }
     catch (error) {
       if (content.includes("La page a expir")) {
@@ -66,5 +68,14 @@ export class ResponseFN {
     const bytes = forge.util.hexToBytes(this.data);
     const compressed = new Uint8Array(Array.from(bytes).map((char) => char.charCodeAt(0)));
     this.data = pako.inflateRaw(compressed, { to: "string" });
+  }
+
+  /**
+   * Handle potential errors in the response.
+   */
+  private check (): void {
+    if ("_Signature_" in this.data && this.data._Signature_.Erreur) {
+      throw new Error(this.data._Signature_.MessageErreur ?? "An error occurred, server-side.");
+    }
   }
 }

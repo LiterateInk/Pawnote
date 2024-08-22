@@ -1,35 +1,23 @@
-import { authenticatePronoteCredentials, PronoteApiAccountId, findPronoteInstances, type PawnoteFetcher } from "../src";
+import * as pronote from "../src";
+import { credentials } from "./_credentials";
+import type { Fetcher } from "@literate.ink/utilities";
 
-const customFetcher: PawnoteFetcher = async (url, options) => {
-  console.time("request from fetcher");
+const customFetcher: Fetcher = async (options) => {
+  console.time(options.url.href);
 
-  const response = await fetch(url, {
+  const response = await fetch(options.url, {
     method: options.method,
     headers: options.headers,
-    body: options.method !== "GET" ? options.body : void 0,
+    body: options.method !== "GET" ? options.content : void 0,
     redirect: options.redirect
   });
 
-  console.timeEnd("request from fetcher");
+  const content = await response.text();
+  console.timeEnd(options.url.href);
 
   return {
-    json: async <T>() => {
-      const data = await response.json() as T;
-
-      // We can add stuff in those methods too !
-      console.info("-> Parsing a JSON in fetcher !");
-
-      return data;
-    },
-
-    text: async () => {
-      const data = await response.text();
-
-      // We can add stuff in those methods too !
-      console.info("-> Reading the response as text...");
-
-      return data;
-    },
+    content,
+    status: response.status,
 
     // We can even write a function on the headers getter.
     get headers () {
@@ -39,29 +27,25 @@ const customFetcher: PawnoteFetcher = async (url, options) => {
   };
 };
 
-(async () => {
-  console.group("findPronoteInstances");
-  const geolocationResults = await findPronoteInstances(customFetcher, {
+void async function main () {
+  console.group("geolocation");
+  const geolocationResults = await pronote.geolocation({
     latitude: 45.849998,
     longitude: 1.25
-  });
+  }, customFetcher);
 
-  console.info("\nThere's", geolocationResults.length, "instances in the given location.");
+  console.info("There's", geolocationResults.length, "instances in the given location.");
   console.groupEnd();
 
-  console.group("authenticate");
-  const pronote = await authenticatePronoteCredentials("https://demo.index-education.net/pronote", {
-    accountTypeID: PronoteApiAccountId.Student,
-    username: "demonstration",
-    password: "pronotevs",
-
-    // Because this is just an example, don't forget to change this.
-    deviceUUID: "my-device-uuid",
-
-    // We use our custom fetcher here !
-    fetcher: customFetcher
+  console.group("loginCredentials");
+  const session = pronote.createSessionHandle(customFetcher);
+  await pronote.loginCredentials(session, {
+    url: credentials.pronoteURL,
+    kind: pronote.AccountKind.STUDENT,
+    username: credentials.username,
+    password: credentials.password,
+    deviceUUID: credentials.deviceUUID
   });
 
-  console.info("\nThere's", pronote.periods.length, "periods in the given pronote account.");
   console.groupEnd();
-})();
+}();

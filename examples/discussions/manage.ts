@@ -1,24 +1,25 @@
-import { authenticatePronoteCredentials, PronoteApiAccountId, PronoteApiDiscussionFolderType, StudentDiscussion } from "../../src";
+import * as pronote from "../../src";
+import { credentials } from "../_credentials";
 import { select } from "@inquirer/prompts";
 
-const isDiscussionInTrash = (discussion: StudentDiscussion) => {
-  return discussion.folders.some((folder) => folder.type === PronoteApiDiscussionFolderType.OCEM_Pre_Poubelle);
+const isDiscussionInTrash = (discussion: pronote.Discussion) => {
+  return discussion.folders.some((folder) => folder.kind === pronote.DiscussionFolderKind.OCEM_Pre_Poubelle);
 };
 
-(async () => {
-  const pronote = await authenticatePronoteCredentials("https://pronote-vm.dev/pronote", {
-    accountTypeID: PronoteApiAccountId.Student,
-    username: "lisa.boulanger", // using my VM credentials here because the demo instance doesn't have any messages.
-    password: "12345678",
-
-    // Because this is just an example, don't forget to change this.
-    deviceUUID: "my-device-uuid"
+void async function main () {
+  const session = pronote.createSessionHandle();
+  await pronote.loginCredentials(session, {
+    url: credentials.pronoteURL,
+    kind: pronote.AccountKind.STUDENT,
+    username: credentials.username,
+    password: credentials.password,
+    deviceUUID: credentials.deviceUUID
   });
 
-  const overview = await pronote.getDiscussionsOverview();
+  const discussions = await pronote.discussions(session);
 
   while (true) {
-    for (const discussion of overview.discussions) {
+    for (const discussion of discussions.items) {
       console.log(discussion.subject);
 
       if (isDiscussionInTrash(discussion)) {
@@ -45,12 +46,12 @@ const isDiscussionInTrash = (discussion: StudentDiscussion) => {
 
         switch (action) {
           case "restore": {
-            await discussion.restoreFromTrash();
+            await pronote.discussionRestoreTrash(session, discussion);
             console.info("|> Discussion restored.");
             break;
           }
           case "delete": {
-            await discussion.deletePermanently();
+            await pronote.discussionDelete(session, discussion);
             console.info("|> Discussion deleted permanently.");
             break;
           }
@@ -82,12 +83,12 @@ const isDiscussionInTrash = (discussion: StudentDiscussion) => {
 
         switch (action) {
           case "trash": {
-            await discussion.moveToTrash();
+            await pronote.discussionTrash(session, discussion);
             console.info("|> Discussion trashed.");
             break;
           }
           case "delete": {
-            await discussion.deletePermanently();
+            await pronote.discussionDelete(session, discussion);
             console.info("|> Discussion deleted permanently.");
           }
           case "nothing":
@@ -114,4 +115,4 @@ const isDiscussionInTrash = (discussion: StudentDiscussion) => {
 
     if (!shouldContinue) break;
   }
-})();
+}();

@@ -4,7 +4,7 @@ import { discussions } from "./discussions";
 import { discussionMessages } from "./discussion-messages";
 
 export const discussionRemoveDraft = async (session: SessionHandle, discussion: Discussion, draft: DiscussionDraftMessage): Promise<void> => {
-  await discussionPostCommand(session, DiscussionCommand.suppression, {
+  await discussionPostCommand(session, DiscussionCommand.Delete, {
     possessions: [{ N: draft.possessionID }]
   });
 

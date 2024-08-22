@@ -94,17 +94,4 @@ export default class Pronote {
         .map((evaluation) => new StudentEvaluation(evaluation));
     });
   }
-
-  public async getRecipientsForMessage (messageID: string): Promise<FetchedMessageRecipient[]> {
-    return this.queue.push(async () => {
-      this.#throwIfNotAllowedReadMessages();
-
-      const { data } = await callApiUserMessageRecipients(this.fetcher, {
-        session: this.session,
-        messageID
-      });
-
-      return data.donnees.listeDest.V.map((dest) => new FetchedMessageRecipient(dest));
-    });
-  }
 }

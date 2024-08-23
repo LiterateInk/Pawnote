@@ -16,8 +16,8 @@ export const decodeNotebookObservation = (observation: any): NotebookObservation
     opened: observation.estLue,
     shouldParentsJustify: observation.avecARObservation,
 
-    sectionName: observation.L,
-    sectionKind: observation.genreObservation,
+    name: observation.L,
+    kind: observation.genreObservation,
     sectionID: observation.rubrique.V.N,
 
     subject,

@@ -49,6 +49,7 @@ export * from "./news-view";
 export * from "./news";
 export * from "./notebook-absence";
 export * from "./notebook-delay";
+export * from "./notebook-observation-kind";
 export * from "./notebook-observation";
 export * from "./notebook-precautionary-measure";
 export * from "./notebook-punishment";

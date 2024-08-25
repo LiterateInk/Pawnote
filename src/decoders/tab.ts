@@ -1,9 +1,9 @@
 import type { Period, Tab } from "~/models";
 
 export const decodeTab = (tab: any, instancePeriods: Period[]): Tab => {
-  const find = (p1: any) => instancePeriods.find((p2) => p2.id === p1.N);
+  const find = (id: string) => instancePeriods.find((p2) => p2.id === id);
 
-  const defaultPeriod = find(tab.periodeParDefaut?.V);
+  const defaultPeriod = tab.periodeParDefaut && find(tab.periodeParDefaut.V.N);
   const periods = tab.listePeriodes.V.map((p1: any) => find(p1)).filter(Boolean);
 
   return {

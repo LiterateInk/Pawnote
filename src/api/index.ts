@@ -31,6 +31,7 @@ export * from "./gradebook-pdf";
 export * from "./grades-overview";
 export * from "./homepage";
 export * from "./instance";
+export * from "./menus";
 export * from "./new-discussion-recipients";
 export * from "./new-discussion";
 export * from "./news-delete";

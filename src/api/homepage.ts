@@ -67,13 +67,6 @@ export const homepage = async (session: SessionHandle, day = session.instance.ne
         numeroSemaine: weekNumber
       },
 
-      menuDeLaCantine: {
-        date: {
-          _T: 7,
-          V: next
-        }
-      },
-
       TAFARendre: {
         date: {
           _T: 7,

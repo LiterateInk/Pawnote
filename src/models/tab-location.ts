@@ -9,7 +9,8 @@ export const TabLocation = {
   News: 8,
   Notebook: 19,
   Discussions: 131,
-  Gradebook: 13
+  Gradebook: 13,
+  Menus: 10
 } as const;
 
 export type TabLocation = typeof TabLocation[keyof typeof TabLocation];

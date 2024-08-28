@@ -1,4 +1,4 @@
-import { type Menu, MealKind } from "~/models";
+import { type Menu, MealKind, UnreachableError } from "~/models";
 import { decodePronoteDate } from "./pronote-date";
 import { decodeMeal } from "./meal";
 
@@ -14,7 +14,7 @@ export const decodeMenu = (menu: any): Menu => {
         key = "dinner";
         break;
       default:
-        throw new Error("unreachable");
+        throw new UnreachableError("decodeMenu");
     }
 
     acc[key] = decodeMeal(meal);

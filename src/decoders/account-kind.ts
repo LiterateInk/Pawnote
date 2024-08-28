@@ -1,4 +1,4 @@
-import { AccountKind } from "~/models";
+import { AccountKind, UnreachableError } from "~/models";
 
 /**
  * @param path mobile.eleve.html or eleve.html, both works.
@@ -11,7 +11,6 @@ export const decodeAccountKindFromPath = (path: string): AccountKind => {
     case "eleve": return AccountKind.STUDENT;
     case "parent": return AccountKind.PARENT;
     case "professeur": return AccountKind.TEACHER;
-
-    default: throw new Error(`Unknown account kind: ${path}`); // TODO: have the error in `models`
+    default: throw new UnreachableError("decodeAccountKindFromPath");
   }
 };

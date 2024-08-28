@@ -1,5 +1,5 @@
 import type { FormDataFile } from "@literate.ink/utilities";
-import type { SessionHandle } from "~/models";
+import { UploadFailedError, type SessionHandle } from "~/models";
 import { aesKeys } from "~/api/private/keys";
 import { AES } from "~/api/private/aes";
 
@@ -61,11 +61,8 @@ export class RequestUpload {
     // Even if there's an error, it bumped.
     this.session.information.order++;
 
-    if (state === 0) { // UNKNOWN
-      throw new Error("The upload state is unknown.");
-    }
-    else if (state === 2) { // ERROR
-      throw new Error("The upload failed.");
+    if (state === 0 || state === 2) { // UNKNOWN or ERROR
+      throw new UploadFailedError();
     }
   }
 }

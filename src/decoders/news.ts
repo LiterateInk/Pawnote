@@ -1,4 +1,4 @@
-import type { News, NewsCategory, SessionHandle } from "~/models";
+import { UnreachableError, type News, type NewsCategory, type SessionHandle } from "~/models";
 import { decodeNewsInformation } from "./news-information";
 import { decodeNewsCategory } from "./news-category";
 import { decodeNewsSurvey } from "./news-survey";
@@ -13,7 +13,7 @@ export const decodeNews = (news: any, session: SessionHandle): News => {
 
       if (item.estInformation) decoder = decodeNewsInformation;
       else if (item.estSondage) decoder = decodeNewsSurvey;
-      else throw new Error("Unknown news type");
+      else throw new UnreachableError("decodeNews");
 
       return decoder(item, session, categories);
     })

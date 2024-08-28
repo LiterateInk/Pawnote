@@ -1,3 +1,5 @@
+import { UnreachableError } from "~/models";
+
 const SHORT_DATE_RE = /^\d{2}\/\d{2}\/\d{4}$/;
 const LONG_DATE_LONG_HOURS_RE = /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}$/;
 const LONG_DATE_SHORT_HOURS_RE = /^\d{2}\/\d{2}\/\d{2} \d{2}h\d{2}$/;
@@ -29,5 +31,5 @@ export const decodePronoteDate = (formatted: string): Date => {
     return output;
   }
 
-  throw new Error("Could not parse date given by the API.");
+  throw new UnreachableError("decodePronoteDate");
 };

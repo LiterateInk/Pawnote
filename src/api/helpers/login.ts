@@ -1,4 +1,4 @@
-import type { AccountKind, RefreshInformation, SessionHandle } from "~/models";
+import { type AccountKind, type RefreshInformation, type SessionHandle, BadCredentialsError } from "~/models";
 import { sessionInformation } from "../session-information";
 import { instanceParameters } from "../private/instance-parameters";
 import { cleanURL } from "./clean-url";
@@ -215,7 +215,7 @@ const solveChallenge = (session: SessionHandle, identity: any, key: forge.util.B
     return AES.encrypt(solution, key, iv);
   }
   catch {
-    throw new Error("Unable to resolve the challenge, probably bad credentials.");
+    throw new BadCredentialsError();
   }
 };
 

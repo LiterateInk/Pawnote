@@ -1,4 +1,4 @@
-import { type Meal, DishKind } from "~/models";
+import { type Meal, DishKind, UnreachableError } from "~/models";
 import { decodeFood } from "./food";
 
 export const decodeMeal = (meal: any): Meal => {
@@ -25,7 +25,7 @@ export const decodeMeal = (meal: any): Meal => {
         key = "dessert";
         break;
       default:
-        throw new Error("unreachable");
+        throw new UnreachableError("decodeMeal");
     }
 
     acc[key] = dish.ListeAliments.V.map(decodeFood);

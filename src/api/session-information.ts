@@ -1,7 +1,7 @@
 import { defaultFetcher, type Fetcher, type Request, setCookiesArrayToRequest } from "@literate.ink/utilities";
 import { decodeSessionInformation } from "~/decoders/session-information";
 import { encodeAccountKindToPath } from "~/encoders/account-kind";
-import type { AccountKind, SessionInformation } from "~/models";
+import { BusyPageError, PageUnavailableError, SuspendedIPError, type AccountKind, type SessionInformation } from "~/models";
 
 export const sessionInformation = async (options: {
   base: string
@@ -41,20 +41,15 @@ export const sessionInformation = async (options: {
   }
   catch (error) {
     if (html.includes("Votre adresse IP est provisoirement suspendue")) {
-      throw new Error("Your IP address is temporarily suspended.");
+      throw new SuspendedIPError();
     }
     else if (html.includes("Le site n'est pas disponible")) {
-      throw new Error("The site is not available.");
+      throw new PageUnavailableError();
     }
     else if (html.includes("Le site est momentanément indisponible")) {
-      let error = "The site is temporarily unavailable";
-      if (html.includes("Toutes les sessions utilisateurs sont occupées")) {
-        error += ", all user sessions are busy";
-      }
-
-      throw new Error(error + ".");
+      throw new BusyPageError();
     }
 
-    throw new Error("Failed to extract session from HTML, for an unknown reason.");
+    throw new PageUnavailableError();
   }
 };

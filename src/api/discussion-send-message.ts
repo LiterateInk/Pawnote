@@ -1,9 +1,9 @@
-import { Discussion, DiscussionMessages, EntityState, SessionHandle, TabLocation } from "~/models";
+import { type Discussion, DiscussionActionError, DiscussionMessagesMissingError, EntityState, type SessionHandle, TabLocation } from "~/models";
 import { encodeDiscussionSendAction } from "~/encoders/discussion-send-action";
 import { RequestFN } from "~/core/request-function";
+import { discussionMessages } from "./discussion-messages";
 import { createEntityID } from "./helpers/entity-id";
 import { discussions } from "./discussions";
-import { discussionMessages } from "./discussion-messages";
 
 export const discussionSendMessage = async (
   session: SessionHandle,
@@ -13,10 +13,10 @@ export const discussionSendMessage = async (
   replyTo = discussion.messages?.defaultReplyMessageID
 ): Promise<void> => {
   if (!discussion.messages)
-    throw new Error("You should request messages before sending.");
+    throw new DiscussionMessagesMissingError();
 
   if (typeof discussion.messages.sendAction === "undefined")
-    throw new Error("You can't create messages in this discussion.");
+    throw new DiscussionActionError();
 
   const action = encodeDiscussionSendAction(discussion.messages.sendAction, includeParentsAndStudents);
   const request = new RequestFN(session, "SaisieMessage", {

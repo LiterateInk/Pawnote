@@ -10,10 +10,6 @@ export const translatePositionToTimings = (
 
   const formatted = endings[position];
 
-  if (!formatted) {
-    throw new Error(`Could not find starting time for position ${position}`);
-  }
-
   const [hours, minutes] = formatted.split("h").map(Number);
   return { hours, minutes };
 };

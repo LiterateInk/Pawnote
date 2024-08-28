@@ -1,3 +1,5 @@
+export * from "./errors";
+
 export * from "./account-kind";
 export * from "./account";
 export * from "./assignment-difficulty";

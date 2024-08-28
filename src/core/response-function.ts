@@ -1,4 +1,4 @@
-import type { SessionHandle } from "~/models";
+import { PageUnavailableError, RateLimitedError, ServerSideError, SessionExpiredError, SuspendedIPError, type SessionHandle } from "~/models";
 import forge from "node-forge";
 import { AES } from "../api/private/aes";
 import pako from "pako";
@@ -27,27 +27,25 @@ export class ResponseFN {
         this.data = JSON.parse(this.data);
       }
 
-      this.check();
+      if ("_Signature_" in this.data && this.data._Signature_.Erreur) {
+        throw new ServerSideError(this.data._Signature_.MessageErreur);
+      }
     }
     catch (error) {
       if (content.includes("La page a expir")) {
-        throw new Error("The page has expired.");
+        throw new SessionExpiredError();
       }
 
       else if (content.includes("Votre adresse IP ")) {
-        throw new Error("Your IP address is temporarily suspended.");
+        throw new SuspendedIPError();
       }
 
-      else if (content.includes("La page dem")) {
-        throw new Error("The requested page does not exist.");
-      }
-
-      else if (content.includes("Impossible d'a")) {
-        throw new Error("Page unaccessible.");
+      else if (content.includes("La page dem") || content.includes("Impossible d'a")) {
+        throw new PageUnavailableError();
       }
 
       else if (content.includes("Vous avez d")) {
-        throw new Error("You've been rate-limited.");
+        throw new RateLimitedError();
       }
 
       throw error;
@@ -68,14 +66,5 @@ export class ResponseFN {
     const bytes = forge.util.hexToBytes(this.data);
     const compressed = new Uint8Array(Array.from(bytes).map((char) => char.charCodeAt(0)));
     this.data = pako.inflateRaw(compressed, { to: "string" });
-  }
-
-  /**
-   * Handle potential errors in the response.
-   */
-  private check (): void {
-    if ("_Signature_" in this.data && this.data._Signature_.Erreur) {
-      throw new Error(this.data._Signature_.MessageErreur ?? "An error occurred, server-side.");
-    }
   }
 }

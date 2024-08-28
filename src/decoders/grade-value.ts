@@ -1,4 +1,4 @@
-import { type GradeValue, GradeKind } from "~/models";
+import { type GradeValue, GradeKind, UnreachableError } from "~/models";
 
 export const decodeGradeValue = (grade: string | number): GradeValue => {
   let kind: GradeKind = GradeKind.Grade;
@@ -24,9 +24,7 @@ export const decodeGradeValue = (grade: string | number): GradeValue => {
   else if (typeof grade === "number") {
     value = grade;
   }
-  else {
-    throw new Error("decodeGradeValue: Unknown grade type.");
-  }
+  else throw new UnreachableError("decodeGradeValue");
 
   return {
     kind,

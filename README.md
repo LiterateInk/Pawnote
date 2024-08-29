@@ -14,7 +14,7 @@ Since we're implementing this library in different programming languages, we hav
 
 | [JS/TS](https://github.com/LiterateInk/Pawnote/tree/js) | [Rust](https://github.com/LiterateInk/Pawnote/tree/rust) | Python | Swift |
 | :---:  | :---: | :---: | :---: |
-| Kotlin | C#    | [Dart](https://github.com/LiterateInk/Pawnote/tree/dart) |       |
+| [Kotlin](https://github.com/LiterateInk/Pawnote/tree/kotlin) | C# | [Dart](https://github.com/LiterateInk/Pawnote/tree/dart) | |
 
 ## License
 

@@ -24,6 +24,7 @@ kotlin {
             dependencies {
                 implementation(libs.ktor.client.core)
                 implementation(libs.kotlinx.serialization)
+                implementation(libs.kotlinx.datetime)
             }
         }
         val commonTest by getting {

@@ -9,8 +9,8 @@ fun decodeGeolocatedInstance (instance: JsonObject, position: Pair<Double, Doubl
     val longitude = instance["long"]!!.jsonPrimitive.double
 
     return GeolocatedInstance(
-        url = instance["url"].toString().lowercase(),
-        name = instance["nomEtab"].toString()
+        url = instance["url"]!!.jsonPrimitive.content.lowercase(),
+        name = instance["nomEtab"]!!.jsonPrimitive.content
             .trim()
             .replace("COLLEGE", "COLLÈGE")
             .replace("LYCEE", "LYCÉE"),

@@ -1,5 +1,6 @@
 package api
 
+import api.helpers.clearURL
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

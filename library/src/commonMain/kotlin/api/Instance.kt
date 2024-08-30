@@ -1,5 +1,6 @@
 package api
 
+import api.helpers.clearURL
 import decoders.decodeInstance
 import io.ktor.client.*
 import io.ktor.client.request.*

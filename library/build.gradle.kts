@@ -15,15 +15,13 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_1_8)
         }
     }
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
 
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation(libs.ktor.client.core)
-                implementation(libs.kotlinx.serialization)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.serialization.core)
                 implementation(libs.kotlinx.datetime)
             }
         }
@@ -35,6 +33,7 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(libs.ktor.client.okhttp)
+                implementation(libs.kotlin.test)
             }
         }
         val androidMain by getting {

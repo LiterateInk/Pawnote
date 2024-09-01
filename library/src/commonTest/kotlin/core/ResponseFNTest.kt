@@ -3,6 +3,7 @@ package core
 import api.private.Queue
 import io.ktor.client.*
 import kotlinx.datetime.Clock
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 import models.*
@@ -65,6 +66,7 @@ class ResponseFNTest {
         serverURL = ""
     )
 
+    @OptIn(ExperimentalSerializationApi::class)
     val rawData = buildJsonObject {
         putJsonObject("donnees") {
             put("number", Json.parseToJsonElement("69"))

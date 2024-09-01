@@ -6,19 +6,16 @@ import api.private.aesKeys
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import models.SessionHandle
 import java.util.zip.Deflater
 
 actual class Payload actual constructor(
     actual val order: String,
     actual val url: Url
-)
-
-data class RequestData(
-    val session: Int,
-    val numeroOrdre: String,
-    val nom: String,
-    val donneesSec: String
 )
 
 actual class RequestFN actual constructor(
@@ -75,16 +72,17 @@ actual class RequestFN actual constructor(
     actual suspend fun send(): ResponseFN {
         val payload = this.process()
 
+        val requestData = buildJsonObject {
+            put("session", session.information.id)
+            put("numeroOrdre", payload.order)
+            put("nom", name)
+            put("donneesSec", data)
+        }
+
         val response = this.session.client.request(payload.url) {
             method = HttpMethod.Post
-            contentType(ContentType.Application.Json)
             header("Content-Type", "application/json")
-            setBody(RequestData(
-                session = session.information.id,
-                numeroOrdre = payload.order,
-                nom = name,
-                donneesSec = data
-            ))
+            setBody(Json.encodeToString(requestData))
         }
 
         return ResponseFN(this.session, response.bodyAsText())

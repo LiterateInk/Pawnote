@@ -26,6 +26,7 @@ export const decodeGrade = (grade: any, session: SessionHandle): Grade => {
     min: decodeGradeValue(grade.noteMin.V),
     coefficient: grade.coefficient,
     comment: grade.commentaire,
+    commentaireSurNote: grade.commentaireSurNote,
     isBonus,
     isOptional: grade.estFacultatif && !isBonus,
     isOutOf20: grade.estRamenerSur20,

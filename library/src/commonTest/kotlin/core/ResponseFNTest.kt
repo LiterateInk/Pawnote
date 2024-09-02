@@ -14,56 +14,22 @@ class ResponseFNTest {
     val sessionBase = "https://demo.index-education.net/pronote"
     val sessionId = 1235678
 
-    val handle = SessionHandle(
-        information = SessionInformation(
-            order = 2,
-            url = sessionBase,
-            id = sessionId,
-            accountKind = AccountKind.STUDENT,
-            aesIV = "\tfmýÝ[½¬È»Dmøu0010",
-            aesKey = "",
-            skipCompression = true,
-            skipEncryption = true,
-            demo = true,
-            accessKind = SessionAccessKind.ACCOUNT,
-            rsaModulus = "",
-            rsaExponent = "",
-            rsaFromConstants = true,
-            http = false,
-            poll = false
-        ),
-        instance = InstanceParameters(
-            nextBusinessDay = Clock.System.now(),
-            firstMonday = Clock.System.now(),
-            firstDate = Clock.System.now(),
-            lastDate = Clock.System.now(),
-            version = listOf(),
-            endings = listOf(),
-            periods = listOf(),
-            holidays = listOf(),
-            weekFrequencies = mapOf(),
-            blocksPerDay = 1,
-        ),
-        user = UserParameters(
-            id = "",
-            kind = 0,
-            name = "",
-            authorizations = UserAuthorizations(
-                canDiscussWithParents = true,
-                canReadDiscussions = true,
-                canDiscuss = true,
-                canDiscussWithStaff = true,
-                canDiscussWithStudents = true,
-                canDiscussWithTeachers = true,
-                hasAdvancedDiscussionEditor = true,
-                maxAssignmentFileUploadSize = 1,
-                tabs = listOf()
-            ),
-            resources = listOf()
-        ),
-        queue = Queue(),
-        client = HttpClient(),
-        serverURL = ""
+    val sessionInfo = SessionInformation(
+        order = 2,
+        url = sessionBase,
+        id = sessionId,
+        accountKind = AccountKind.STUDENT,
+        aesIV = "\tfmýÝ[½¬È»Dmøu0010",
+        aesKey = "",
+        skipCompression = true,
+        skipEncryption = true,
+        demo = true,
+        accessKind = SessionAccessKind.ACCOUNT,
+        rsaModulus = "",
+        rsaExponent = "",
+        rsaFromConstants = true,
+        http = false,
+        poll = false
     )
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -86,32 +52,32 @@ class ResponseFNTest {
 
     @Test
     fun `should not decrypt and not decompress`() {
-        val handle = handle.copy()
-        val response = ResponseFN(handle, mock(rawData))
+        val sessionInfo = sessionInfo.copy()
+        val response = ResponseFN(sessionInfo, mock(rawData))
 
         assertEquals(Json.encodeToString(rawData), response.data)
     }
 
     @Test
     fun `should only decrypt`() {
-        val handle = handle.copy(information = handle.information.copy(skipEncryption = false))
-        val response = ResponseFN(handle, mock(Json.parseToJsonElement(encryptedData)))
+        val sessionInfo = sessionInfo.copy(skipEncryption = false)
+        val response = ResponseFN(sessionInfo, mock(Json.parseToJsonElement(encryptedData)))
 
         assertEquals(Json.encodeToString(rawData), response.data)
     }
 
     @Test
     fun `should only decompress`() {
-        val handle = handle.copy(information = handle.information.copy(skipCompression = false))
-        val response = ResponseFN(handle, mock(Json.parseToJsonElement(compressedData)))
+        val sessionInfo = sessionInfo.copy(skipCompression = false)
+        val response = ResponseFN(sessionInfo, mock(Json.parseToJsonElement(compressedData)))
 
         assertEquals(Json.encodeToString(rawData), response.data)
     }
 
     @Test
     fun `should decrypt and decompress`() {
-        val handle = handle.copy(information = handle.information.copy(skipCompression = false, skipEncryption = false))
-        val response = ResponseFN(handle, mock(Json.parseToJsonElement(encryptedAndCompressedData)))
+        val sessionInfo = sessionInfo.copy(skipCompression = false, skipEncryption = false)
+        val response = ResponseFN(sessionInfo, mock(Json.parseToJsonElement(encryptedAndCompressedData)))
 
         assertEquals(Json.encodeToString(rawData), response.data)
     }

@@ -3,6 +3,7 @@ package core
 import api.private.AES
 import api.private.Keys
 import api.private.aesKeys
+import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -10,7 +11,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
-import models.SessionHandle
+import models.SessionInformation
 import java.util.zip.Deflater
 
 actual class Payload actual constructor(
@@ -19,32 +20,32 @@ actual class Payload actual constructor(
 )
 
 actual class RequestFN actual constructor(
-    private val session: SessionHandle,
+    private val sessionInfo: SessionInformation,
     actual val name: String,
     actual var data: String
 ) {
     actual fun process(): Payload {
-        this.session.information.order++
+        sessionInfo.order++
 
         val order = this.generateOrder()
-        val url = Url("${this.session.information.url}/appelfonction/${this.session.information.accountKind.code}/${this.session.information.id}/${order}")
+        val url = Url("${this.sessionInfo.url}/appelfonction/${this.sessionInfo.accountKind.code}/${this.sessionInfo.id}/${order}")
 
-        if (!this.session.information.skipCompression)
+        if (!this.sessionInfo.skipCompression)
             this.compress()
 
-        if (!this.session.information.skipEncryption)
+        if (!this.sessionInfo.skipEncryption)
             this.encrypt()
 
         return Payload(order, url)
     }
 
     private fun keys(): Keys {
-        return aesKeys(this.session, this.session.information.order == 1)
+        return aesKeys(this.sessionInfo, this.sessionInfo.order == 1)
     }
 
     private fun generateOrder(): String {
         val keys = this.keys()
-        return AES.encrypt("${this.session.information.order}".toByteArray(), keys.key, keys.iv)
+        return AES.encrypt("${this.sessionInfo.order}".toByteArray(), keys.key, keys.iv)
     }
 
     @OptIn(ExperimentalStdlibApi::class)
@@ -63,7 +64,7 @@ actual class RequestFN actual constructor(
     @OptIn(ExperimentalStdlibApi::class)
     private fun encrypt() {
         val keys = this.keys()
-        if(!this.session.information.skipCompression)
+        if(!this.sessionInfo.skipCompression)
             this.data = AES.encrypt(this.data.hexToByteArray(), keys.key, keys.iv)
         else
             this.data = AES.encrypt(this.data.toByteArray(), keys.key, keys.iv)
@@ -73,18 +74,18 @@ actual class RequestFN actual constructor(
         val payload = this.process()
 
         val requestData = buildJsonObject {
-            put("session", session.information.id)
+            put("session", sessionInfo.id)
             put("numeroOrdre", payload.order)
             put("nom", name)
-            put("donneesSec", data)
+            put("donneesSec", Json.parseToJsonElement(data))
         }
 
-        val response = this.session.client.request(payload.url) {
+        val response = HttpClient().request(payload.url) {
             method = HttpMethod.Post
             header("Content-Type", "application/json")
             setBody(Json.encodeToString(requestData))
         }
 
-        return ResponseFN(this.session, response.bodyAsText())
+        return ResponseFN(this.sessionInfo, response.bodyAsText())
     }
 }

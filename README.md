@@ -12,7 +12,7 @@ You're currently on the `index` branch.
 
 Since we're implementing this library in different programming languages, we have a branch for each of them.
 
-| [JS/TS](https://github.com/LiterateInk/Pawnote/tree/js) | [Rust](https://github.com/LiterateInk/Pawnote/tree/rust) | Python | Swift |
+| [JS/TS](https://github.com/LiterateInk/Pawnote/tree/js) | [Rust](https://github.com/LiterateInk/Pawnote/tree/rust) | Python | [Swift](https://github.com/LiterateInk/Pawnote/tree/swift) |
 | :---:  | :---: | :---: | :---: |
 | [Kotlin](https://github.com/LiterateInk/Pawnote/tree/kotlin) | C# | [Dart](https://github.com/LiterateInk/Pawnote/tree/dart) | |
 

@@ -36,7 +36,7 @@ actual class ResponseFN actual constructor(
                 && this.jsonData.jsonObject["_Signature_"]!!.jsonObject["Erreur"]!!.jsonPrimitive.boolean)
                 throw ServerSideError(this.jsonData.jsonObject["_Signature_"]!!.jsonObject["MessageErreur"]!!.jsonPrimitive.content)
         }
-        catch (error: ServerSideError) {
+        catch (error: Exception) {
             if (content.contains("La page a expir"))
                 throw SessionExpiredError()
             else if (content.contains("Votre adresse IP "))

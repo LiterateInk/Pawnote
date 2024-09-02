@@ -1,6 +1,6 @@
 package decoders
 
-import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.json.*
 import models.Instance
 import models.InstanceAccount
@@ -17,7 +17,7 @@ fun decodeInstance(instance: JsonObject): Instance {
     return Instance(
         name = instance["nomEtab"]!!.jsonPrimitive.content,
         version = instance["version"]!!.jsonArray.map {version -> version.jsonPrimitive.int},
-        date = Instant.parse(instance["date"]!!.jsonPrimitive.content),
+        date = LocalDateTime.parse(instance["date"]!!.jsonPrimitive.content),
         accounts = instance["espaces"]!!.jsonArray.map {account -> InstanceAccount(
             name = account.jsonObject["nom"]!!.jsonPrimitive.content,
             path = account.jsonObject["URL"]!!.jsonPrimitive.content

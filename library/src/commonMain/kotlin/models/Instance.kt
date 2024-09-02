@@ -1,6 +1,6 @@
 package models
 
-import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
 
 data class InstanceAccount(
     val name: String,
@@ -10,7 +10,7 @@ data class InstanceAccount(
 data class Instance(
     val version: List<Int>,
     val name: String,
-    val date: Instant,
+    val date: LocalDateTime,
     val accounts: List<InstanceAccount>,
     val casURL: String?,
     val casToken: String?

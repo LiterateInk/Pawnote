@@ -1,11 +1,11 @@
 package models
 
-import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
 
 data class Period(
     val id: String,
     val name: String,
     val kind: Int,
-    val startDate: Instant,
-    val endDate: Instant
+    val startDate: LocalDateTime,
+    val endDate: LocalDateTime
 )

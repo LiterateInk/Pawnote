@@ -1,12 +1,12 @@
 package models
 
-import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
 
 data class InstanceParameters(
-    val nextBusinessDay: Instant,
-    val firstMonday: Instant,
-    val firstDate: Instant,
-    val lastDate: Instant,
+    val nextBusinessDay: LocalDateTime,
+    val firstMonday: LocalDateTime,
+    val firstDate: LocalDateTime,
+    val lastDate: LocalDateTime,
 
     val version: List<Int>,
     val endings: List<String>,

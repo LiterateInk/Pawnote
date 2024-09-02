@@ -7,6 +7,7 @@ import kotlinx.serialization.json.*
 import models.SessionInformation
 import models.errors.*
 import okio.ByteString.Companion.decodeHex
+import java.nio.ByteBuffer
 import java.util.zip.Inflater
 
 actual class ResponseFN actual constructor(
@@ -70,10 +71,11 @@ actual class ResponseFN actual constructor(
         val decompresser = Inflater(true)
         decompresser.setInput(Json.parseToJsonElement(this.data).jsonPrimitive.content.hexToByteArray())
 
-        val output = ByteArray(10000)
+        // Allocate a maximum of 2MB for response data
+        val output = ByteBuffer.allocate(2000000)
         val resultLength = decompresser.inflate(output)
         decompresser.end()
 
-        this.data = output.copyOfRange(0, resultLength).decodeToString()
+        this.data = output.array().copyOfRange(0, resultLength).decodeToString()
     }
 }

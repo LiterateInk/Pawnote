@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 import { join } from "node:path";
 // Load the `.env` file configuration.
-config({ path: join(__dirname, ".env") });
+config({ path: join(__dirname, ".env"), override: true });
 
 class ExampleCredentialsError extends Error {
   constructor() {
@@ -18,8 +18,8 @@ if (!process.env.PRONOTE_URL) {
 export const credentials = {
   pronoteURL: process.env.PRONOTE_URL,
 
-  username: process.env.USERNAME!,
-  password: process.env.PASSWORD!,
+  username: process.env.STUDENT_USERNAME!,
+  password: process.env.STUDENT_PASSWORD!,
 
   parent_username: process.env.PARENT_USERNAME!,
   parent_password: process.env.PARENT_PASSWORD!,

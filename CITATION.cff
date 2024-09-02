@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+title: Pawnote
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - name: LiterateInk
+    website: "https://literate.ink"
+    email: contact@literate.ink
+repository-code: 'https://github.com/LiterateInk/Pawnote'
+url: 'https://docs.literate.ink/pawnote'
+abstract: >-
+  A purrfect API wrapper for PRONOTE.
+keywords:
+  - pronote
+  - wrapper
+  - api
+license: GPL-3.0-or-later

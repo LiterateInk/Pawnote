@@ -25,6 +25,8 @@ export type Grade = Readonly<{
   coefficient: number;
   /** comment on the grade description */
   comment: string;
+  /** note on the grade */
+  commentaireSurNote?: string;
   /** is the grade bonus : only points above 10 count */
   isBonus: boolean;
   /** is the grade optional : the grade only counts if it increases the average */

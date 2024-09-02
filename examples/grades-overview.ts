@@ -23,7 +23,7 @@ const handleGradeValue = (grade: pronote.GradeValue, outOf: number, coefficient:
   }
   // Otherwise, just print as is.
   else {
-    return `${grade}/${outOf} (x${coefficient})`;
+    return `${grade.points}/${outOf} (x${coefficient})`;
   }
 };
 
@@ -55,7 +55,7 @@ void async function main () {
     console.log(grade.subject.name, ":", grade.comment || "(no description)");
     console.log("Registered the", grade.date.toLocaleString(), "//", selectedPeriod.name);
 
-    if (typeof grade.outOf === "number") {
+    if (typeof grade.outOf.points === "number") {
       if (grade.isOutOf20)
         console.log("-> Grade was transformed to be out of 20.");
       if (grade.isBonus)
@@ -63,15 +63,19 @@ void async function main () {
       if (grade.isOptional)
         console.log("-> Grade is optional, only counted if value increases the student's average.");
 
-      console.log("Grade:  ", handleGradeValue(grade.value, grade.outOf, grade.coefficient));
-      if (grade.average) console.log("Average:", handleGradeValue(grade.average, grade.outOf, grade.coefficient));
-      console.log("Minimum:", handleGradeValue(grade.min, grade.outOf, grade.coefficient));
-      console.log("Maximum:", handleGradeValue(grade.max, grade.outOf, grade.coefficient));
+      console.log("Grade:  ", handleGradeValue(grade.value, grade.outOf.points, grade.coefficient));
+      if (grade.average) console.log("Average:", handleGradeValue(grade.average, grade.outOf.points, grade.coefficient));
+      console.log("Minimum:", handleGradeValue(grade.min, grade.outOf.points, grade.coefficient));
+      console.log("Maximum:", handleGradeValue(grade.max, grade.outOf.points, grade.coefficient));
+      if (grade.commentaireSurNote) {
+        console.log("Note on grade:", grade.commentaireSurNote);
+      }
       if (grade.subjectFile) console.log("Subject:", grade.subjectFile.name, "=>", grade.subjectFile.url);
       if (grade.correctionFile) console.log("Correction:", grade.correctionFile.name, "=>", grade.correctionFile.url);
     }
     else {
       console.log("Grade doesn't have a valid 'outOf', shouldn't be counted.");
+      console.log(grade.outOf);
     }
 
     // Break line for next entry.

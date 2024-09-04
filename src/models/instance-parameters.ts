@@ -8,6 +8,10 @@ export type InstanceParameters = Readonly<{
   firstDate: Date
   lastDate: Date
 
+  /**
+   * Allows to recognize the device for next authentications.
+   */
+  navigatorIdentifier: string
   version: number[]
   endings: string[]
   periods: Period[]

@@ -1,4 +1,4 @@
-import { type AccountKind, type RefreshInformation, type SessionHandle, BadCredentialsError, SecurityError } from "~/models";
+import { type AccountKind, type RefreshInformation, type SessionHandle, BadCredentialsError, DoubleAuthClientAction, DoubleAuthMode, SecurityError } from "~/models";
 import { sessionInformation } from "../session-information";
 import { instanceParameters } from "../private/instance-parameters";
 import { cleanURL } from "./clean-url";
@@ -25,6 +25,7 @@ export const loginCredentials = async (session: SessionHandle, auth: {
   password: string
   kind: AccountKind
   deviceUUID: string
+  navigatorIdentifier?: string
 }): Promise<RefreshInformation> => {
   const base = cleanURL(auth.url);
 
@@ -38,7 +39,7 @@ export const loginCredentials = async (session: SessionHandle, auth: {
     }
   }, session.fetcher);
 
-  session.instance = await instanceParameters(session);
+  session.instance = await instanceParameters(session, auth.navigatorIdentifier);
 
   const identity = await identify(session, {
     username: auth.username,
@@ -57,8 +58,14 @@ export const loginCredentials = async (session: SessionHandle, auth: {
   const authentication = await authenticate(session, challenge);
   switchToAuthKey(session, authentication, key);
 
-  checkForSecurityModal(authentication, identity, auth.username);
-  return finishLoginManually(session, authentication, identity, auth.username);
+  if (hasSecurityModal(authentication)) {
+    return switchToTokenLogin(session, {
+      token: authentication.jetonConnexionAppliMobile,
+      username: identity.login ?? auth.username,
+      deviceUUID: auth.deviceUUID
+    });
+  }
+  else return finishLoginManually(session, authentication, identity, auth.username);
 };
 
 export const loginToken = async (session: SessionHandle, auth: {
@@ -67,6 +74,7 @@ export const loginToken = async (session: SessionHandle, auth: {
   token: string
   kind: AccountKind
   deviceUUID: string
+  navigatorIdentifier?: string
 }): Promise<RefreshInformation> => {
   const base = cleanURL(auth.url);
 
@@ -77,7 +85,7 @@ export const loginToken = async (session: SessionHandle, auth: {
     params: BASE_PARAMS
   }, session.fetcher);
 
-  session.instance = await instanceParameters(session);
+  session.instance = await instanceParameters(session, auth.navigatorIdentifier);
 
   const identity = await identify(session, {
     username: auth.username,
@@ -96,7 +104,10 @@ export const loginToken = async (session: SessionHandle, auth: {
   const authentication = await authenticate(session, challenge);
   switchToAuthKey(session, authentication, key);
 
-  checkForSecurityModal(authentication, identity, auth.username);
+  if (hasSecurityModal(authentication)) {
+    throw new SecurityError(authentication, identity, auth.username);
+  }
+
   return finishLoginManually(session, authentication, identity, auth.username);
 };
 
@@ -104,6 +115,7 @@ export const loginQrCode = async (session: SessionHandle, info: {
   deviceUUID: string
   pin: string
   qr: any
+  navigatorIdentifier?: string
 }): Promise<RefreshInformation> => {
   const qr = decodeAuthenticationQr(info.qr);
   const pin = forge.util.createBuffer(info.pin);
@@ -122,7 +134,7 @@ export const loginQrCode = async (session: SessionHandle, info: {
     params: BASE_PARAMS
   }, session.fetcher);
 
-  session.instance = await instanceParameters(session);
+  session.instance = await instanceParameters(session, info.navigatorIdentifier);
 
   const identity = await identify(session, {
     username: auth.username,
@@ -141,8 +153,31 @@ export const loginQrCode = async (session: SessionHandle, info: {
   const authentication = await authenticate(session, challenge);
   switchToAuthKey(session, authentication, key);
 
-  checkForSecurityModal(authentication, identity, auth.username);
-  return finishLoginManually(session, authentication, identity, auth.username);
+  if (hasSecurityModal(authentication)) {
+    return switchToTokenLogin(session, {
+      token: authentication.jetonConnexionAppliMobile,
+      username: identity.login ?? auth.username,
+      deviceUUID: info.deviceUUID
+    });
+  }
+  else return finishLoginManually(session, authentication, identity, auth.username);
+};
+
+const switchToTokenLogin = (session: SessionHandle, auth: {
+  token: string,
+  username: string,
+  deviceUUID: string
+}): Promise<RefreshInformation> => {
+  // TODO: Add and call logout function for current `session`.
+
+  return loginToken(session, {
+    url: session.information.url,
+    kind: session.information.accountKind,
+    username: auth.username,
+    token: auth.token,
+    deviceUUID: auth.deviceUUID,
+    navigatorIdentifier: session.instance.navigatorIdentifier
+  });
 };
 
 /**
@@ -182,9 +217,10 @@ const transformCredentials = (auth: { username: string, token?: string, password
  */
 const solveChallenge = (session: SessionHandle, identity: any, key: forge.util.ByteStringBuffer): string => {
   const iv = forge.util.createBuffer(session.information.aesIV);
-  const bytes = forge.util.decodeUtf8(AES.decrypt(identity.challenge, key, iv));
 
   try {
+    const bytes = forge.util.decodeUtf8(AES.decrypt(identity.challenge, key, iv));
+
     // Modify the plain text by removing every second character.
     const unscrambled = new Array(bytes.length);
     for (let i = 0; i < bytes.length; i += 1) {
@@ -209,11 +245,7 @@ const switchToAuthKey = (session: SessionHandle, authentication: any, key: forge
   session.information.aesKey = authKey;
 };
 
-const checkForSecurityModal = (authentication: any, identity: any, initialUsername?: string): void => {
-  if (authentication.actionsDoubleAuth) {
-    throw new SecurityError(authentication, identity, initialUsername);
-  }
-};
+const hasSecurityModal = (authentication: any): boolean => Boolean(authentication.actionsDoubleAuth);
 
 export const finishLoginManually = async (session: SessionHandle, authentication: any, identity: any, initialUsername?: string): Promise<RefreshInformation> => {
   session.user = await userParameters(session);
@@ -222,6 +254,7 @@ export const finishLoginManually = async (session: SessionHandle, authentication
     token: authentication.jetonConnexionAppliMobile,
     username: identity.login ?? initialUsername,
     kind: session.information.accountKind,
-    url: session.information.url
+    url: session.information.url,
+    navigatorIdentifier: session.instance.navigatorIdentifier
   };
 };

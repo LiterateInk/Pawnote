@@ -1,20 +1,23 @@
 import { RequestFN } from "~/core/request-function";
-import { DoubleAuthMode, DoubleAuthServerAction, type SessionHandle } from "~/models";
+import { DoubleAuthMode, DoubleAuthServerAction, SecurityModal, type SessionHandle } from "~/models";
 import { aesKeys } from "./private/keys";
 import { AES } from "./private/aes";
 
-export const securitySave = async (session: SessionHandle, options: {
+export const securitySave = async (session: SessionHandle, handle: SecurityModal, options: {
   password?: string,
   deviceName?: string,
   pin?: string,
-  mode: DoubleAuthMode
+  mode?: DoubleAuthMode
 }): Promise<void> => {
   const data: any = {
-    mode: options.mode,
     action: DoubleAuthServerAction.csch_EnregistrerChoixUtilisateur
   };
 
   const keys = aesKeys(session);
+
+  if (typeof options.mode === "number") {
+    data.mode = options.mode;
+  }
 
   if (options.password) {
     data.nouveauMDP = AES.encrypt(options.password, keys.key, keys.iv);
@@ -33,5 +36,10 @@ export const securitySave = async (session: SessionHandle, options: {
     donnees: data
   });
 
-  await request.send();
+  const response = await request.send();
+  const token = response.data.donnees.jetonConnexionAppliMobile;
+
+  if (token) { // update the token to use for refresh information generation
+    handle.context.authentication.jetonConnexionAppliMobile = token;
+  }
 };

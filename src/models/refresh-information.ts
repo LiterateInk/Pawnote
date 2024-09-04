@@ -13,4 +13,5 @@ export type RefreshInformation = Readonly<{
   token: string
   username: string
   kind: AccountKind
+  navigatorIdentifier: string
 }>;

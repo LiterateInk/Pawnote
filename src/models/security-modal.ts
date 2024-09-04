@@ -9,6 +9,9 @@ export type SecurityModal = Readonly<{
   shouldCustomPassword: boolean;
   shouldCustomDoubleAuth: boolean;
 
+  shouldEnterPIN: boolean;
+  shouldEnterSource: boolean;
+
   /**
    * Should be internal use only.
    */

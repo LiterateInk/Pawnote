@@ -24,6 +24,7 @@ export const decodeInstanceParameters = (parameters: any): InstanceParameters =>
     firstDate: decodePronoteDate(parameters.General.PremiereDate.V),
     lastDate: decodePronoteDate(parameters.General.DerniereDate.V),
 
+    navigatorIdentifier: parameters.identifiantNav,
     endings: parameters.General.ListeHeuresFin.V.map((ending: any) => ending.L),
     periods: parameters.General.ListePeriodes.map(decodePeriod),
     holidays: parameters.General.listeJoursFeries.V.map(decodeHoliday),

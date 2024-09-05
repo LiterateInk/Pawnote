@@ -9,9 +9,10 @@ data class Keys(
     val key: ByteArray
 )
 
+@OptIn(ExperimentalStdlibApi::class)
 fun aesKeys (sessionInfo: SessionInformation, forceEmptyIV: Boolean = false): Keys {
-    val iv = (if (forceEmptyIV) "" else sessionInfo.aesIV).toByteArray(Charsets.ISO_8859_1)
-    val key = sessionInfo.aesKey.toByteArray()
+    val iv = (if (forceEmptyIV) "" else sessionInfo.aesIV).hexToByteArray()
+    val key = sessionInfo.aesKey.hexToByteArray()
 
     return Keys(iv = iv, key = key)
 }

@@ -19,7 +19,7 @@ class RequestFNTest {
         url = sessionBase,
         id = sessionId,
         accountKind = AccountKind.STUDENT,
-        aesIV = "\tfmýÝ[½¬È»Dmøu0010",
+        aesIV = "09666dfddd5bbdacc8bb446df87530303130",
         aesKey = "",
         skipCompression = true,
         skipEncryption = true,

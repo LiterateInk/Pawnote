@@ -13,6 +13,5 @@ data class SessionHandle(
     var instance: InstanceParameters,
     var user: UserParameters,
 
-    val queue: Queue,
-    val client: HttpClient
+    val client: HttpClient = HttpClient()
 )

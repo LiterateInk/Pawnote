@@ -21,6 +21,7 @@ actual class ResponseFN actual constructor(
         val content = data
 
         try {
+            println(this.data)
             this.data = Json.encodeToString(Json.parseToJsonElement(data).jsonObject["donneesSec"]!!)
 
             if (!this.sessionInfo.skipEncryption) {

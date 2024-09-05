@@ -64,6 +64,7 @@ actual class RequestFN actual constructor(
     @OptIn(ExperimentalStdlibApi::class)
     private fun encrypt() {
         val keys = this.keys()
+        println("SHOULD encrypt with key: " + keys.key.toHexString())
         if(!this.sessionInfo.skipCompression)
             this.data = AES.encrypt(this.data.hexToByteArray(), keys.key, keys.iv)
         else
@@ -71,6 +72,7 @@ actual class RequestFN actual constructor(
     }
 
     actual suspend fun send(): ResponseFN {
+        println(name)
         val payload = this.process()
 
         val requestData = buildJsonObject {
@@ -79,6 +81,10 @@ actual class RequestFN actual constructor(
             put("nom", name)
             put("donneesSec", Json.parseToJsonElement(data))
         }
+
+        println(payload.url)
+        println(Json.encodeToString(requestData))
+
 
         val response = HttpClient().request(payload.url) {
             method = HttpMethod.Post

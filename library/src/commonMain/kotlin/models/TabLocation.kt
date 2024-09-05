@@ -12,5 +12,9 @@ enum class TabLocation (val code: Int) {
     Notebook(19),
     Discussions(131),
     Gradebook(13),
-    Menus(10)
+    Menus(10);
+
+    companion object {
+        fun fromInt(code: Int) = entries.first { it.code == code }
+    }
 }

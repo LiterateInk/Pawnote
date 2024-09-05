@@ -17,7 +17,7 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.text.toByteArray
 
-@OptIn(ExperimentalEncodingApi::class)
+@OptIn(ExperimentalEncodingApi::class, ExperimentalStdlibApi::class)
 actual suspend fun instanceParameters (sessionInfo: SessionInformation): InstanceParameters {
     val modulus = BigInteger(sessionInfo.rsaModulus, 16)
     val exponent = BigInteger(sessionInfo.rsaExponent, 16)
@@ -32,9 +32,9 @@ actual suspend fun instanceParameters (sessionInfo: SessionInformation): Instanc
     cipher.init(Cipher.ENCRYPT_MODE, pubKey)
 
     uuid = if (sessionInfo.rsaFromConstants)
-        Base64.encode(if (sessionInfo.http) cipher.doFinal(aesIV.toByteArray(Charsets.ISO_8859_1)) else aesIV.toByteArray(Charsets.ISO_8859_1))
+        Base64.encode(if (sessionInfo.http) cipher.doFinal(aesIV.hexToByteArray()) else aesIV.hexToByteArray())
     else
-        Base64.encode(cipher.doFinal(aesIV.toByteArray(Charsets.ISO_8859_1)))
+        Base64.encode(cipher.doFinal(aesIV.hexToByteArray()))
 
     val requestData = buildJsonObject {
         putJsonObject("donnees") {

@@ -1,4 +1,4 @@
-import type { SessionHandle, Timetable } from "~/models";
+import type { SessionHandle, Timetable, TimetableClass } from "~/models";
 import { decodeTimetableClassActivity } from "./timetable-class-activity";
 import { decodeTimetableClassDetention } from "./timetable-class-detention";
 import { decodeTimetableClassLesson } from "./timetable-class-lesson";
@@ -16,7 +16,7 @@ export const decodeTimetable = (timetable: any, session: SessionHandle): Timetab
     absences: timetable.absences,
     withCanceledClasses: timetable.avecCoursAnnule ?? true,
 
-    classes: (timetable.ListeCours as any[]).map((item) => {
+    classes: (timetable.ListeCours ?? []).map((item: any) => {
       if (isTimetableClassActivity(item)) {
         return decodeTimetableClassActivity(item, session);
       }
@@ -27,7 +27,7 @@ export const decodeTimetable = (timetable: any, session: SessionHandle): Timetab
 
       return decodeTimetableClassLesson(item, session);
     })
-      .sort((a, b) => (
+      .sort((a: TimetableClass, b: TimetableClass) => (
         a.startDate.getTime() - b.startDate.getTime()
       ))
   };

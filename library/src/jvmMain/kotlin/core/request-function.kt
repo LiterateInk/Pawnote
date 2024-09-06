@@ -12,7 +12,9 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import models.SessionInformation
+import java.io.ByteArrayOutputStream
 import java.util.zip.Deflater
+import java.util.zip.DeflaterOutputStream
 
 actual class Payload actual constructor(
     actual val order: String,
@@ -50,29 +52,27 @@ actual class RequestFN actual constructor(
 
     @OptIn(ExperimentalStdlibApi::class)
     private fun compress() {
-        val input = this.data.toByteArray().toHexString().toByteArray()
+        val hexString = this.data.toByteArray().toHexString()
+        val input = hexString.toByteArray(Charsets.UTF_8)
 
-        val output = ByteArray(input.size)
-        val compressor = Deflater(6, true).apply {
-            setInput(input)
-            finish()
-        }
-        val compressedDataLength: Int = compressor.deflate(output)
-        this.data = output.copyOfRange(0, compressedDataLength).toHexString()
+        val outputStream = ByteArrayOutputStream()
+        DeflaterOutputStream(outputStream, Deflater(6, true)).use { it.write(input) }
+        val output = outputStream.toByteArray()
+
+        this.data = output.toHexString()
     }
 
     @OptIn(ExperimentalStdlibApi::class)
     private fun encrypt() {
         val keys = this.keys()
-        println("SHOULD encrypt with key: " + keys.key.toHexString())
-        if(!this.sessionInfo.skipCompression)
+
+        if (!this.sessionInfo.skipCompression)
             this.data = AES.encrypt(this.data.hexToByteArray(), keys.key, keys.iv)
         else
             this.data = AES.encrypt(this.data.toByteArray(), keys.key, keys.iv)
     }
 
     actual suspend fun send(): ResponseFN {
-        println(name)
         val payload = this.process()
 
         val requestData = buildJsonObject {
@@ -81,10 +81,6 @@ actual class RequestFN actual constructor(
             put("nom", name)
             put("donneesSec", Json.parseToJsonElement(data))
         }
-
-        println(payload.url)
-        println(Json.encodeToString(requestData))
-
 
         val response = HttpClient().request(payload.url) {
             method = HttpMethod.Post

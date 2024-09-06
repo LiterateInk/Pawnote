@@ -7,6 +7,7 @@ import kotlinx.serialization.json.*
 import models.SessionInformation
 import models.errors.*
 import okio.ByteString.Companion.decodeHex
+import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.util.zip.Inflater
 
@@ -21,7 +22,6 @@ actual class ResponseFN actual constructor(
         val content = data
 
         try {
-            println(this.data)
             this.data = Json.encodeToString(Json.parseToJsonElement(data).jsonObject["donneesSec"]!!)
 
             if (!this.sessionInfo.skipEncryption) {
@@ -69,14 +69,21 @@ actual class ResponseFN actual constructor(
 
     @OptIn(ExperimentalStdlibApi::class)
     private fun decompress() {
-        val decompresser = Inflater(true)
-        decompresser.setInput(Json.parseToJsonElement(this.data).jsonPrimitive.content.hexToByteArray())
+        val inflater = Inflater(true)
+        inflater.setInput(Json.parseToJsonElement(this.data).jsonPrimitive.content.hexToByteArray())
 
-        // Allocate a maximum of 2MB for response data
-        val output = ByteBuffer.allocate(2000000)
-        val resultLength = decompresser.inflate(output)
-        decompresser.end()
+        val outputStream = ByteArrayOutputStream()
+        val buffer = ByteArray(1024) // A small buffer for iterative decompression
 
-        this.data = output.array().copyOfRange(0, resultLength).decodeToString()
+        try {
+            while (!inflater.finished()) {
+                val count = inflater.inflate(buffer)
+                outputStream.write(buffer, 0, count)
+            }
+        } finally {
+            inflater.end() // Ensure resources are freed
+        }
+
+        this.data = outputStream.toString("UTF-8")
     }
 }

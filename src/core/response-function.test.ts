@@ -1,4 +1,4 @@
-import { test, expect, describe, beforeEach } from "bun:test";
+import { it, expect, describe, beforeEach } from "bun:test";
 import { AccountKind, type SessionHandle } from "~/models";
 import { ResponseFN } from "./response-function";
 
@@ -62,12 +62,12 @@ beforeEach(() => {
 });
 
 describe("ResponseFN", () => {
-  test("should not decrypt and not decompress", () => {
+  it("should not decrypt and not decompress", () => {
     const response = new ResponseFN(handle, mock(RAW_DATA));
     expect(response.data).toEqual(RAW_DATA);
   });
 
-  test("should only decrypt", () => {
+  it("should only decrypt", () => {
     // @ts-expect-error : not readonly here.
     handle.information.skipEncryption = false;
 
@@ -75,7 +75,7 @@ describe("ResponseFN", () => {
     expect(response.data).toEqual(RAW_DATA);
   });
 
-  test("should only decompress", () => {
+  it("should only decompress", () => {
     // @ts-expect-error : not readonly here.
     handle.information.skipCompression = false;
 
@@ -83,7 +83,7 @@ describe("ResponseFN", () => {
     expect(response.data).toEqual(RAW_DATA);
   });
 
-  test("should decrypt and decompress", () => {
+  it("should decrypt and decompress", () => {
     // @ts-expect-error : not readonly here.
     handle.information.skipCompression = false;
     // @ts-expect-error : not readonly here.

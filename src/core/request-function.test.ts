@@ -1,4 +1,4 @@
-import { test, expect, describe, beforeEach } from "bun:test";
+import { it, expect, describe, beforeEach } from "bun:test";
 import { RequestFN } from "./request-function";
 import { AccountKind, type SessionHandle } from "~/models";
 
@@ -42,7 +42,7 @@ beforeEach(() => {
 });
 
 describe("RequestFN", () => {
-  test("URLs", () => {
+  it("URLs", () => {
     let request: RequestFN;
 
     request = new RequestFN(handle, REQUEST_NAME, REQUEST_DATA);
@@ -57,13 +57,13 @@ describe("RequestFN", () => {
     expect(request.process().url.href).toBe(SESSION_BASE + "/appelfonction/6/" + SESSION_ID + "/7c1f9564ba825ab3d87d6dc965105db7");
   });
 
-  test("should not encrypt and not compress", () => {
+  it("should not encrypt and not compress", () => {
     const request = new RequestFN(handle, REQUEST_NAME, REQUEST_DATA);
     // On order === 1, the IV is empty.
     expect(request.data).toEqual(REQUEST_DATA);
   });
 
-  test("should compress only", () => {
+  it("should compress only", () => {
     // @ts-expect-error : not readonly here.
     handle.information.skipCompression = false;
 
@@ -74,7 +74,7 @@ describe("RequestFN", () => {
     expect(request.data).toBe("358ed1118030084357d220891d47dbbaff08869e1e5f798f0be80678f0e1f4245301c4a5a253c94198a158301afac7bba7297896f9c9b270d7e394dc3957d721d86759d1b4af64e36d7760e38e4d517b6cfec2e734345e");
   });
 
-  test("should encrypt only", () => {
+  it("should encrypt only", () => {
     // @ts-expect-error : not readonly here.
     handle.information.skipEncryption = false;
 
@@ -95,7 +95,7 @@ describe("RequestFN", () => {
     expect(request.data).toBe("e098e0c0e79cdfedc9ade4c7a0a260ffae4f07eac6300ec418f337de878714a876a6750ccfe57134a8e7742ad82e2d7988f012c16035adcdaef9a2e8da57e8fef7f54e131baa656d9a7d126f90ed4213");
   });
 
-  test("should compress and encrypt", () => {
+  it("should compress and encrypt", () => {
     // @ts-expect-error : not readonly here.
     handle.information.skipCompression = false;
     // @ts-expect-error : not readonly here.

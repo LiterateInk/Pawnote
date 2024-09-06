@@ -40,10 +40,10 @@ suspend fun identify(sessionInfo: SessionInformation, parameters: IdentifyParame
             put("loginTokenSAV", "")
         }
     }
+
     val request = RequestFN(sessionInfo, "Identification", Json.encodeToString(requestData))
     val response = request.send()
 
-    println(response.data)
     val data = Json.parseToJsonElement(response.data).jsonObject["donnees"]!!.jsonObject
 
     return IdentifyResponse(

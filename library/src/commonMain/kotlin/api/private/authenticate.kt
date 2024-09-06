@@ -21,7 +21,6 @@ suspend fun authenticate (sessionInfo: SessionInformation, challenge: String): J
     val response = request.send()
     val data = Json.parseToJsonElement(response.data).jsonObject["donnees"]!!.jsonObject
 
-    println(data)
     if (data["Acces"] != null)
         when (data["Acces"]!!.jsonPrimitive.int) {
             1 -> throw BadCredentialsError()

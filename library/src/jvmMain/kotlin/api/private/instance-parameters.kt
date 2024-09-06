@@ -46,6 +46,5 @@ actual suspend fun instanceParameters (sessionInfo: SessionInformation): Instanc
     val request = RequestFN(sessionInfo, "FonctionParametres", Json.encodeToString(requestData))
     val response = request.send()
 
-    println(response.data)
     return decodeInstanceParameters(Json.parseToJsonElement(response.data).jsonObject["donnees"]!!.jsonObject)
 }

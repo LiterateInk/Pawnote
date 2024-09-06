@@ -11,7 +11,6 @@ import models.SessionInformation
 import models.UserParameters
 
 suspend fun userParameters (sessionInfo: SessionInformation, sessionInstance: InstanceParameters): UserParameters {
-    println(sessionInfo)
     val request = RequestFN(sessionInfo, "ParametresUtilisateur", "{}")
     val response = request.send()
     return decodeUserParameters(Json.parseToJsonElement(response.data).jsonObject["donnees"]!!.jsonObject, sessionInfo, sessionInstance)

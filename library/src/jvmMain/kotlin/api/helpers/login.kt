@@ -36,7 +36,6 @@ fun createMiddlewareKey (identity: IdentifyResponse, username: String, mod: Stri
     val md = MessageDigest.getInstance("SHA-256")
     val hash = md.digest("${identity.alea ?: ""}${mod}".toByteArray()).toHexString(HexFormat.UpperCase)
 
-    println(username + hash)
     return (username + hash).toByteArray()
 }
 
@@ -60,9 +59,7 @@ fun solveChallenge (sessionInfo: SessionInformation, identity: IdentifyResponse,
 fun switchToAuthKey (sessionInfo: SessionInformation, authentication: JsonObject, key: ByteArray): SessionInformation {
     val iv = sessionInfo.aesIV.hexToByteArray()
     val authKeyDecrypted = AES.decrypt(authentication["cle"]!!.jsonPrimitive.content.hexToByteArray(), key, iv)
-    println(authKeyDecrypted.decodeToString())
     val authKey = authKeyDecrypted.decodeToString().split(",").map { char -> char.toInt().toByte() }.toByteArray().toHexString()
-    println(authKey)
     return sessionInfo.copy(aesKey = authKey)
 }
 
@@ -79,7 +76,6 @@ actual suspend fun loginCredentials (auth: CredentialsAuth): LoginResult {
     ))
 
     val sessionInstance = instanceParameters(sessionInfo)
-    println(sessionInfo)
 
     val identity = identify(sessionInfo, IdentifyParameters(
         username = auth.username,

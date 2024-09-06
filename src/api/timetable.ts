@@ -3,6 +3,7 @@ import { propertyCaseInsensitive } from "./private/property-case-insensitive";
 import { RequestFN } from "~/core/request-function";
 import { encodeUserResource } from "~/encoders/user-resource";
 import { decodeTimetable } from "~/decoders/timetable";
+import { encodePronoteDate } from "~/encoders/pronote-date";
 
 const timetable = async (session: SessionHandle, index: number, additional = {}): Promise<Timetable> => {
   const request = new RequestFN(session, "PageEmploiDuTemps", {
@@ -41,12 +42,12 @@ export const timetableFromIntervals = async (session: SessionHandle, startDate: 
   return timetable(session, index, {
     ...propertyCaseInsensitive("dateDebut", {
       _T: 7,
-      V: startDate
+      V: encodePronoteDate(startDate)
     }),
 
     ...(endDate && propertyCaseInsensitive("dateFin", {
       _T: 7,
-      V: endDate
+      V: encodePronoteDate(endDate)
     }))
   });
 };

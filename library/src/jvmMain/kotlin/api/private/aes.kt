@@ -5,9 +5,9 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-class AES {
-    companion object {
-        fun decrypt(data: ByteArray, key: ByteArray, iv: ByteArray) : ByteArray {
+actual class AES {
+    actual companion object {
+        actual fun decrypt(data: ByteArray, key: ByteArray, iv: ByteArray) : ByteArray {
             val finalKey = MessageDigest.getInstance("MD5").digest(key)
             val finalIv: ByteArray = when (iv.isNotEmpty()) {
                 true -> {
@@ -27,7 +27,7 @@ class AES {
         }
 
         @OptIn(ExperimentalStdlibApi::class)
-        fun encrypt(data: ByteArray, key: ByteArray, iv: ByteArray): String {
+        actual fun encrypt(data: ByteArray, key: ByteArray, iv: ByteArray): String {
             val finalKey = MessageDigest.getInstance("MD5").digest(key)
             val finalIv: ByteArray = when (iv.isNotEmpty()) {
                 true -> {

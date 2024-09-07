@@ -8,6 +8,6 @@ data class UserAuthorizations(
     val canDiscussWithStudents: Boolean,
     val canDiscussWithTeachers: Boolean,
     val hasAdvancedDiscussionEditor: Boolean,
-    val maxAssignmentFileUploadSize: Long,
+    val maxAssignmentFileUploadSize: Double,
     val tabs: List<TabLocation>
 )

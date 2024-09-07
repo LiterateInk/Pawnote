@@ -39,7 +39,7 @@ fun decodeUserAuthorizations (data: JsonObject, tabs: JsonArray): UserAuthorizat
         canDiscussWithTeachers = canDiscussWithTeachers,
 
         hasAdvancedDiscussionEditor = data["AvecDiscussionAvancee"]?.jsonPrimitive?.boolean ?: false,
-        maxAssignmentFileUploadSize = data["tailleMaxRenduTafEleve"]!!.jsonPrimitive.long,
+        maxAssignmentFileUploadSize = data["tailleMaxRenduTafEleve"]!!.jsonPrimitive.double,
 
         tabs = locations
     )

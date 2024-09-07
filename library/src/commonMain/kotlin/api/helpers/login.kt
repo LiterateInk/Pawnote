@@ -80,7 +80,7 @@ suspend fun loginCredentials (auth: CredentialsAuth): LoginResult {
         username = auth.username,
         deviceUUID = auth.deviceUUID,
 
-        requestFirstMobileAuthentication = false,
+        requestFirstMobileAuthentication = true,
         reuseMobileAuthentication = false,
         requestFromQRCode = false,
         useCAS = false

@@ -15,6 +15,6 @@ enum class TabLocation (val code: Int) {
     Menus(10);
 
     companion object {
-        fun fromInt(code: Int) = entries.first { it.code == code }
+        fun fromInt(code: Int) = entries.firstOrNull { it.code == code }
     }
 }

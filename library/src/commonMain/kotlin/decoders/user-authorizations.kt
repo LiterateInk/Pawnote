@@ -16,8 +16,12 @@ fun decodeUserAuthorizations (data: JsonObject, tabs: JsonArray): UserAuthorizat
 
     if (tabs.isNotEmpty()) {
         fun traverse (obj: JsonObject): Unit = run {
-            if (obj.containsKey("G"))
-                locations.add(TabLocation.fromInt(obj["G"]!!.jsonPrimitive.int))
+            if (obj.containsKey("G")) {
+                val location = TabLocation.fromInt(obj["G"]!!.jsonPrimitive.int)
+
+                if (location != null)
+                    locations.add(location)
+            }
 
             if (obj.containsKey("Onglet"))
                 obj["Onglet"]!!.jsonArray.forEach{ traverse(it.jsonObject) }

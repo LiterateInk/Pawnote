@@ -13,7 +13,7 @@ fun decodeTab (tab: JsonObject, instancePeriods: List<Period>): Tab {
 
     return Tab(
         defaultPeriod = defaultPeriod,
-        location = TabLocation.fromInt(tab["G"]!!.jsonPrimitive.int),
+        location = TabLocation.fromInt(tab["G"]!!.jsonPrimitive.int)!!,
         periods = periods
     )
 }

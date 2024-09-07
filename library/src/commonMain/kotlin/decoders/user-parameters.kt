@@ -8,7 +8,6 @@ import models.UserParameters
 
 fun decodeUserParameters (parameters: JsonObject, sessionInfo: SessionInformation, sessionInstance: InstanceParameters): UserParameters {
     var resources: JsonArray = JsonArray(listOf())
-    println(parameters) // TODO
 
     when (sessionInfo.accountKind) {
         AccountKind.STUDENT -> {}

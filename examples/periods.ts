@@ -23,7 +23,7 @@ void async function main () {
 
   for (const tabID of session.user.authorizations.tabs) {
     // We're on a student account, there's only one resource.
-    const tab = session.user.resources[0].tabs.get(tabID);
+    const tab = session.userResource.tabs.get(tabID);
     if (!tab) {
       console.warn(`Skipping tab ${tabID} since no period is required there.`);
       continue;

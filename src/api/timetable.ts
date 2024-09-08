@@ -5,7 +5,7 @@ import { encodeUserResource } from "~/encoders/user-resource";
 import { decodeTimetable } from "~/decoders/timetable";
 import { encodePronoteDate } from "~/encoders/pronote-date";
 
-const timetable = async (session: SessionHandle, index: number, additional = {}): Promise<Timetable> => {
+const timetable = async (session: SessionHandle, additional = {}): Promise<Timetable> => {
   const request = new RequestFN(session, "PageEmploiDuTemps", {
     _Signature_: { onglet: TabLocation.Timetable },
 
@@ -25,7 +25,7 @@ const timetable = async (session: SessionHandle, index: number, additional = {})
 
       edt: { G: 16, L: "Emploi du temps" },
 
-      ...propertyCaseInsensitive("ressource", encodeUserResource(session.user.resources[index])),
+      ...propertyCaseInsensitive("ressource", encodeUserResource(session.userResource)),
       ...additional
     }
   });
@@ -34,12 +34,12 @@ const timetable = async (session: SessionHandle, index: number, additional = {})
   return decodeTimetable(response.data.donnees, session);
 };
 
-export const timetableFromWeek = async (session: SessionHandle, weekNumber: number, index = 0): Promise<Timetable> => {
-  return timetable(session, index, propertyCaseInsensitive("numeroSemaine", weekNumber));
+export const timetableFromWeek = async (session: SessionHandle, weekNumber: number): Promise<Timetable> => {
+  return timetable(session, propertyCaseInsensitive("numeroSemaine", weekNumber));
 };
 
-export const timetableFromIntervals = async (session: SessionHandle, startDate: Date, endDate?: Date, index = 0): Promise<Timetable> => {
-  return timetable(session, index, {
+export const timetableFromIntervals = async (session: SessionHandle, startDate: Date, endDate?: Date): Promise<Timetable> => {
+  return timetable(session, {
     ...propertyCaseInsensitive("dateDebut", {
       _T: 7,
       V: encodePronoteDate(startDate)

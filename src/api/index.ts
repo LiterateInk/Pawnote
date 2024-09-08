@@ -6,6 +6,7 @@ export * from "./helpers/news-question-local-mutate";
 export * from "./helpers/parse-timetable";
 export * from "./helpers/presence-interval";
 export * from "./helpers/session-handle";
+export * from "./helpers/use";
 export * from "./helpers/week-number";
 
 export * from "./account";

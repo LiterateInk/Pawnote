@@ -14,8 +14,7 @@ void async function main () {
   if (!session.user.authorizations.canDiscuss)
     throw new Error("This account can't discuss, review the permissions.");
 
-  const user = session.user.resources[0];
-  const teachers = await pronote.newDiscussionRecipients(session, user, pronote.EntityKind.Teacher);
+  const teachers = await pronote.newDiscussionRecipients(session, pronote.EntityKind.Teacher);
   console.info("Sending a message to every teachers:", teachers.map((teacher) => teacher.name).join(", "));
 
   await pronote.newDiscussion(

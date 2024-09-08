@@ -37,14 +37,11 @@ void async function main () {
     kinds.push(pronote.EntityKind.Student);
   }
 
-  const user = session.user.resources[0]; // we'll use the first user (for students this is the student itself)
-  const recipients = await pronote.newDiscussionRecipients(session, user, pronote.EntityKind.Teacher);
-  // const recipients = await Promise.all(kinds.map((type) => pronote.newDiscussionRecipients(session, user, type)));
-
+  const recipients = await Promise.all(kinds.map((kind) => pronote.newDiscussionRecipients(session, kind)));
   const people = recipients.flat();
 
   for (const person of people) {
-    console.info();
+    console.info(); // New line.
     let typeName = "unknown";
 
     if (person.kind === pronote.EntityKind.Personal) typeName = "staff";

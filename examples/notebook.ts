@@ -11,10 +11,7 @@ void async function main () {
     deviceUUID: credentials.deviceUUID
   });
 
-  // Read the user resources to find the tab's periods.
-  const user = session.user.resources[0];
-
-  const tab = user.tabs.get(pronote.TabLocation.Notebook);
+  const tab = session.userResource.tabs.get(pronote.TabLocation.Notebook);
   if (!tab) throw new Error("Cannot retrieve periods for the notebook tab, you maybe don't have access to it.");
   const selectedPeriod = tab.defaultPeriod!;
 

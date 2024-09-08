@@ -12,9 +12,9 @@ void async function main () {
   });
 
   // Basic account data that we can access without doing any requests.
-  console.log("Logged into", session.user.name, "studying at", session.user.resources[0].establishmentName, "in", session.user.resources[0].className);
-  if (session.user.resources[0].profilePicture) {
-    console.log("-> Profile Picture URL:", session.user.resources[0].profilePicture.url);
+  console.log("Logged into", session.user.name, "studying at", session.userResource.establishmentName, "in", session.userResource.className);
+  if (session.userResource.profilePicture) {
+    console.log("-> Profile Picture URL:", session.userResource.profilePicture.url);
   }
 
   console.log(); // Break line.

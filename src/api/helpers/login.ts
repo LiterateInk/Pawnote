@@ -8,6 +8,7 @@ import { AES } from "../private/aes";
 import { authenticate } from "../private/authenticate";
 import { userParameters } from "../private/user-parameters";
 import { decodeAuthenticationQr } from "~/decoders/authentication-qr";
+import { use } from "./use";
 
 /**
  * base parameters for `sessionInformation` call.
@@ -249,6 +250,7 @@ const hasSecurityModal = (authentication: any): boolean => Boolean(authenticatio
 
 export const finishLoginManually = async (session: SessionHandle, authentication: any, identity: any, initialUsername?: string): Promise<RefreshInformation> => {
   session.user = await userParameters(session);
+  use(session, 0); // default to first resource.
 
   return {
     token: authentication.jetonConnexionAppliMobile,

@@ -1,4 +1,4 @@
-import { PageUnavailableError, RateLimitedError, ServerSideError, SessionExpiredError, SuspendedIPError, type SessionHandle } from "~/models";
+import { AccessDeniedError, PageUnavailableError, RateLimitedError, ServerSideError, SessionExpiredError, SuspendedIPError, type SessionHandle } from "~/models";
 import forge from "node-forge";
 import { AES } from "../api/private/aes";
 import pako from "pako";
@@ -27,7 +27,7 @@ export class ResponseFN {
         this.data = JSON.parse(this.data);
       }
 
-      if ("_Signature_" in this.data && this.data._Signature_.Erreur) {
+      if (typeof this.data?._Signature_?.Erreur !== "undefined") {
         throw new ServerSideError(this.data._Signature_.MessageErreur);
       }
     }
@@ -46,6 +46,11 @@ export class ResponseFN {
 
       else if (content.includes("Vous avez d")) {
         throw new RateLimitedError();
+      }
+
+      // "Accès refusé", we just trying to prevent using accents.
+      else if (content.includes("s refus")) {
+        throw new AccessDeniedError();
       }
 
       throw error;

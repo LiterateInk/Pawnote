@@ -10,7 +10,7 @@ fun decodeUserParameters (parameters: JsonObject, sessionInfo: SessionInformatio
     var resources: JsonArray = JsonArray(listOf())
 
     when (sessionInfo.accountKind) {
-        AccountKind.STUDENT -> {}
+        AccountKind.STUDENT -> resources = JsonArray(listOf( parameters["ressource"]!!.jsonObject))
         AccountKind.TEACHER -> resources = JsonArray(listOf( parameters["ressource"]!!.jsonObject))
         AccountKind.PARENT -> resources = parameters["ressource"]!!.jsonObject["listeRessources"]!!.jsonArray
     }

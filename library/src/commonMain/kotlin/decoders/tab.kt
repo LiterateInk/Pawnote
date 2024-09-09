@@ -9,7 +9,8 @@ fun decodeTab (tab: JsonObject, instancePeriods: List<Period>): Tab {
     val find: (id: String) -> Period? = {id -> instancePeriods.find { it.id == id }}
 
     val defaultPeriod = if(tab["periodeParDefaut"] != null) find(tab["periodeParDefaut"]!!.jsonObject["V"]!!.jsonObject["N"]!!.jsonPrimitive.content) else null
-    val periods = tab["listePeriodes"]!!.jsonObject["V"]!!.jsonArray.map { find(it.jsonObject["N"]!!.jsonPrimitive.content) }.filterNotNull()
+    val periods =
+        tab["listePeriodes"]!!.jsonObject["V"]!!.jsonArray.mapNotNull { if(it.jsonObject["N"] != null) find(it.jsonObject["N"]!!.jsonPrimitive.content) else null }
 
     return Tab(
         defaultPeriod = defaultPeriod,

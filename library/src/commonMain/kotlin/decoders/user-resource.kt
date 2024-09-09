@@ -17,8 +17,9 @@ fun decodeUserResource (resource: JsonObject, sessionInfo: SessionInformation, s
 
     if (resource["listeOngletsPourPeriodes"] != null)
         for (tab in resource["listeOngletsPourPeriodes"]!!.jsonObject["V"]?.jsonArray ?: listOf())
-            tabs[TabLocation.fromInt(tab.jsonObject["G"]!!.jsonPrimitive.int)!!] =
-                decodeTab(tab.jsonObject, sessionInstance.periods)
+            if (TabLocation.fromInt(tab.jsonObject["G"]!!.jsonPrimitive.int) != null)
+                tabs[TabLocation.fromInt(tab.jsonObject["G"]!!.jsonPrimitive.int)!!] =
+                    decodeTab(tab.jsonObject, sessionInstance.periods)
 
     return UserResource(
         id = resource["N"]!!.jsonPrimitive.content,

@@ -13,7 +13,13 @@ export class ResponseFN {
     const content = data;
 
     try {
-      this.data = JSON.parse(this.data).donneesSec;
+      const response = JSON.parse(content);
+      if (response.Erreur) {
+        const error = response.Erreur.Titre || "Server Error";
+        throw new ServerSideError(error);
+      }
+
+      this.data = response.donneesSec;
 
       if (!this.session.information.skipEncryption) {
         this.decrypt();

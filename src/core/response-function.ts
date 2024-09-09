@@ -13,8 +13,11 @@ export class ResponseFN {
     const content = data;
 
     try {
-      const response = JSON.parse(this.data);
-      if (response.Erreur) throw new Error();
+      const response = JSON.parse(content);
+      if (response.Erreur) {
+        const error = response.Erreur.Titre || "Server Error";
+        throw new ServerSideError(error);
+      }
 
       this.data = response.donneesSec;
 

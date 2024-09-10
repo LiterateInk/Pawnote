@@ -37,6 +37,11 @@ export class RequestFN {
     const order = this.generateOrder();
     const url = new URL(`${this.session.information.url}/appelfonction/${this.session.information.accountKind}/${this.session.information.id}/${order}`);
 
+    if (this.session.beforeRequest) {
+      const newdata = this.session.beforeRequest(this.data);
+      if (newdata) this.data = newdata;
+    }
+
     if (!this.session.information.skipCompression) {
       this.compress();
     }

@@ -14,6 +14,8 @@ export type SessionHandle = {
   instance: InstanceParameters
   user: UserParameters
 
+  beforeRequest: undefined | ((data: any) => any)
+
   /**
    * Can be updated with the `pronote.use(number | UserResource)` method.
    * @default user.resources[0] // first resource from the user

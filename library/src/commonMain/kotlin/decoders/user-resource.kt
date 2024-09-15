@@ -6,7 +6,7 @@ import models.*
 fun decodeUserResource (resource: JsonObject, sessionInfo: SessionInformation, sessionInstance: InstanceParameters): UserResource {
     var profilePicture: Attachment? = null
 
-    if (resource["avecPhoto"]!!.jsonPrimitive.boolean)
+    if (resource["avecPhoto"]?.jsonPrimitive?.boolean == true)
         profilePicture = decodeAttachment(buildJsonObject {
             put("G", 1)
             put("N", resource["N"]!!)

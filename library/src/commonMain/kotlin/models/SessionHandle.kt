@@ -1,6 +1,5 @@
 package models
 
-import api.private.Queue
 import io.ktor.client.*
 
 /**
@@ -12,6 +11,7 @@ data class SessionHandle(
     var information: SessionInformation,
     var instance: InstanceParameters,
     var user: UserParameters,
+    var userResource: UserResource,
 
     val client: HttpClient = HttpClient()
 )

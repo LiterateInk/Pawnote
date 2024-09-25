@@ -24,6 +24,7 @@ fun decodeInstanceParameters (parameters: JsonObject): InstanceParameters {
         firstDate = decodePronoteDate(parameters["General"]!!.jsonObject["PremiereDate"]!!.jsonObject["V"]!!.jsonPrimitive.content),
         lastDate = decodePronoteDate(parameters["General"]!!.jsonObject["DerniereDate"]!!.jsonObject["V"]!!.jsonPrimitive.content),
 
+        navigatorIdentifier = parameters["identifiantNav"]?.jsonPrimitive?.content,
         endings = parameters["General"]!!.jsonObject["ListeHeuresFin"]!!.jsonObject["V"]!!.jsonArray.map {it.jsonObject["L"]!!.jsonPrimitive.content},
         periods = parameters["General"]!!.jsonObject["ListePeriodes"]!!.jsonArray.map { decodePeriod(it.jsonObject) },
         holidays = parameters["General"]!!.jsonObject["listeJoursFeries"]!!.jsonObject["V"]!!.jsonArray.map { decodeHoliday(it.jsonObject) },

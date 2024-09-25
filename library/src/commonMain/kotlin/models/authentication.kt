@@ -3,9 +3,11 @@ package models
 data class CredentialsAuth(
     val url: String,
     val username: String,
-    val password: String,
+    val password: String? = null,
+    val token: String? = null,
     val kind: AccountKind,
-    val deviceUUID: String
+    val deviceUUID: String,
+    val navigatorIdentifier: String? = null
 )
 
 data class LoginResult(

@@ -8,6 +8,10 @@ data class InstanceParameters(
     val firstDate: LocalDateTime,
     val lastDate: LocalDateTime,
 
+    /**
+     * Allows to recognize the device for next authentications.
+     */
+    val navigatorIdentifier: String? = null,
     val version: List<Int>,
     val endings: List<String>,
     val periods: List<Period>,

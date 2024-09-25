@@ -18,7 +18,7 @@ data class SessionInfoParams(
     val base: String,
     val kind: AccountKind,
     val params: Map<String, String>,
-    val cookies: List<String>
+    val cookies: List<Map<String, String>>
 )
 
 suspend fun sessionInformation(
@@ -31,6 +31,7 @@ suspend fun sessionInformation(
         url {
             options.params.forEach { (k, v) -> parameters.append(k, v) }
         }
+        options.cookies.forEach {cookie(it.keys.first(), it.values.first())}
     }
 
     val content = response.bodyAsText()

@@ -3,10 +3,7 @@ package api.private
 import core.RequestFN
 import decoders.decodeInstanceParameters
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.putJsonObject
+import kotlinx.serialization.json.*
 import models.InstanceParameters
 import models.SessionInformation
 import java.math.BigInteger
@@ -15,10 +12,9 @@ import java.security.spec.RSAPublicKeySpec
 import javax.crypto.Cipher
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
-import kotlin.text.toByteArray
 
 @OptIn(ExperimentalEncodingApi::class, ExperimentalStdlibApi::class)
-actual suspend fun instanceParameters (sessionInfo: SessionInformation): InstanceParameters {
+actual suspend fun instanceParameters (sessionInfo: SessionInformation, navigatorIdentifier: String?): InstanceParameters {
     val modulus = BigInteger(sessionInfo.rsaModulus, 16)
     val exponent = BigInteger(sessionInfo.rsaExponent, 16)
 
@@ -38,7 +34,7 @@ actual suspend fun instanceParameters (sessionInfo: SessionInformation): Instanc
 
     val requestData = buildJsonObject {
         putJsonObject("donnees") {
-            put("identifiantNav", Json.parseToJsonElement("null"))
+            put("identifiantNav", navigatorIdentifier)
             put("Uuid", Json.parseToJsonElement(uuid))
         }
     }

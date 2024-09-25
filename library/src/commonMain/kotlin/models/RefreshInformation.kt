@@ -12,5 +12,6 @@ data class RefreshInformation(
      */
     val token: String,
     val username: String,
-    val kind: AccountKind
+    val kind: AccountKind,
+    val navigatorIdentifier: String? = null
 )

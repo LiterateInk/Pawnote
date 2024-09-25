@@ -3,15 +3,24 @@ package api.helpers
 import api.SessionInfoParams
 import api.private.*
 import api.sessionInformation
+import decoders.decodeAuthenticationQr
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.jsonPrimitive
 import models.*
 import models.errors.BadCredentialsError
+import models.errors.SecurityError
 import java.security.MessageDigest
 import kotlin.text.toByteArray
 
+enum class QrProperty {
+    token,
+    username
+}
+
 enum class ModProperty {
-    password
+    password,
+    token
 }
 
 val baseParams = mapOf(
@@ -19,12 +28,15 @@ val baseParams = mapOf(
     "login" to "true"
 )
 
+val hasSecurityModal: (authentication: JsonObject) -> Boolean = { it["actionsDoubleAuth"]?.jsonPrimitive?.boolean ?: false }
+
 fun transformCredentials (auth: CredentialsAuth, modProperty: ModProperty, identity: IdentifyResponse): CredentialsAuth {
     val username = if (identity.modeCompLog == 1) auth.username.lowercase() else auth.username
 
     if (identity.modeCompMdp == 1)
-        when (modProperty) {
-            ModProperty.password -> return auth.copy(username = username, password = auth.password.lowercase())
+        return when (modProperty) {
+            ModProperty.password -> auth.copy(username = username, password = auth.password!!.lowercase())
+            ModProperty.token -> auth.copy(username = username, token = auth.token!!.lowercase())
         }
 
     return auth.copy(username = username)
@@ -49,7 +61,6 @@ fun solveChallenge (sessionInfo: SessionInformation, identity: IdentifyResponse,
 
         return AES.encrypt(unscrambled, key, iv)
     } catch (err: Exception) {
-        println(err.stackTraceToString())
         throw BadCredentialsError()
     }
 }
@@ -74,7 +85,7 @@ suspend fun loginCredentials (auth: CredentialsAuth): LoginResult {
         )
     ))
 
-    val sessionInstance = instanceParameters(sessionInfo)
+    val sessionInstance = instanceParameters(sessionInfo, auth.navigatorIdentifier)
 
     val identity = identify(sessionInfo, IdentifyParameters(
         username = auth.username,
@@ -87,26 +98,147 @@ suspend fun loginCredentials (auth: CredentialsAuth): LoginResult {
     ))
 
     val transformedCredentials = transformCredentials(auth, ModProperty.password, identity)
-    val key = createMiddlewareKey(identity, transformedCredentials.username, transformedCredentials.password)
+    val key = createMiddlewareKey(identity, transformedCredentials.username, transformedCredentials.password!!)
 
     val challenge = solveChallenge(sessionInfo, identity, key)
     val authentication = authenticate(sessionInfo, challenge)
 
     val finalSessionInfo = switchToAuthKey(sessionInfo, authentication, key)
-    val sessionUser = userParameters(finalSessionInfo, sessionInstance)
+
+    if (hasSecurityModal(authentication))
+        return switchToTokenLogin(auth)
+
+    return finishLoginManually(base, finalSessionInfo, sessionInstance, authentication, identity, auth.username)
+}
+
+suspend fun loginToken (auth: CredentialsAuth): LoginResult {
+    val base = clearURL(auth.url)
+
+    val sessionInfo = sessionInformation(
+        SessionInfoParams(
+            base,
+            kind = auth.kind,
+            cookies = listOf(mapOf("appliMobile" to "1")),
+            params = baseParams
+        )
+    )
+
+    val sessionInstance = instanceParameters(sessionInfo, auth.navigatorIdentifier)
+
+    val identity = identify(sessionInfo, IdentifyParameters(
+        username = auth.username,
+        deviceUUID = auth.deviceUUID,
+
+        requestFirstMobileAuthentication = false,
+        reuseMobileAuthentication = true,
+        requestFromQRCode = false,
+        useCAS = false
+    ))
+
+    val transformedCredentials = transformCredentials(auth, ModProperty.token, identity)
+    val key = createMiddlewareKey(identity, transformedCredentials.username, transformedCredentials.token!!)
+
+    val challenge = solveChallenge(sessionInfo, identity, key)
+    val authentication = authenticate(sessionInfo, challenge)
+    val finalSessionInfo = switchToAuthKey(sessionInfo, authentication, key)
+
+    if (hasSecurityModal(authentication))
+        throw SecurityError(authentication, identity, auth.username)
+
+    return finishLoginManually(base, finalSessionInfo, sessionInstance, authentication, identity, auth.username)
+}
+
+@OptIn(ExperimentalStdlibApi::class)
+suspend fun loginQrCode (info: QrInfo): LoginResult {
+    val qr = decodeAuthenticationQr(info.qr)
+    val pin = info.pin.toByteArray()
+
+    fun read (prop: QrProperty): String {
+        lateinit var data: ByteArray
+
+        when (prop) {
+            QrProperty.token -> data = AES.decrypt(qr.token.hexToByteArray(), pin, ByteArray(0))
+            QrProperty.username -> data = AES.decrypt(qr.username.hexToByteArray(), pin, ByteArray(0))
+        }
+
+        return data.decodeToString()
+    }
+
+    val auth = CredentialsAuth(
+        url = qr.url,
+        username = read(QrProperty.username),
+        token = read(QrProperty.token),
+        kind = qr.kind,
+        deviceUUID = info.deviceUUID,
+        navigatorIdentifier = info.navigatorIdentifier
+    )
+
+    val sessionInfo = sessionInformation(
+        SessionInfoParams(
+            base = qr.url,
+            kind = qr.kind,
+            cookies = listOf(mapOf("appliMobile" to "1")),
+            params = baseParams
+        )
+    )
+
+    val sessionInstance = instanceParameters(sessionInfo, info.navigatorIdentifier)
+
+    val identity = identify(sessionInfo, IdentifyParameters(
+            username = auth.username,
+            deviceUUID = info.deviceUUID,
+
+            requestFirstMobileAuthentication = true,
+            reuseMobileAuthentication = false,
+            requestFromQRCode = true,
+            useCAS = false,
+        )
+    )
+
+    val transformedCredentials = transformCredentials(auth, ModProperty.token, identity)
+    val key = createMiddlewareKey(identity, transformedCredentials.username, transformedCredentials.token!!)
+
+    val challenge = solveChallenge(sessionInfo, identity, key)
+    val authentication = authenticate(sessionInfo, challenge)
+    val finalSessionInfo = switchToAuthKey(sessionInfo, authentication, key)
+
+    if (hasSecurityModal(authentication))
+        return switchToTokenLogin(transformedCredentials)
+    else
+        return finishLoginManually(qr.url, finalSessionInfo, sessionInstance, authentication, identity, auth.username)
+}
+
+suspend fun switchToTokenLogin (auth: CredentialsAuth): LoginResult {
+    // TODO: Add and call logout function for current `session`.
+
+    return loginToken(auth)
+}
+
+suspend fun finishLoginManually (
+    base: String,
+    sessionInfo: SessionInformation,
+    sessionInstance: InstanceParameters,
+    authentication: JsonObject,
+    identity: IdentifyResponse,
+    initialUsername: String? = null
+): LoginResult {
+    val sessionUser = userParameters(sessionInfo, sessionInstance)
+    val session = SessionHandle(
+        serverURL = base,
+        information = sessionInfo,
+        instance = sessionInstance,
+        user = sessionUser,
+        userResource = sessionUser.resources[0]
+    )
 
     return LoginResult(
-        session = SessionHandle(
-            serverURL = base,
-            information = finalSessionInfo,
-            instance = sessionInstance,
-            user = sessionUser
-        ),
+        session = session,
         refreshInfo = RefreshInformation(
             token = authentication["jetonConnexionAppliMobile"]!!.jsonPrimitive.content,
-            username = identity.login ?: transformedCredentials.username,
-            kind = transformedCredentials.kind,
-            url = base
+            username = identity.login ?: initialUsername!!,
+            kind = session.information.accountKind,
+            url = session.information.url,
+            navigatorIdentifier = session.instance.navigatorIdentifier
         )
     )
 }

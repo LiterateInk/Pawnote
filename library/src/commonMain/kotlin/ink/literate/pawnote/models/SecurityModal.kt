@@ -5,7 +5,7 @@ import ink.literate.pawnote.api.private.IdentifyResponse
 import kotlinx.serialization.json.JsonObject
 
 data class SecurityModalContext(
-    val authentication: JsonObject,
+    var authentication: JsonObject,
     val identity: IdentifyResponse,
     val initialUsername: String? = null
 )

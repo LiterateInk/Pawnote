@@ -1,10 +1,8 @@
 package ink.literate.pawnote.models
 
-import ink.literate.pawnote.api.private.DiscussionsCache
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonObject
 
-data class Discussion(
+class Discussion(
     val creator: String? = null,
     val recipientName: String? = null,
 
@@ -45,6 +43,8 @@ data class Discussion(
     val numberOfMessagesUnread: Int,
     val folders: List<DiscussionFolder>,
     val closed: Boolean,
+
+    val cache: MutableList<Discussion>,
 
     var messages: DiscussionMessages? = null
 )

@@ -13,11 +13,11 @@ import kotlinx.serialization.json.*
 
 data class DiscussionsResponse(
     val folders: List<DiscussionFolder>,
-    val items: List<Discussion>
+    val items: MutableList<Discussion>
 )
 
 @OptIn(ExperimentalSerializationApi::class)
-suspend fun discussions (session: SessionHandle): DiscussionsResponse {
+suspend fun discussions (session: SessionHandle, cache: MutableList<Discussion> = mutableListOf()): DiscussionsResponse {
     val request = RequestFN(session.information, "ListeMessagerie", Json.encodeToString(
         buildJsonObject {
             putJsonObject("_Signature_") {
@@ -44,10 +44,14 @@ suspend fun discussions (session: SessionHandle): DiscussionsResponse {
             val hasParticipants = if (discussion["messagePourParticipants"] != null) discussion["messagePourParticipants"]!!.jsonObject["V"]!!.jsonObject["N"] != null else false
             discussion["estUneDiscussion"]?.jsonPrimitive?.boolean ?: false && hasParticipants && hasZeroDepth
         }
-        .map { decodeDiscussion(it.jsonObject, folders) }
+        .map { decodeDiscussion(it.jsonObject, folders, cache) }
+
+    cache.clear()
+
+    cache.addAll(items)
 
     return DiscussionsResponse(
         folders = folders,
-        items = items
+        items = cache
     )
 }

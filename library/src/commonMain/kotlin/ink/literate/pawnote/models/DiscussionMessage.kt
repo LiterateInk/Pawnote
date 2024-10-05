@@ -2,7 +2,7 @@ package ink.literate.pawnote.models
 
 import kotlinx.datetime.LocalDateTime
 
-data class DiscussionMessage(
+data class DiscussionMessage <T> (
     val id: String,
     val content: String,
     val creationDate: LocalDateTime,
@@ -16,5 +16,7 @@ data class DiscussionMessage(
     val receiver: DiscussionMessageRecipient? = null,
     val partialVisibility: Boolean,
     val amountOfRecipients: Int,
-    val files: List<Attachment>
+    val files: List<Attachment>,
+
+    val data: T
 )

@@ -2,7 +2,7 @@ package ink.literate.pawnote.models
 
 data class DiscussionMessages(
     val defaultReplyMessageID: String,
-    val sents: List<DiscussionSentMessage>,
+    val sents: List<DiscussionMessage<DiscussionSentMessage>>,
     val drafts: List<DiscussionDraftMessage>,
 
     /**

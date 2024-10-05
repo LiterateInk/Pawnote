@@ -15,8 +15,18 @@ fun decodeDiscussionMessages (messages: JsonObject, session: SessionHandle): Dis
 
     sents.sortedWith {a, b -> b.creationDate.time.toMillisecondOfDay() - a.creationDate.time.toMillisecondOfDay()}
 
-    if (draft != null)
-        drafts.add(decodeDiscussionDraftMessage(messages))
+    if (draft != null) {
+        val isHTML = draft.jsonObject["V"]!!.jsonObject["estHTML"]?.jsonPrimitive?.boolean ?: false
+
+        drafts.add(
+            DiscussionDraftMessage(
+                isHTML = isHTML,
+                content = if (isHTML) draft.jsonObject["V"]!!.jsonObject["contenu"]!!.jsonPrimitive.content else draft.jsonObject["V"]!!.jsonObject["contenu"]!!.jsonObject["V"]!!.jsonPrimitive.content,
+                possessionID = draft.jsonObject["V"]!!.jsonObject["N"]!!.jsonPrimitive.content,
+                replyMessageID = defaultReplyMessageID
+            )
+        )
+    }
 
     val actionObj = messages["listeBoutons"]!!.jsonObject["V"]!!.jsonArray.find { it.jsonObject["L"]!!.jsonPrimitive.content.startsWith("Envoyer") }
     val sendAction: DiscussionSendAction? = if (actionObj != null) DiscussionSendAction.fromInt(actionObj.jsonObject["G"]!!.jsonPrimitive.int) else null

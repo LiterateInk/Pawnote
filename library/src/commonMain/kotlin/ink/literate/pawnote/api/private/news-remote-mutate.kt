@@ -48,7 +48,7 @@ suspend fun newsRemoteMutate (
                                     put("genreReponse", answer.kind.code)
 
                                     putJsonObject("reponse") {
-                                        put("N", answer.answerId.toInt())
+                                        put("N", answer.answerId.split('#')[0].toInt())
                                         put("Actif", true)
 
                                         // Should give a string directly when we reply to an information

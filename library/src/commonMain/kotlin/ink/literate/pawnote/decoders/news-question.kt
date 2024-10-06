@@ -14,11 +14,11 @@ fun decodeNewsQuestion (question: JsonObject, sessionInformation: SessionInforma
     var textInputAnswer: String? = null
 
     if (answered && question["reponse"]!!.jsonObject["V"]!!.jsonObject["valeurReponse"] != null) {
-        if (question["reponse"]!!.jsonObject["V"]!!.jsonObject["valeurReponse"]!!.jsonPrimitive.isString)
+        if (question["reponse"]!!.jsonObject["V"]!!.jsonObject["valeurReponse"]!! is JsonPrimitive)
             textInputAnswer = question["reponse"]!!.jsonObject["V"]!!.jsonObject["valeurReponse"]!!.jsonPrimitive.content
         else {
             selectedAnswers = decodeDomain(question["reponse"]!!.jsonObject["V"]!!.jsonObject["valeurReponse"]!!.jsonObject["V"]!!.jsonPrimitive.content)
-            textInputAnswer = question["reponse"]!!.jsonObject["V"]!!.jsonObject["valeurReponseLibre"]!!.jsonPrimitive.content
+            textInputAnswer = question["reponse"]!!.jsonObject["V"]!!.jsonObject["valeurReponseLibre"]?.jsonPrimitive?.content
         }
     }
 

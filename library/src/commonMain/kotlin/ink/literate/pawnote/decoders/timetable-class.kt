@@ -2,14 +2,14 @@ package ink.literate.pawnote.decoders
 
 import ink.literate.pawnote.api.helpers.translatePositionToTimings
 import ink.literate.pawnote.api.helpers.translateToWeekNumber
-import ink.literate.pawnote.models.SessionHandle
+import ink.literate.pawnote.models.InstanceParameters
 import ink.literate.pawnote.models.TimetableClass
 import kotlinx.datetime.*
 import kotlinx.serialization.json.*
 
 fun decodeTimetableClass(
     item: JsonObject,
-    session: SessionHandle,
+    sessionInstance: InstanceParameters,
     decoder: (item: JsonObject) -> Any
 ): TimetableClass<Any> {
   val startDate = decodePronoteDate(item["DateDuCours"]!!.jsonObject["V"]!!.jsonPrimitive.content)
@@ -22,15 +22,15 @@ fun decodeTimetableClass(
         endDate =
             decodePronoteDate(item["DateDuCoursFin"]!!.jsonObject["V"]!!.jsonPrimitive.content)
     else {
-      val position = blockPosition % session.instance.blocksPerDay + blockLength - 1
-      val timings = translatePositionToTimings(session, position.toInt())
+      val position = blockPosition % sessionInstance.blocksPerDay + blockLength - 1
+      val timings = translatePositionToTimings(sessionInstance, position.toInt())
 
       val time = LocalTime(timings.hours.toInt(), timings.minutes.toInt())
       endDate = LocalDateTime(startDate.date, time)
     }
   } else {
-    val position = blockPosition % session.instance.blocksPerDay + blockLength - 1
-    val timings = translatePositionToTimings(session, position.toInt())
+    val position = blockPosition % sessionInstance.blocksPerDay + blockLength - 1
+    val timings = translatePositionToTimings(sessionInstance, position.toInt())
 
     val time = LocalTime(timings.hours.toInt(), timings.minutes.toInt())
     endDate = LocalDateTime(startDate.date, time)
@@ -44,6 +44,6 @@ fun decodeTimetableClass(
       endDate = endDate,
       blockLength = blockLength,
       blockPosition = blockPosition,
-      weekNumber = translateToWeekNumber(startDate, session.instance.firstMonday),
+      weekNumber = translateToWeekNumber(startDate, sessionInstance.firstMonday),
       data = decoder(item))
 }

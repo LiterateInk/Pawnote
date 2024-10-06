@@ -1,6 +1,6 @@
 package ink.literate.pawnote.decoders
 
-import ink.literate.pawnote.models.SessionHandle
+import ink.literate.pawnote.models.InstanceParameters
 import ink.literate.pawnote.models.Timetable
 import kotlinx.serialization.json.*
 
@@ -11,7 +11,7 @@ val isTimetableClassDetention: (item: JsonObject) -> Boolean = { item ->
   item.containsKey("estRetenue") && item["estRetenue"]!!.jsonPrimitive.content != "undefined"
 }
 
-fun decodeTimetable(timetable: JsonObject, session: SessionHandle) =
+fun decodeTimetable(timetable: JsonObject, sessionInstance: InstanceParameters) =
     Timetable(
         absences = timetable["absences"]!!.jsonObject,
         withCanceledClasses = timetable["avecCoursAnnule"]?.jsonPrimitive?.boolean ?: true,
@@ -21,12 +21,12 @@ fun decodeTimetable(timetable: JsonObject, session: SessionHandle) =
 
               val decoder: (item: JsonObject) -> Any =
                   if (isTimetableClassActivity(itemObj)) {
-                    { decodeTimetableClassActivity(itemObj, session.information) }
+                    { decodeTimetableClassActivity(itemObj) }
                   } else if (isTimetableClassDetention(itemObj)) {
                     { decodeTimetableClassDetention(itemObj) }
                   } else {
                     { decodeTimetableClassLesson(itemObj) }
                   }
 
-              decodeTimetableClass(itemObj, session, decoder)
+              decodeTimetableClass(itemObj, sessionInstance, decoder)
             })

@@ -54,7 +54,7 @@ suspend fun timetable(
 
   val response = request.send()
   return decodeTimetable(
-      Json.parseToJsonElement(response.data).jsonObject["donnees"]!!.jsonObject, session)
+      Json.parseToJsonElement(response.data).jsonObject["donnees"]!!.jsonObject, session.instance)
 }
 
 suspend fun timetableFromWeek(session: SessionHandle, weekNumber: Int, index: Int = 0): Timetable {

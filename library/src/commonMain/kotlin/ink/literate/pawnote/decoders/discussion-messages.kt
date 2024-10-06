@@ -10,7 +10,7 @@ fun decodeDiscussionMessages (messages: JsonObject, session: SessionHandle): Dis
     val defaultReplyMessageID = messages["messagePourReponse"]!!.jsonObject["V"]!!.jsonObject["N"]!!.jsonPrimitive.content
 
     for (message in messages["listeMessages"]!!.jsonObject["V"]!!.jsonArray)
-        if (draft != null) drafts.add(decodeDiscussionDraftMessage(message.jsonObject))
+        if (message.jsonObject["brouillon"] != null) drafts.add(decodeDiscussionDraftMessage(message.jsonObject))
         else sents.add(decodeDiscussionMessage(message.jsonObject, session, { decodeDiscussionSentMessage(message.jsonObject, session, sents) }))
 
     sents.sortedWith {a, b -> b.creationDate.time.toMillisecondOfDay() - a.creationDate.time.toMillisecondOfDay()}

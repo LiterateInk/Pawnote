@@ -10,7 +10,4 @@ data class CredentialsAuth(
     val navigatorIdentifier: String? = null
 )
 
-data class LoginResult(
-    val session: SessionHandle,
-    val refreshInfo: RefreshInformation
-)
+data class LoginResult(val session: SessionHandle, val refreshInfo: RefreshInformation)

@@ -6,5 +6,5 @@ data class TimetableClassActivity(
     val resourceTypeName: String,
     val resourceValue: String
 ) {
-    val `is` = "activity"
+  val `is` = "activity"
 }

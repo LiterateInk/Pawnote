@@ -12,60 +12,59 @@ import ink.literate.pawnote.models.errors.DiscussionMessagesMissingError
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 
-suspend fun discussionSendMessage (
+suspend fun discussionSendMessage(
     session: SessionHandle,
     discussion: Discussion,
     content: String,
     includeParentsAndStudents: Boolean = false,
     replyTo: String? = discussion.messages?.defaultReplyMessageID
 ) {
-    if (discussion.messages == null)
-        throw DiscussionMessagesMissingError()
+  if (discussion.messages == null) throw DiscussionMessagesMissingError()
 
-    if (discussion.messages!!.sendAction == null)
-        throw DiscussionActionError()
+  if (discussion.messages!!.sendAction == null) throw DiscussionActionError()
 
-    val action = encodeDiscussionSendAction(discussion.messages!!.sendAction!!, includeParentsAndStudents)
+  val action =
+      encodeDiscussionSendAction(discussion.messages!!.sendAction!!, includeParentsAndStudents)
 
-    val request = RequestFN(session.information, "SaisieMessage", Json.encodeToString(
-        buildJsonObject {
-            putJsonObject("donnees") {
-                if (session.user.authorizations.hasAdvancedDiscussionEditor)
-                    putJsonObject("contenu") {
+  val request =
+      RequestFN(
+          session.information,
+          "SaisieMessage",
+          Json.encodeToString(
+              buildJsonObject {
+                putJsonObject("donnees") {
+                  if (session.user.authorizations.hasAdvancedDiscussionEditor)
+                      putJsonObject("contenu") {
                         put("_T", 21)
                         put("V", content)
-                    }
-                else
-                    put("contenu", content)
+                      }
+                  else put("contenu", content)
 
-                putJsonObject("bouton") {
+                  putJsonObject("bouton") {
                     put("N", 0)
                     put("G", action.code)
-                }
+                  }
 
-                putJsonObject("brouillon") {
+                  putJsonObject("brouillon") {
                     put("N", createEntityID())
                     put("E", EntityState.CREATION.code)
-                }
+                  }
 
-                put("genreDiscussion", 0)
+                  put("genreDiscussion", 0)
 
-                putJsonObject("messagePourReponse") {
+                  putJsonObject("messagePourReponse") {
                     put("G", 0)
                     put("N", replyTo)
+                  }
+
+                  putJsonArray("listeFichiers") {}
                 }
 
-                putJsonArray("listeFichiers") {}
-            }
+                putJsonObject("_Signature_") { put("onglet", TabLocation.Discussions.code) }
+              }))
 
-            putJsonObject("_Signature_") {
-                put("onglet", TabLocation.Discussions.code)
-            }
-        }
-    ))
+  request.send()
 
-    request.send()
-
-    discussions(session, discussion.cache)
-    discussionMessages(session, discussion)
+  discussions(session, discussion.cache)
+  discussionMessages(session, discussion)
 }

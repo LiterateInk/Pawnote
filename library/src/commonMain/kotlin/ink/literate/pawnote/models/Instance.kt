@@ -2,10 +2,7 @@ package ink.literate.pawnote.models
 
 import kotlinx.datetime.LocalDateTime
 
-data class InstanceAccount(
-    val name: String,
-    val path: String
-)
+data class InstanceAccount(val name: String, val path: String)
 
 data class Instance(
     val version: List<Int>,

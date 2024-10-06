@@ -6,24 +6,27 @@ import ink.literate.pawnote.encoders.encodeDomain
 import ink.literate.pawnote.models.News
 import ink.literate.pawnote.models.SessionInformation
 import ink.literate.pawnote.models.TabLocation
-
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 
-suspend fun news (sessionInformation: SessionInformation): News {
-    val request = RequestFN(sessionInformation, "PageActualites", Json.encodeToString(buildJsonObject {
-        putJsonObject("_Signature_") {
-            put("onglet", TabLocation.News.code)
-        }
+suspend fun news(sessionInformation: SessionInformation): News {
+  val request =
+      RequestFN(
+          sessionInformation,
+          "PageActualites",
+          Json.encodeToString(
+              buildJsonObject {
+                putJsonObject("_Signature_") { put("onglet", TabLocation.News.code) }
 
-        putJsonObject("donnees") {
-            putJsonObject("modesAffActus") {
-                put("_T", 26)
-                put("V", encodeDomain(listOf(0)))
-            }
-        }
-    }))
+                putJsonObject("donnees") {
+                  putJsonObject("modesAffActus") {
+                    put("_T", 26)
+                    put("V", encodeDomain(listOf(0)))
+                  }
+                }
+              }))
 
-    val response = request.send()
-    return decodeNews(Json.parseToJsonElement(response.data).jsonObject["donnees"]!!.jsonObject, sessionInformation)
+  val response = request.send()
+  return decodeNews(
+      Json.parseToJsonElement(response.data).jsonObject["donnees"]!!.jsonObject, sessionInformation)
 }

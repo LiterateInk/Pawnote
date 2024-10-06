@@ -8,70 +8,77 @@ import ink.literate.pawnote.models.TabLocation
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 
-suspend fun discussionPostCommand (session: SessionHandle, command: DiscussionCommand? = null, extra: JsonObject) {
-    val payload: JsonObject
+suspend fun discussionPostCommand(
+    session: SessionHandle,
+    command: DiscussionCommand? = null,
+    extra: JsonObject
+) {
+  val payload: JsonObject
 
-    when (command) {
-        DiscussionCommand.brouillon -> payload = buildJsonObject {
-            put("commande", command.value)
-            put("brouillon", when (extra["id"]!!.jsonPrimitive.intOrNull != null) {
-                true -> buildJsonObject {
-                    put("E", EntityState.CREATION.code)
-                    put("N", extra["id"]!!)
-                }
-                false -> buildJsonObject {
-                    put("E", EntityState.MODIFICATION.code)
-                    put("N", extra["id"]!!)
-                }
-            })
+  when (command) {
+    DiscussionCommand.brouillon -> payload = buildJsonObject {
+          put("commande", command.value)
+          put(
+              "brouillon",
+              when (extra["id"]!!.jsonPrimitive.intOrNull != null) {
+                true ->
+                    buildJsonObject {
+                      put("E", EntityState.CREATION.code)
+                      put("N", extra["id"]!!)
+                    }
+                false ->
+                    buildJsonObject {
+                      put("E", EntityState.MODIFICATION.code)
+                      put("N", extra["id"]!!)
+                    }
+              })
 
-            put("contenu", extra["content"]!!)
+          put("contenu", extra["content"]!!)
 
-            putJsonObject("messagePourReponse") {
-                put("G", 0)
-                put("N", extra["replyMessageID"]!!)
-            }
+          putJsonObject("messagePourReponse") {
+            put("G", 0)
+            put("N", extra["replyMessageID"]!!)
+          }
 
-            putJsonArray("listeDestinataires") {}
-            putJsonArray("listeFichiers") {}
-            put("objet", "")
+          putJsonArray("listeDestinataires") {}
+          putJsonArray("listeFichiers") {}
+          put("objet", "")
         }
-        null -> payload = buildJsonObject {
-            put("commande", "")
-            putJsonObject("bouton") {
-                put("N", 0)
-                put("G", extra["button"]!!)
-            }
+    null -> payload = buildJsonObject {
+          put("commande", "")
+          putJsonObject("bouton") {
+            put("N", 0)
+            put("G", extra["button"]!!)
+          }
 
-            putJsonObject("brouillon") {
-                put("N", extra["id"]!!)
-            }
+          putJsonObject("brouillon") { put("N", extra["id"]!!) }
 
-            put("contenu", extra["content"]!!)
+          put("contenu", extra["content"]!!)
 
-            putJsonArray("listeDestinataires") {}
-            putJsonArray("listeFichiers") {}
+          putJsonArray("listeDestinataires") {}
+          putJsonArray("listeFichiers") {}
 
-            putJsonObject("messagePourReponse") {
-                put("G", 0)
-                put("N", extra["replyMessageID"]!!)
-            }
+          putJsonObject("messagePourReponse") {
+            put("G", 0)
+            put("N", extra["replyMessageID"]!!)
+          }
         }
-        else -> payload = buildJsonObject {
-            put("commande", command.value)
-            put("listePossessionsMessages", extra["possessions"]!!)
+    else -> payload = buildJsonObject {
+          put("commande", command.value)
+          put("listePossessionsMessages", extra["possessions"]!!)
         }
-    }
+  }
 
-    val request = RequestFN(session.information, "SaisieMessage", Json.encodeToString(
-        buildJsonObject {
-            putJsonObject("_Signature_") {
-                put("onglet", TabLocation.Discussions.code)
-            }
+  val request =
+      RequestFN(
+          session.information,
+          "SaisieMessage",
+          Json.encodeToString(
+              buildJsonObject {
+                putJsonObject("_Signature_") { put("onglet", TabLocation.Discussions.code) }
 
-            put("donnees", payload)
-        }
-    ))
+                put("donnees", payload)
+              }))
 
-    request.send()
+  request.send()
 }

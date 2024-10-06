@@ -8,24 +8,31 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-fun decodeDiscussionSentMessage (message: JsonObject, session: SessionHandle, sents: List<DiscussionMessage<DiscussionSentMessage>> = listOf()): DiscussionSentMessage {
-    val transferredMessages: MutableList<DiscussionMessage<DiscussionSentMessage>> = mutableListOf()
-    val replyMessageID = message["messageSource"]!!.jsonObject["V"]!!.jsonObject["N"]!!.jsonPrimitive.content
+fun decodeDiscussionSentMessage(
+    message: JsonObject,
+    session: SessionHandle,
+    sents: List<DiscussionMessage<DiscussionSentMessage>> = listOf()
+): DiscussionSentMessage {
+  val transferredMessages: MutableList<DiscussionMessage<DiscussionSentMessage>> = mutableListOf()
+  val replyMessageID =
+      message["messageSource"]!!.jsonObject["V"]!!.jsonObject["N"]!!.jsonPrimitive.content
 
-    if (message["listeMessagesPourContexte"] != null)
-        for (transferredMessage in message["listeMessagesPourContexte"]!!.jsonObject["V"]!!.jsonArray) {
-            val decoded = decodeDiscussionMessage<DiscussionSentMessage>(transferredMessage.jsonObject, session, {
-                decodeDiscussionSentMessage(it, session)
-            })
+  if (message["listeMessagesPourContexte"] != null)
+      for (transferredMessage in
+          message["listeMessagesPourContexte"]!!.jsonObject["V"]!!.jsonArray) {
+        val decoded =
+            decodeDiscussionMessage<DiscussionSentMessage>(
+                transferredMessage.jsonObject,
+                session,
+                { decodeDiscussionSentMessage(it, session) })
 
-            transferredMessages.add(decoded)
-        }
+        transferredMessages.add(decoded)
+      }
 
-    val replyingTo = sents.find { it.id == replyMessageID }
+  val replyingTo = sents.find { it.id == replyMessageID }
 
-    return DiscussionSentMessage(
-        transferredMessages = transferredMessages,
-        replyMessageID = replyMessageID,
-        replyingTo = replyingTo
-    )
+  return DiscussionSentMessage(
+      transferredMessages = transferredMessages,
+      replyMessageID = replyMessageID,
+      replyingTo = replyingTo)
 }

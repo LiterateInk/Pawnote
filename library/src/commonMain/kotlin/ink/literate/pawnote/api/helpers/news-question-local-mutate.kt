@@ -10,20 +10,22 @@ fun newsQuestionLocalMutate(
     answers: Any? = null,
     textInput: String? = null
 ) {
-    when (question.kind) {
-        NewsQuestionKind.TextInput, NewsQuestionKind.InformationText -> {
-            question.textInputAnswer = answers as? String
-        }
-        else -> {
-            if (answers !is List<*>)
-                throw UnreachableError("newsQuestionLocalMutate")
-            else {
-                question.selectedAnswers = answers.filterIsInstance<Int>()
-                question.textInputAnswer = textInput
-            }
-        }
+  when (question.kind) {
+    NewsQuestionKind.TextInput,
+    NewsQuestionKind.InformationText -> {
+      question.textInputAnswer = answers as? String
     }
+    else -> {
+      if (answers !is List<*>) throw UnreachableError("newsQuestionLocalMutate")
+      else {
+        question.selectedAnswers = answers.filterIsInstance<Int>()
+        question.textInputAnswer = textInput
+      }
+    }
+  }
 
-    question.answered = answers != null
-    question.answerDate = if (question.answered) Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()) else null
+  question.answered = answers != null
+  question.answerDate =
+      if (question.answered) Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+      else null
 }

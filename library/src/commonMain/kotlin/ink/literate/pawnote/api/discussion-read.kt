@@ -8,6 +8,6 @@ import ink.literate.pawnote.models.SessionHandle
  *
  * Shortcut of `discussionMessages` but here we don't return anything.
  */
-suspend fun discussionRead (session: SessionHandle, discussion: Discussion) {
-    discussionMessages(session, discussion, markAsRead = true)
+suspend fun discussionRead(session: SessionHandle, discussion: Discussion) {
+  discussionMessages(session, discussion, markAsRead = true)
 }

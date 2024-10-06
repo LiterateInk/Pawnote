@@ -12,76 +12,82 @@ data class NewsRemoteMutateOptions(
     val onlyMarkAsRead: Boolean = false
 )
 
-/**
- * Updates the status of a news item.
- * Could be a read, or answer to a survey.
- */
-suspend fun newsRemoteMutate (
+/** Updates the status of a news item. Could be a read, or answer to a survey. */
+suspend fun newsRemoteMutate(
     session: SessionHandle,
     item: NewsItem<Any>,
     options: NewsRemoteMutateOptions
 ) {
-    val answers: List<NewsQuestion> = if (options.onlyMarkAsRead || options.delete) listOf() else (if (item.data is NewsInformation) listOf(item.data.question) else (item.data as NewsSurvey).questions)
+  val answers: List<NewsQuestion> =
+      if (options.onlyMarkAsRead || options.delete) listOf()
+      else
+          (if (item.data is NewsInformation) listOf(item.data.question)
+          else (item.data as NewsSurvey).questions)
 
-    val request = RequestFN(session.information, "SaisieActualites", Json.encodeToString(
-        buildJsonObject {
-            putJsonObject("_Signature_") {
-                put("onglet", TabLocation.News.code)
-            }
+  val request =
+      RequestFN(
+          session.information,
+          "SaisieActualites",
+          Json.encodeToString(
+              buildJsonObject {
+                putJsonObject("_Signature_") { put("onglet", TabLocation.News.code) }
 
-            putJsonObject("donnees") {
-                putJsonArray("listeActualites") {
+                putJsonObject("donnees") {
+                  putJsonArray("listeActualites") {
                     addJsonObject {
-                        put("N", item.id)
-                        put("L", item.title ?: "")
+                      put("N", item.id)
+                      put("L", item.title ?: "")
 
-                        put("genrePublic", item.public["G"]!!)
-                        put("public", item.public)
+                      put("genrePublic", item.public["G"]!!)
+                      put("public", item.public)
 
-                        put("validationDirecte", true)
+                      put("validationDirecte", true)
 
-                        putJsonArray("listeQuestions") {
-                            for (answer in answers) {
-                                addJsonObject {
-                                    put("N", answer.id)
-                                    put("L", answer.fullTitle)
-                                    put("genreReponse", answer.kind.code)
+                      putJsonArray("listeQuestions") {
+                        for (answer in answers) {
+                          addJsonObject {
+                            put("N", answer.id)
+                            put("L", answer.fullTitle)
+                            put("genreReponse", answer.kind.code)
 
-                                    putJsonObject("reponse") {
-                                        put("N", answer.answerId.split('#')[0].toInt())
-                                        put("Actif", true)
+                            putJsonObject("reponse") {
+                              put("N", answer.answerId.split('#')[0].toInt())
+                              put("Actif", true)
 
-                                        // Should give a string directly when we reply to an information
-                                        // or when the question is just a text input.
-                                        if (answer.kind === NewsQuestionKind.InformationText || answer.kind === NewsQuestionKind.TextInput)
-                                            put("valeurReponse", answer.textInputAnswer)
-                                        else
-                                            putJsonObject("valeurReponse") {
-                                                put("_T", 8)
-                                                put("V", encodeDomain(answer.selectedAnswers ?: listOf()))
-                                            }
+                              // Should give a string directly when we reply to an information
+                              // or when the question is just a text input.
+                              if (answer.kind === NewsQuestionKind.InformationText ||
+                                  answer.kind === NewsQuestionKind.TextInput)
+                                  put("valeurReponse", answer.textInputAnswer)
+                              else
+                                  putJsonObject("valeurReponse") {
+                                    put("_T", 8)
+                                    put("V", encodeDomain(answer.selectedAnswers ?: listOf()))
+                                  }
 
-                                        put("valeurReponseLibre", if (answer.choices.any { it.isTextInput }) answer.textInputAnswer else null)
+                              put(
+                                  "valeurReponseLibre",
+                                  if (answer.choices.any { it.isTextInput }) answer.textInputAnswer
+                                  else null)
 
-                                        put("avecReponse", answer.answered)
-                                        put("estReponseAttendue", answer.shouldAnswer)
-                                        put("_validationSaisie", true)
-                                    }
-                                }
+                              put("avecReponse", answer.answered)
+                              put("estReponseAttendue", answer.shouldAnswer)
+                              put("_validationSaisie", true)
                             }
+                          }
                         }
+                      }
 
-                        put("marqueLueSeulement", !options.delete && options.onlyMarkAsRead)
-                        put("lue", !options.delete && options.markAsRead)
-                        put("supprimee", !options.onlyMarkAsRead && options.delete)
-                        put("saisieActualite", false)
+                      put("marqueLueSeulement", !options.delete && options.onlyMarkAsRead)
+                      put("lue", !options.delete && options.markAsRead)
+                      put("supprimee", !options.onlyMarkAsRead && options.delete)
+                      put("saisieActualite", false)
                     }
+                  }
+
+                  put("saisieActualite", false)
                 }
+              }))
 
-                put("saisieActualite", false)
-            }
-        }
-    ))
-
-    request.send()
+  request.send()
 }

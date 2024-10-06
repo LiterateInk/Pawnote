@@ -16,9 +16,6 @@ data class Assignment(
     /** Themes associated with this homework. */
     val themes: List<AssignmentTheme>,
     val `return`: AssignmentReturn,
-    /**
-     * If defined, can be used to retrieve
-     * the lesson contents from the resources tab.
-     */
+    /** If defined, can be used to retrieve the lesson contents from the resources tab. */
     val resourceID: String? = null
 )

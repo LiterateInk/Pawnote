@@ -6,5 +6,5 @@ data class TimetableClassDetention(
     val teacherNames: List<String>,
     val classrooms: List<String>
 ) {
-    val `is` = "detention"
+  val `is` = "detention"
 }

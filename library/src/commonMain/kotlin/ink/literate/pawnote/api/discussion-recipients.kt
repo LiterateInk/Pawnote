@@ -9,21 +9,30 @@ import ink.literate.pawnote.models.TabLocation
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 
-suspend fun discussionRecipients (session: SessionHandle, discussion: Discussion): List<DiscussionRecipient> {
-    val request = RequestFN(session.information, "SaisiePublicMessage", Json.encodeToString(buildJsonObject {
-        putJsonObject("_Signature_") {
-            put("onglet", TabLocation.Discussions.code)
-        }
+suspend fun discussionRecipients(
+    session: SessionHandle,
+    discussion: Discussion
+): List<DiscussionRecipient> {
+  val request =
+      RequestFN(
+          session.information,
+          "SaisiePublicMessage",
+          Json.encodeToString(
+              buildJsonObject {
+                putJsonObject("_Signature_") { put("onglet", TabLocation.Discussions.code) }
 
-        putJsonObject("donnees") {
-            putJsonObject("message") {
-                put("N", discussion.participantsMessageID)
-            }
-            put("estPublicParticipant", true)
-            put("estDestinataireReponse", false)
-        }
-    }))
+                putJsonObject("donnees") {
+                  putJsonObject("message") { put("N", discussion.participantsMessageID) }
+                  put("estPublicParticipant", true)
+                  put("estDestinataireReponse", false)
+                }
+              }))
 
-    val response = request.send()
-    return Json.parseToJsonElement(response.data).jsonObject["donnees"]!!.jsonObject["listeDest"]!!.jsonObject["V"]!!.jsonArray.map { decodeDiscussionRecipient(it.jsonObject) }
+  val response = request.send()
+  return Json.parseToJsonElement(response.data)
+      .jsonObject["donnees"]!!
+      .jsonObject["listeDest"]!!
+      .jsonObject["V"]!!
+      .jsonArray
+      .map { decodeDiscussionRecipient(it.jsonObject) }
 }

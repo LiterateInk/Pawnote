@@ -6,8 +6,8 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonPrimitive
 
-fun decodeDiscussionFolder (folder: JsonObject) = DiscussionFolder(
-    id = folder["N"]!!.jsonPrimitive.content,
-    name = folder["L"]!!.jsonPrimitive.content,
-    kind = DiscussionFolderKind.fromInt(folder["G"]!!.jsonPrimitive.int)
-)
+fun decodeDiscussionFolder(folder: JsonObject) =
+    DiscussionFolder(
+        id = folder["N"]!!.jsonPrimitive.content,
+        name = folder["L"]!!.jsonPrimitive.content,
+        kind = DiscussionFolderKind.fromInt(folder["G"]!!.jsonPrimitive.int))

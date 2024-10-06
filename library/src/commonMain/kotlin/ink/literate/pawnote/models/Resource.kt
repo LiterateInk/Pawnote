@@ -7,7 +7,6 @@ data class Resource(
     val startDate: LocalDateTime,
     val endDate: LocalDateTime,
     val subject: Subject,
-
     val haveAssignment: Boolean,
     val assignmentDeadline: LocalDateTime? = null,
 

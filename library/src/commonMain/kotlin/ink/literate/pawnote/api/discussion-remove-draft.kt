@@ -10,15 +10,18 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 
-suspend fun discussionRemoveDraft (session: SessionHandle, discussion: Discussion, draft: DiscussionDraftMessage) {
-    discussionPostCommand(session, DiscussionCommand.Delete, buildJsonObject {
-        putJsonArray("possessions") {
-            addJsonObject {
-                put("N", draft.possessionID)
-            }
-        }
-    })
+suspend fun discussionRemoveDraft(
+    session: SessionHandle,
+    discussion: Discussion,
+    draft: DiscussionDraftMessage
+) {
+  discussionPostCommand(
+      session,
+      DiscussionCommand.Delete,
+      buildJsonObject {
+        putJsonArray("possessions") { addJsonObject { put("N", draft.possessionID) } }
+      })
 
-    discussions(session, discussion.cache)
-    discussionMessages(session, discussion)
+  discussions(session, discussion.cache)
+  discussionMessages(session, discussion)
 }

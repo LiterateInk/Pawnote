@@ -9,17 +9,29 @@ import ink.literate.pawnote.models.errors.DiscussionActionError
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
-suspend fun discussionSendDraft (session: SessionHandle, discussion: Discussion, draft: DiscussionDraftMessage, includeParentsAndStudents: Boolean = false) {
-    if (discussion.messages == null || discussion.messages!!.sendAction == null)
-        throw DiscussionActionError()
+suspend fun discussionSendDraft(
+    session: SessionHandle,
+    discussion: Discussion,
+    draft: DiscussionDraftMessage,
+    includeParentsAndStudents: Boolean = false
+) {
+  if (discussion.messages == null || discussion.messages!!.sendAction == null)
+      throw DiscussionActionError()
 
-    discussionPostCommand(session, null, buildJsonObject {
-        put("button", encodeDiscussionSendAction(discussion.messages!!.sendAction!!, includeParentsAndStudents).code)
+  discussionPostCommand(
+      session,
+      null,
+      buildJsonObject {
+        put(
+            "button",
+            encodeDiscussionSendAction(
+                    discussion.messages!!.sendAction!!, includeParentsAndStudents)
+                .code)
         put("content", draft.content)
         put("id", draft.possessionID)
         put("replyMessageID", draft.replyMessageID)
-    })
+      })
 
-    discussions(session, discussion.cache)
-    discussionMessages(session, discussion)
+  discussions(session, discussion.cache)
+  discussionMessages(session, discussion)
 }

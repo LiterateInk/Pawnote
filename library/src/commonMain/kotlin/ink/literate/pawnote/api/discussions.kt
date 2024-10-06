@@ -17,41 +17,54 @@ data class DiscussionsResponse(
 )
 
 @OptIn(ExperimentalSerializationApi::class)
-suspend fun discussions (session: SessionHandle, cache: MutableList<Discussion> = mutableListOf()): DiscussionsResponse {
-    val request = RequestFN(session.information, "ListeMessagerie", Json.encodeToString(
-        buildJsonObject {
-            putJsonObject("_Signature_") {
-                put("onglet", TabLocation.Discussions.code)
-            }
+suspend fun discussions(
+    session: SessionHandle,
+    cache: MutableList<Discussion> = mutableListOf()
+): DiscussionsResponse {
+  val request =
+      RequestFN(
+          session.information,
+          "ListeMessagerie",
+          Json.encodeToString(
+              buildJsonObject {
+                putJsonObject("_Signature_") { put("onglet", TabLocation.Discussions.code) }
 
-            putJsonObject("donnees") {
-                put("avecLu", true)
-                put("avecMessage", true)
-                put("possessionMessageDiscussionUnique", null)
-            }
-        }
-    ))
+                putJsonObject("donnees") {
+                  put("avecLu", true)
+                  put("avecMessage", true)
+                  put("possessionMessageDiscussionUnique", null)
+                }
+              }))
 
-    val response = request.send()
-    val data = Json.parseToJsonElement(response.data).jsonObject["donnees"]!!.jsonObject
+  val response = request.send()
+  val data = Json.parseToJsonElement(response.data).jsonObject["donnees"]!!.jsonObject
 
-    val folders = data["listeEtiquettes"]!!.jsonObject["V"]!!.jsonArray.map { decodeDiscussionFolder(it.jsonObject) }
+  val folders =
+      data["listeEtiquettes"]!!.jsonObject["V"]!!.jsonArray.map {
+        decodeDiscussionFolder(it.jsonObject)
+      }
 
-    val items = data["listeMessagerie"]!!.jsonObject["V"]!!.jsonArray
-        .filter {
+  val items =
+      data["listeMessagerie"]!!
+          .jsonObject["V"]!!
+          .jsonArray
+          .filter {
             val discussion = it.jsonObject
             val hasZeroDepth = (discussion["profondeur"]?.jsonPrimitive?.int ?: 0) == 0
-            val hasParticipants = if (discussion["messagePourParticipants"] != null) discussion["messagePourParticipants"]!!.jsonObject["V"]!!.jsonObject["N"] != null else false
-            discussion["estUneDiscussion"]?.jsonPrimitive?.boolean ?: false && hasParticipants && hasZeroDepth
-        }
-        .map { decodeDiscussion(it.jsonObject, folders, cache) }
+            val hasParticipants =
+                if (discussion["messagePourParticipants"] != null)
+                    discussion["messagePourParticipants"]!!.jsonObject["V"]!!.jsonObject["N"] !=
+                        null
+                else false
+            discussion["estUneDiscussion"]?.jsonPrimitive?.boolean ?: false &&
+                hasParticipants &&
+                hasZeroDepth
+          }
+          .map { decodeDiscussion(it.jsonObject, folders, cache) }
 
-    cache.clear()
+  cache.clear()
 
-    cache.addAll(items)
+  cache.addAll(items)
 
-    return DiscussionsResponse(
-        folders = folders,
-        items = cache
-    )
+  return DiscussionsResponse(folders = folders, items = cache)
 }

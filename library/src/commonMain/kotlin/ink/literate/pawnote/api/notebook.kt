@@ -8,31 +8,34 @@ import ink.literate.pawnote.models.Notebook
 import ink.literate.pawnote.models.Period
 import ink.literate.pawnote.models.SessionHandle
 import ink.literate.pawnote.models.TabLocation
-
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
 
-suspend fun notebook (session: SessionHandle, period: Period): Notebook {
-    val request = RequestFN(session.information, "PagePresence", Json.encodeToString(buildJsonObject {
-        putJsonObject("_Signature_") {
-            put("onglet", TabLocation.Notebook.code)
-        }
+suspend fun notebook(session: SessionHandle, period: Period): Notebook {
+  val request =
+      RequestFN(
+          session.information,
+          "PagePresence",
+          Json.encodeToString(
+              buildJsonObject {
+                putJsonObject("_Signature_") { put("onglet", TabLocation.Notebook.code) }
 
-        putJsonObject("donnees") {
-            put("periode", encodePeriod(period))
+                putJsonObject("donnees") {
+                  put("periode", encodePeriod(period))
 
-            putJsonObject("DateDebut") {
-                put("_T", 7)
-                put("V", encodePronoteDate(period.startDate))
-            }
+                  putJsonObject("DateDebut") {
+                    put("_T", 7)
+                    put("V", encodePronoteDate(period.startDate))
+                  }
 
-            putJsonObject("DateFin") {
-                put("_T", 7)
-                put("V", encodePronoteDate(period.endDate))
-            }
-        }
-    }))
+                  putJsonObject("DateFin") {
+                    put("_T", 7)
+                    put("V", encodePronoteDate(period.endDate))
+                  }
+                }
+              }))
 
-    val response = request.send()
-    return decodeNotebook(Json.parseToJsonElement(response.data).jsonObject["donnees"]!!.jsonObject, session)
+  val response = request.send()
+  return decodeNotebook(
+      Json.parseToJsonElement(response.data).jsonObject["donnees"]!!.jsonObject, session)
 }

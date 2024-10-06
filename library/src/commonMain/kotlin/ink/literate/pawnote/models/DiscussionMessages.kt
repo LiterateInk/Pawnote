@@ -5,15 +5,9 @@ data class DiscussionMessages(
     val sents: List<DiscussionMessage<DiscussionSentMessage>>,
     val drafts: List<DiscussionDraftMessage>,
 
-    /**
-     * Can't create message in the discussion if
-     * this is not defined.
-     */
+    /** Can't create message in the discussion if this is not defined. */
     val sendAction: DiscussionSendAction? = null,
 
-    /**
-     * Whether the button "include students and parents"
-     * appears on the UI or not.
-     */
+    /** Whether the button "include students and parents" appears on the UI or not. */
     val canIncludeStudentsAndParents: Boolean
 )

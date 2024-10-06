@@ -8,13 +8,21 @@ import ink.literate.pawnote.models.SessionHandle
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
-suspend fun discussionCreateDraft (session: SessionHandle, discussion: Discussion, content: String, replyTo: String? = discussion.messages?.defaultReplyMessageID) {
-    discussionPostCommand(session, DiscussionCommand.brouillon, buildJsonObject {
+suspend fun discussionCreateDraft(
+    session: SessionHandle,
+    discussion: Discussion,
+    content: String,
+    replyTo: String? = discussion.messages?.defaultReplyMessageID
+) {
+  discussionPostCommand(
+      session,
+      DiscussionCommand.brouillon,
+      buildJsonObject {
         put("id", createEntityID())
         put("content", content)
         put("replyMessageID", replyTo)
-    })
+      })
 
-    discussions(session, discussion.cache)
-    discussionMessages(session, discussion)
+  discussions(session, discussion.cache)
+  discussionMessages(session, discussion)
 }

@@ -22,8 +22,8 @@ data class SessionInfoParams(
 )
 
 suspend fun sessionInformation(
-  options: SessionInfoParams,
-  httpClient: HttpClient = HttpClient { followRedirects = false }
+    options: SessionInfoParams,
+    httpClient: HttpClient = HttpClient { followRedirects = false }
 ): SessionInformation {
   val url = Url(options.base + "/" + encodeAccountKindToPath(options.kind))
 

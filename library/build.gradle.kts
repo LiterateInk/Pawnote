@@ -45,6 +45,7 @@ kotlin {
             }
         }
         val androidMain by getting {
+            dependsOn(jvmMain)
             dependencies {
                 implementation(libs.ktor.client.okhttp)
             }

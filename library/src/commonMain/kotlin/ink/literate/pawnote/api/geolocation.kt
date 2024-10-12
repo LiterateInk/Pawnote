@@ -4,7 +4,6 @@ import ink.literate.pawnote.decoders.decodeGeolocatedInstance
 import ink.literate.pawnote.models.GeolocatedInstance
 import ink.literate.pawnote.models.Position
 import io.ktor.client.*
-import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -14,7 +13,7 @@ import kotlinx.serialization.json.jsonObject
 
 suspend fun geolocation(
   position: Position,
-  httpClient: HttpClient = HttpClient(CIO)
+  httpClient: HttpClient = HttpClient()
 ): List<GeolocatedInstance> {
   val res =
       httpClient.submitForm(

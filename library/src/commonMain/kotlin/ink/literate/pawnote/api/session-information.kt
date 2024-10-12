@@ -8,7 +8,6 @@ import ink.literate.pawnote.models.errors.BusyPageError
 import ink.literate.pawnote.models.errors.PageUnavailableError
 import ink.literate.pawnote.models.errors.SuspendedIPError
 import io.ktor.client.*
-import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -24,7 +23,7 @@ data class SessionInfoParams(
 
 suspend fun sessionInformation(
   options: SessionInfoParams,
-  httpClient: HttpClient = HttpClient (CIO) { followRedirects = false }
+  httpClient: HttpClient = HttpClient { followRedirects = false }
 ): SessionInformation {
   val url = Url(options.base + "/" + encodeAccountKindToPath(options.kind))
 

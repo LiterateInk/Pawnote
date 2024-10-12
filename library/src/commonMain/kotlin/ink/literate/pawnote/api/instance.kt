@@ -4,13 +4,12 @@ import ink.literate.pawnote.api.helpers.clearURL
 import ink.literate.pawnote.decoders.decodeInstance
 import ink.literate.pawnote.models.Instance
 import io.ktor.client.*
-import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 
-suspend fun instance(url: String, httpClient: HttpClient = HttpClient(CIO)): Instance {
+suspend fun instance(url: String, httpClient: HttpClient = HttpClient()): Instance {
   var cleanedURL = clearURL(url)
   cleanedURL += "/infoMobileApp.json?id=0D264427-EEFC-4810-A9E9-346942A862A4"
 

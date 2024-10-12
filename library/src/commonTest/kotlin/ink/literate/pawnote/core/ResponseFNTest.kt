@@ -18,7 +18,7 @@ class ResponseFNTest {
           id = sessionId,
           accountKind = AccountKind.STUDENT,
           aesIV = "09666dfddd5bbdacc8bb446df87530303130",
-          aesKey = "09666dfddd5bbdacc8bb446df87530303130",
+          aesKey = "",
           skipCompression = true,
           skipEncryption = true,
           demo = true,

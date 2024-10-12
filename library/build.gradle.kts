@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val libraryName = "Pawnote"
 
-version = "0.0.0"
+version = "1.0.0"
 
 plugins {
   alias(libs.plugins.kotlinMultiplatform)

@@ -12,8 +12,8 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 
 suspend fun geolocation(
-  position: Position,
-  httpClient: HttpClient = HttpClient()
+    position: Position,
+    httpClient: HttpClient = HttpClient()
 ): List<GeolocatedInstance> {
   val res =
       httpClient.submitForm(

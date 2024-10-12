@@ -17,7 +17,7 @@ fun decodeInstance(instance: JsonObject): Instance {
   return Instance(
       name = instance["nomEtab"]!!.jsonPrimitive.content,
       version = instance["version"]!!.jsonArray.map { version -> version.jsonPrimitive.int },
-      date = LocalDateTime.parse(instance["date"]!!.jsonPrimitive.content),
+      date = LocalDateTime.parse(instance["date"]!!.jsonPrimitive.content.dropLast(1)),
       accounts =
           instance["espaces"]!!.jsonArray.map { account ->
             InstanceAccount(

@@ -5,6 +5,7 @@ import ink.literate.pawnote.api.private.Keys
 import ink.literate.pawnote.api.private.aesKeys
 import ink.literate.pawnote.models.SessionInformation
 import io.ktor.client.*
+import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -80,7 +81,7 @@ actual constructor(
     }
 
     val response =
-        HttpClient().request(payload.url) {
+        HttpClient(CIO).request(payload.url) {
           method = HttpMethod.Post
           header("Content-Type", "application/json")
           setBody(Json.encodeToString(requestData))

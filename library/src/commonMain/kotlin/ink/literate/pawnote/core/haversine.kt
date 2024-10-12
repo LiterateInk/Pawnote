@@ -1,3 +1,5 @@
+package ink.literate.pawnote.core
+
 import kotlin.math.PI
 import kotlin.math.asin
 import kotlin.math.cos

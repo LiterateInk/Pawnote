@@ -8,6 +8,7 @@ import ink.literate.pawnote.models.errors.BusyPageError
 import ink.literate.pawnote.models.errors.PageUnavailableError
 import ink.literate.pawnote.models.errors.SuspendedIPError
 import io.ktor.client.*
+import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -22,8 +23,8 @@ data class SessionInfoParams(
 )
 
 suspend fun sessionInformation(
-    options: SessionInfoParams,
-    httpClient: HttpClient = HttpClient { followRedirects = false }
+  options: SessionInfoParams,
+  httpClient: HttpClient = HttpClient (CIO) { followRedirects = false }
 ): SessionInformation {
   val url = Url(options.base + "/" + encodeAccountKindToPath(options.kind))
 
@@ -51,10 +52,11 @@ suspend fun sessionInformation(
     return decodeSessionInformation(
         Json.parseToJsonElement(sessionDataString).jsonObject, options.base)
   } catch (err: Exception) {
-    if (content.contains("Votre adresse IP est provisoirement suspendue")) throw SuspendedIPError()
-    else if (content.contains("Le site n'est pas disponible")) throw PageUnavailableError()
-    else if (content.contains("Le site est momentanément indisponible")) throw BusyPageError()
-
-    throw PageUnavailableError()
+    when {
+      content.contains("Votre adresse IP est provisoirement suspendue") -> throw SuspendedIPError()
+      content.contains("Le site n'est pas disponible") -> throw PageUnavailableError()
+      content.contains("Le site est momentanément indisponible") -> throw BusyPageError()
+      else -> throw PageUnavailableError()
+    }
   }
 }

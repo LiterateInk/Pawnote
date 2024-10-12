@@ -1,6 +1,6 @@
 package ink.literate.pawnote.decoders
 
-import haversine
+import ink.literate.pawnote.core.haversine
 import ink.literate.pawnote.models.GeolocatedInstance
 import kotlinx.serialization.json.*
 
